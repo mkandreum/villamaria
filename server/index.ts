@@ -884,7 +884,81 @@ app.post('/api/admin/reservations/:id/confirm-payment', authenticateToken, requi
     res.status(500).json({ error: error.message });
   }
 });
+// ─── REVIEWS ────────────────────────────────────────────────────────────────
 
+// PUBLIC: get only visible reviews
+app.get('/api/reviews', async (_req, res) => {
+  try {
+    const reviews = await (prisma as any).review.findMany({
+      where: { visible: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ reviews });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUBLIC: submit a new review (starts as visible:false, admin must approve)
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { author, location, date, rating, comment, avatarUrl } = req.body;
+    if (!author || !comment) return res.status(400).json({ error: 'author y comment son requeridos.' });
+
+    const review = await (prisma as any).review.create({
+      data: {
+        author,
+        location: location || '',
+        date: date || new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
+        rating: Math.max(1, Math.min(5, Number(rating) || 5)),
+        comment,
+        avatarUrl: avatarUrl || null,
+        visible: false,
+      },
+    });
+    res.json({ success: true, review });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: get ALL reviews (visible + hidden) for management
+app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const reviews = await (prisma as any).review.findMany({ orderBy: { createdAt: 'desc' } });
+    res.json({ reviews });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: toggle review visibility
+app.patch('/api/admin/reviews/:id/visible', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { visible } = req.body;
+    const review = await (prisma as any).review.update({
+      where: { id },
+      data: { visible: Boolean(visible) },
+    });
+    res.json({ success: true, review });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: delete review
+app.delete('/api/admin/reviews/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await (prisma as any).review.delete({ where: { id } });
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ─── ADMIN USERS ─────────────────────────────────────────────────────────────
 app.get('/api/admin/users', authenticateToken, requireAdmin, async (_req, res) => {
   try {
     const users = await prisma.user.findMany({

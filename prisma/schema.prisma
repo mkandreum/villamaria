@@ -114,3 +114,17 @@ model AuditLog {
 
   @@map("audit_logs")
 }
+
+model Review {
+  id        String   @id @default(uuid())
+  author    String
+  location  String?
+  date      String
+  rating    Int      @default(5)
+  comment   String
+  avatarUrl String?
+  visible   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}

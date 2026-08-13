@@ -114,4 +114,15 @@ export const api = {
   saveSmtpSettings: (payload: any) => request('/admin/smtp', { method: 'POST', body: JSON.stringify(payload) }),
   testSmtpConnection: (payload: any) => request('/admin/smtp/test-connection', { method: 'POST', body: JSON.stringify(payload) }),
   sendTestEmail: (payload: any) => request('/admin/smtp/test-email', { method: 'POST', body: JSON.stringify(payload) }),
+
+  // Reviews (public)
+  getPublicReviews: () => request('/reviews'),
+  submitReview: (payload: { author: string; location?: string; rating: number; comment: string }) =>
+    request('/reviews', { method: 'POST', body: JSON.stringify(payload) }),
+
+  // Reviews (admin)
+  getAdminReviews: () => request('/admin/reviews'),
+  toggleReviewVisible: (id: string, visible: boolean) =>
+    request(`/admin/reviews/${id}/visible`, { method: 'PATCH', body: JSON.stringify({ visible }) }),
+  deleteReview: (id: string) => request(`/admin/reviews/${id}`, { method: 'DELETE' }),
 };

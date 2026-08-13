@@ -17,6 +17,9 @@ import {
   Send,
   Plus,
   Image as ImageIcon,
+  Star,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { api } from '../api';
 import { SmtpSettingsSection } from './admin/SmtpSettingsSection';
@@ -27,7 +30,7 @@ interface AdminModalProps {
 }
 
 export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }) => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'reservations' | 'property' | 'blocked' | 'templates' | 'smtp'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'reservations' | 'property' | 'blocked' | 'templates' | 'smtp' | 'reviews'>('dashboard');
 
   // Data states
   const [loading, setLoading] = useState(true);
@@ -37,6 +40,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
   const [propertySettings, setPropertySettings] = useState<any>({});
+  const [adminReviews, setAdminReviews] = useState<any[]>([]);
 
   // Form states
   const [newBlock, setNewBlock] = useState({ startDate: '', endDate: '', reason: '' });
@@ -52,13 +56,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const loadAllAdminData = async () => {
     setLoading(true);
     try {
-      const [dashRes, resRes, usersRes, blockRes, tplRes, propRes] = await Promise.all([
+      const [dashRes, resRes, usersRes, blockRes, tplRes, propRes, revRes] = await Promise.all([
         api.getDashboardMetrics().catch(() => ({ metrics: null })),
         api.getAdminReservations().catch(() => ({ reservations: [] })),
         api.getAdminUsers().catch(() => ({ users: [] })),
         api.getBlockedDates().catch(() => ({ blockedDates: [] })),
         api.getEmailTemplates().catch(() => ({ templates: [] })),
         api.getPropertySettings().catch(() => ({ settings: {} })),
+        api.getAdminReviews().catch(() => ({ reviews: [] })),
       ]);
 
       setMetrics(dashRes.metrics);
@@ -67,6 +72,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       setBlockedDates(blockRes.blockedDates || []);
       setTemplates(tplRes.templates || []);
       setPropertySettings(propRes.settings || {});
+      setAdminReviews(revRes.reviews || []);
 
       if (tplRes.templates && tplRes.templates.length > 0) {
         setSelectedTemplate(tplRes.templates[0]);
@@ -110,6 +116,26 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       if (onRefreshData) onRefreshData();
     } catch (err: any) {
       setStatusAlert({ type: 'error', text: err.message || 'Error al confirmar el pago.' });
+    }
+  };
+
+  const handleToggleReview = async (id: string, currentVisible: boolean) => {
+    try {
+      await api.toggleReviewVisible(id, !currentVisible);
+      setAdminReviews(prev => prev.map(r => r.id === id ? { ...r, visible: !currentVisible } : r));
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al cambiar visibilidad.' });
+    }
+  };
+
+  const handleDeleteReview = async (id: string, author: string) => {
+    if (!window.confirm(`¿Eliminar la reseña de ${author}? Esta acción no se puede deshacer.`)) return;
+    try {
+      await api.deleteReview(id);
+      setAdminReviews(prev => prev.filter(r => r.id !== id));
+      setStatusAlert({ type: 'success', text: `Reseña de ${author} eliminada.` });
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al eliminar la reseña.' });
     }
   };
 
@@ -257,6 +283,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
           {[
             { id: 'dashboard', label: 'Dashboard', icon: DollarSign },
             { id: 'reservations', label: `Reservas (${reservations.length})`, icon: CalendarIcon },
+            { id: 'reviews', label: `Reseñas (${adminReviews.length})`, icon: Star },
             { id: 'property', label: 'Propiedad & Tarifas', icon: Settings },
             { id: 'blocked', label: 'Fechas Bloqueadas', icon: Lock },
             { id: 'templates', label: 'Plantillas Email', icon: Mail },
@@ -1093,6 +1120,94 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
               {/* 6. SMTP Settings Tab */}
               {activeTab === 'smtp' && <SmtpSettingsSection />}
+
+              {/* 7. Reviews Management Tab */}
+              {activeTab === 'reviews' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-base font-bold text-emerald-100">Gestión de Reseñas ⭐</h3>
+                      <p className="text-xs text-emerald-400/60 mt-0.5">
+                        Activa o desactiva cada reseña para que aparezca en la web. Las nuevas reseñas llegan desactivadas por defecto.
+                      </p>
+                    </div>
+                    <button
+                      onClick={loadAllAdminData}
+                      className="p-2 rounded-xl bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-400 transition-colors"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {adminReviews.length === 0 ? (
+                    <div className="text-center py-12 text-emerald-400/40 text-sm">
+                      <Star className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                      <p>Aún no hay reseñas. Aparecerán aquí cuando los huéspedes envíen sus opiniones.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {adminReviews.map((rev: any) => (
+                        <div
+                          key={rev.id}
+                          className={`p-4 rounded-2xl border transition-all ${
+                            rev.visible
+                              ? 'bg-emerald-900/30 border-emerald-500/30'
+                              : 'bg-emerald-950/60 border-emerald-500/10 opacity-60'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-bold text-emerald-100">{rev.author}</span>
+                                {rev.location && (
+                                  <span className="text-xs text-emerald-400/60">{rev.location}</span>
+                                )}
+                                <span className="text-xs text-emerald-400/40">{rev.date}</span>
+                                <div className="flex gap-0.5">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`w-3 h-3 ${i < rev.rating ? 'text-amber-400 fill-amber-400' : 'text-emerald-800'}`}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-xs text-emerald-200/70 mt-1.5 leading-relaxed italic">
+                                "{rev.comment}"
+                              </p>
+                            </div>
+
+                            <div className="flex flex-col gap-2 shrink-0">
+                              {/* Toggle visibility */}
+                              <button
+                                onClick={() => handleToggleReview(rev.id, rev.visible)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95 ${
+                                  rev.visible
+                                    ? 'bg-emerald-500 text-emerald-950 hover:bg-emerald-400 shadow'
+                                    : 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-800/60'
+                                }`}
+                                title={rev.visible ? 'Ocultar de la web' : 'Publicar en la web'}
+                              >
+                                {rev.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                {rev.visible ? 'Visible' : 'Oculta'}
+                              </button>
+
+                              {/* Delete */}
+                              <button
+                                onClick={() => handleDeleteReview(rev.id, rev.author)}
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/30 text-red-400 border border-red-500/20 font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Borrar
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
