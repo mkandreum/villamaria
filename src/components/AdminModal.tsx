@@ -409,9 +409,21 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo de la Propiedad</label>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Principal de la Propiedad</label>
                       <input
                         type="text"
+                        placeholder="Villa María"
+                        value={propertySettings.property_title || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, property_title: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Cabecera (Badge)</label>
+                      <input
+                        type="text"
+                        placeholder="Tu refugio exclusivo en Chichiriviche"
                         value={propertySettings.property_subtitle || ''}
                         onChange={(e) => setPropertySettings({ ...propertySettings, property_subtitle: e.target.value })}
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
@@ -419,11 +431,111 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Dirección Completa</label>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Sección Ubicación</label>
                       <input
                         type="text"
+                        placeholder="Chichiriviche • Calle 15 🌴"
+                        value={propertySettings.location_title || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_title: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Sección Ubicación</label>
+                      <input
+                        type="text"
+                        placeholder="Urbanización privada segura con fácil acceso..."
+                        value={propertySettings.location_subtitle || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_subtitle: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Dirección Exacta</label>
+                      <input
+                        type="text"
+                        placeholder="Calle 15, Urbanización Privada, Chichiriviche..."
                         value={propertySettings.location_address || ''}
                         onChange={(e) => setPropertySettings({ ...propertySettings, location_address: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Distancia 1 (Embarcaderos)</label>
+                      <input
+                        type="text"
+                        placeholder="5 minutos de los embarcaderos a Cayo Sombrero"
+                        value={propertySettings.location_feature_1 || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_feature_1: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Distancia 2 (Seguridad)</label>
+                      <input
+                        type="text"
+                        placeholder="Condominio privado con vigilancia las 24 horas"
+                        value={propertySettings.location_feature_2 || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_feature_2: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Distancia 3 (Servicios)</label>
+                      <input
+                        type="text"
+                        placeholder="Supermercados y servicios a 3 minutos"
+                        value={propertySettings.location_feature_3 || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_feature_3: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Sección Fotos</label>
+                      <input
+                        type="text"
+                        placeholder="Fotos de Villa María 🌴"
+                        value={propertySettings.gallery_title || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, gallery_title: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Sección Fotos</label>
+                      <input
+                        type="text"
+                        placeholder="Galería dinámica de la propiedad..."
+                        value={propertySettings.gallery_subtitle || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, gallery_subtitle: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Sección Servicios</label>
+                      <input
+                        type="text"
+                        placeholder="Comodidades Incluidas 🏡"
+                        value={propertySettings.amenities_title || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, amenities_title: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Sección Servicios</label>
+                      <input
+                        type="text"
+                        placeholder="Instalaciones preparadas para tu máximo confort..."
+                        value={propertySettings.amenities_subtitle || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, amenities_subtitle: e.target.value })}
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                       />
                     </div>

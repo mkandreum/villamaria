@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { GALLERY_IMAGES } from '../data/mockData';
-import { Camera, Eye, X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface GallerySectionProps {
   images?: any;
+  title?: string;
+  subtitle?: string;
 }
 
-export const GallerySection: React.FC<GallerySectionProps> = ({ images }) => {
+export const GallerySection: React.FC<GallerySectionProps> = ({
+  images,
+  title = 'Fotos de Villa María 🌴',
+  subtitle = 'Galería dinámica de la propiedad, jardines, piscina climatizada y estancias.',
+}) => {
   const normalizedImages = React.useMemo(() => {
     if (!images) return GALLERY_IMAGES;
     let list = images;
@@ -51,10 +57,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ images }) => {
             <span>📸 Recorrido Visual</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            Fotos de Villa María 🌴
+            {title}
           </h2>
           <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-2">
-            Galería dinámica de la propiedad, jardines, piscina climatizada y estancias.
+            {subtitle}
           </p>
 
           {/* Categories */}

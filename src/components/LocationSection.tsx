@@ -1,17 +1,27 @@
 import React from 'react';
-import { MapPin, Navigation, ExternalLink, ShieldCheck, Compass } from 'lucide-react';
+import { MapPin, Navigation, ExternalLink } from 'lucide-react';
 import { PROPERTY_INFO } from '../data/mockData';
 
 interface LocationSectionProps {
   address?: string;
   description?: string;
   mapsLink?: string;
+  title?: string;
+  subtitle?: string;
+  feature1?: string;
+  feature2?: string;
+  feature3?: string;
 }
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
   address = PROPERTY_INFO.locationName,
   description = PROPERTY_INFO.locationDescription,
   mapsLink = PROPERTY_INFO.googleMapsUrl,
+  title = 'Chichiriviche • Calle 15 🌴',
+  subtitle = 'Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.',
+  feature1 = '5 minutos de los embarcaderos a Cayo Sombrero',
+  feature2 = 'Condominio privado con vigilancia las 24 horas',
+  feature3 = 'Supermercados y servicios a 3 minutos',
 }) => {
   return (
     <section id="location" className="py-12 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
@@ -23,10 +33,10 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             <span>📍 Ubicación Privilegiada</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            Chichiriviche • Calle 15 🌴
+            {title}
           </h2>
           <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-2">
-            Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.
+            {subtitle}
           </p>
         </div>
 
@@ -45,15 +55,15 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             <div className="space-y-3 pt-4 border-t border-[#1B3B36]/10">
               <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
                 <span className="w-8 h-8 rounded-xl bg-[#EAE3D8] flex items-center justify-center text-sm">⛵</span>
-                <span>5 minutos de los embarcaderos a Cayo Sombrero</span>
+                <span>{feature1}</span>
               </div>
               <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
                 <span className="w-8 h-8 rounded-xl bg-[#EAE3D8] flex items-center justify-center text-sm">🔒</span>
-                <span>Condominio privado con vigilancia las 24 horas</span>
+                <span>{feature2}</span>
               </div>
               <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
                 <span className="w-8 h-8 rounded-xl bg-[#EAE3D8] flex items-center justify-center text-sm">🛒</span>
-                <span>Supermercados y servicios a 3 minutos</span>
+                <span>{feature3}</span>
               </div>
             </div>
 
