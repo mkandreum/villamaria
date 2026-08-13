@@ -1,17 +1,12 @@
 import React from 'react';
 import { AMENITIES } from '../data/mockData';
+import { Wifi, Sun, Car, Wind, Utensils, Zap, Tv, Shield } from 'lucide-react';
 
 interface AmenitiesSectionProps {
   amenities?: any;
-  title?: string;
-  subtitle?: string;
 }
 
-export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
-  amenities,
-  title = 'Comodidades Incluidas 🏡',
-  subtitle = 'Instalaciones preparadas para tu máximo confort durante tus vacaciones en Chichiriviche.',
-}) => {
+export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({ amenities }) => {
   const normalizedAmenities = React.useMemo(() => {
     if (!amenities) return AMENITIES;
     let list = amenities;
@@ -56,10 +51,10 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
             <span>✨ Servicios de la Propiedad</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            {title}
+            Comodidades Incluidas 🏡
           </h2>
           <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-2">
-            {subtitle}
+            Instalaciones preparadas para tu máximo confort durante tus vacaciones en Chichiriviche.
           </p>
         </div>
 

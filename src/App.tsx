@@ -146,7 +146,8 @@ export default function App() {
             subtitle={propertySettings.property_subtitle}
             description={propertySettings.property_description}
             pricePerNight={pricePerNight}
-            heroPhotos={propertySettings.gallery_images}
+            whatsappNumber={propertySettings.whatsapp_number}
+            images={propertySettings.gallery_images}
           />
         </section>
 
@@ -169,20 +170,12 @@ export default function App() {
 
         {/* Photo Gallery */}
         <section id="gallery">
-          <GallerySection
-            images={propertySettings.gallery_images}
-            title={propertySettings.gallery_title}
-            subtitle={propertySettings.gallery_subtitle}
-          />
+          <GallerySection images={propertySettings.gallery_images} />
         </section>
 
         {/* Amenities */}
         <section id="amenities">
-          <AmenitiesSection
-            amenities={propertySettings.amenities}
-            title={propertySettings.amenities_title}
-            subtitle={propertySettings.amenities_subtitle}
-          />
+          <AmenitiesSection amenities={propertySettings.amenities} />
         </section>
 
         {/* Location */}
@@ -191,12 +184,6 @@ export default function App() {
             address={propertySettings.location_address}
             description={propertySettings.location_description}
             mapsLink={propertySettings.location_maps_link}
-            mapEmbedUrl={propertySettings.location_map_embed}
-            title={propertySettings.location_title}
-            subtitle={propertySettings.location_subtitle}
-            feature1={propertySettings.location_feature_1}
-            feature2={propertySettings.location_feature_2}
-            feature3={propertySettings.location_feature_3}
           />
         </section>
 

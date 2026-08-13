@@ -83,7 +83,7 @@ function requireAdmin(req: AuthenticatedRequest, res: express.Response, next: ex
 // ----------------------------------------------------
 // Database Initializer & Seeder
 // ----------------------------------------------------
-async function initializeDatabase(retries = 5) {
+async function initializeDatabase() {
   try {
     // 1. Ensure Admin User
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@villamaria.com';
@@ -238,11 +238,6 @@ async function initializeDatabase(retries = 5) {
 
     console.log('[Init] Database initialization complete.');
   } catch (error) {
-    if (retries > 0) {
-      console.log(`[Init] Retrying database initialization in 2s... (${retries} attempts left)`);
-      await new Promise((r) => setTimeout(r, 2000));
-      return initializeDatabase(retries - 1);
-    }
     console.error('[Init] Error during database initialization:', error);
   }
 }
@@ -847,9 +842,7 @@ if (fs.existsSync(distPath)) {
 // ----------------------------------------------------
 // Server Start & DB Initialization
 // ----------------------------------------------------
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, async () => {
   console.log(`[Server] Villa María backend listening on port ${PORT}`);
-  initializeDatabase().catch((err) => {
-    console.error('[Init] Error in database initialization (re-trying on request):', err);
-  });
+  await initializeDatabase();
 });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, ShieldCheck, MapPin, Sparkles, MessageCircle, Star, Award, Wifi, Sun, Car, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Users, ShieldCheck, MapPin, Sparkles, MessageCircle, Star, Award, Wifi, Sun, Car, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroProps {
   checkIn: string;
@@ -14,7 +14,8 @@ interface HeroProps {
   description?: string;
   pricePerNight?: number;
   whatsappNumber?: string;
-  heroPhotos?: any;
+  heroImage?: string;
+  images?: any;
 }
 
 const DEFAULT_HERO_PHOTOS = [
@@ -33,43 +34,43 @@ export const Hero: React.FC<HeroProps> = ({
   onGuestsChange,
   onSearch,
   title = 'Villa María',
-  subtitle = 'Tu refugio exclusivo en plena naturaleza con piscina privada',
+  subtitle = 'Tu refugio exclusivo en Chichiriviche 🌴',
   description = 'Villa María es una elegante finca vacacional totalmente equipada. Disfruta de piscina privada climatizada, servicio de agua constante 24/7, planta eléctrica y cercanía a los cayos de Morrocoy.',
   pricePerNight = 150,
   whatsappNumber = '+34600000000',
-  heroPhotos,
+  heroImage,
+  images,
 }) => {
   const photos = React.useMemo(() => {
-    if (!heroPhotos) return DEFAULT_HERO_PHOTOS;
-    let list = heroPhotos;
-    if (typeof heroPhotos === 'string') {
+    let list = images;
+    if (typeof images === 'string') {
       try {
-        list = JSON.parse(heroPhotos);
+        list = JSON.parse(images);
       } catch {
         list = [];
       }
     }
-    if (!Array.isArray(list) || list.length === 0) return DEFAULT_HERO_PHOTOS;
-
-    const valid = list
-      .filter(Boolean)
-      .map((item: any) => (typeof item === 'string' ? item : item?.url || item?.imageUrl || ''))
-      .filter((url: string) => typeof url === 'string' && url.trim().length > 0);
-
-    return valid.length > 0 ? valid : DEFAULT_HERO_PHOTOS;
-  }, [heroPhotos]);
+    if (Array.isArray(list) && list.length > 0) {
+      return list.map((item: any) =>
+        typeof item === 'string' ? item : item.url || item.imageUrl || DEFAULT_HERO_PHOTOS[0]
+      );
+    }
+    if (heroImage) {
+      return [heroImage, ...DEFAULT_HERO_PHOTOS.slice(1)];
+    }
+    return DEFAULT_HERO_PHOTOS;
+  }, [images, heroImage]);
 
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
 
   // Auto slide photos every 4 seconds
   useEffect(() => {
-    if (!photos || photos.length === 0) return;
     const timer = setInterval(() => {
       setActivePhotoIndex((prev) => (prev + 1) % photos.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [photos]);
+  }, [photos.length]);
 
   const waUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodeURIComponent(
     'Hola Villa María 🌴, me gustaría consultar disponibilidad y precios para reservar.'
@@ -81,7 +82,7 @@ export const Hero: React.FC<HeroProps> = ({
         
         {/* Headline & Title Section */}
         <div className="text-center lg:text-left max-w-4xl mx-auto lg:mx-0 space-y-2 mb-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider">
             <span>✨</span>
             <span>{subtitle}</span>
           </div>
@@ -99,7 +100,7 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
           
-          {/* DYNAMIC PHOTO CAROUSEL FROM DB "AL AIRE" 📸 */}
+          {/* PHOTO CAROUSEL "AL AIRE" (Full-width, large, rounded corners, arrows on touch/hover) 📸 */}
           <div className="lg:col-span-7">
             <div
               onTouchStart={() => setShowArrows(true)}
@@ -112,7 +113,7 @@ export const Hero: React.FC<HeroProps> = ({
                 <img
                   key={idx}
                   src={img}
-                  alt={`Villa María foto ${idx + 1}`}
+                  alt={`Villa María ${idx + 1}`}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
                     idx === activePhotoIndex ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
                   }`}
@@ -123,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/70 via-transparent to-transparent" />
 
               {/* Left/Right Controls - ONLY APPEAR ON TOUCH / HOVER */}
-              {showArrows && photos.length > 1 && (
+              {showArrows && (
                 <>
                   <button
                     onClick={() => setActivePhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)}
@@ -143,19 +144,17 @@ export const Hero: React.FC<HeroProps> = ({
               )}
 
               {/* Photo Dots */}
-              {photos.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
-                  {photos.map((_: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActivePhotoIndex(idx)}
-                      className={`h-2 rounded-full transition-all ${
-                        idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2 bg-white/60'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+                {photos.map((_: any, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActivePhotoIndex(idx)}
+                    className={`h-2 rounded-full transition-all ${
+                      idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2 bg-white/60'
+                    }`}
+                  />
+                ))}
+              </div>
 
               {/* Badge Overlay */}
               <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1">

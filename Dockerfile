@@ -17,6 +17,9 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+# Server Build / TypeScript compile
+RUN npm install -g tsx
+
 # Production Stage
 FROM node:20-alpine AS runner
 
@@ -32,11 +35,11 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src ./src
-COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
 
-# Create upload directory & set entrypoint permissions
-RUN mkdir -p /app/uploads && chmod +x /app/docker-entrypoint.sh
+# Create upload directory
+RUN mkdir -p /app/uploads
 
 EXPOSE 3000
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Entrypoint script: Detects PostgreSQL vs SQLite automatically based on DATABASE_URL
+CMD ["sh", "-c", "if [ -n \"$DATABASE_URL\" ] && (echo \"$DATABASE_URL\" | grep -qi \"postgres\"); then echo '[DB Init] Detected PostgreSQL. Updating schema provider...'; sed -i 's/provider = \"sqlite\"/provider = \"postgresql\"/g' prisma/schema.prisma; else echo '[DB Init] Using SQLite database...'; export DATABASE_URL=\"${DATABASE_URL:-file:./dev.db}\"; fi && npx prisma generate && npx prisma db push && npx tsx server/index.ts"]

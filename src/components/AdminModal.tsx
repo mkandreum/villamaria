@@ -377,327 +377,214 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
               {/* 3. Property & Pricing Tab */}
               {activeTab === 'property' && (
                 <form onSubmit={handleSavePropertySettings} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Precio por Noche (€)</label>
-                      <input
-                        type="number"
-                        value={propertySettings.price_per_night || 150}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, price_per_night: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
+                  {/* Títulos y Marca */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                      1. Títulos y Textos Principales
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Nombre / Título Principal de la Propiedad</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Villa María"
+                          value={propertySettings.property_title || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, property_title: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Destacado</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Tu refugio exclusivo en Chichiriviche..."
+                          value={propertySettings.property_subtitle || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, property_subtitle: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Gastos de Limpieza (€)</label>
-                      <input
-                        type="number"
-                        value={propertySettings.cleaning_fee || 50}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, cleaning_fee: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Estancia Mínima (Noches)</label>
-                      <input
-                        type="number"
-                        value={propertySettings.minimum_stay_nights || 2}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, minimum_stay_nights: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Principal de la Propiedad</label>
-                      <input
-                        type="text"
-                        placeholder="Villa María"
-                        value={propertySettings.property_title || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, property_title: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Cabecera (Badge)</label>
-                      <input
-                        type="text"
-                        placeholder="Tu refugio exclusivo en Chichiriviche"
-                        value={propertySettings.property_subtitle || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, property_subtitle: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Sección Ubicación</label>
-                      <input
-                        type="text"
-                        placeholder="Chichiriviche • Calle 15 🌴"
-                        value={propertySettings.location_title || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_title: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Sección Ubicación</label>
-                      <input
-                        type="text"
-                        placeholder="Urbanización privada segura con fácil acceso..."
-                        value={propertySettings.location_subtitle || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_subtitle: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Dirección Exacta</label>
-                      <input
-                        type="text"
-                        placeholder="Calle 15, Urbanización Privada, Chichiriviche..."
-                        value={propertySettings.location_address || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_address: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Distancia 1 (Embarcaderos)</label>
-                      <input
-                        type="text"
-                        placeholder="5 minutos de los embarcaderos a Cayo Sombrero"
-                        value={propertySettings.location_feature_1 || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_feature_1: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Distancia 2 (Seguridad)</label>
-                      <input
-                        type="text"
-                        placeholder="Condominio privado con vigilancia las 24 horas"
-                        value={propertySettings.location_feature_2 || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_feature_2: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Distancia 3 (Servicios)</label>
-                      <input
-                        type="text"
-                        placeholder="Supermercados y servicios a 3 minutos"
-                        value={propertySettings.location_feature_3 || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_feature_3: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Sección Fotos</label>
-                      <input
-                        type="text"
-                        placeholder="Fotos de Villa María 🌴"
-                        value={propertySettings.gallery_title || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, gallery_title: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Sección Fotos</label>
-                      <input
-                        type="text"
-                        placeholder="Galería dinámica de la propiedad..."
-                        value={propertySettings.gallery_subtitle || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, gallery_subtitle: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título Sección Servicios</label>
-                      <input
-                        type="text"
-                        placeholder="Comodidades Incluidas 🏡"
-                        value={propertySettings.amenities_title || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, amenities_title: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo Sección Servicios</label>
-                      <input
-                        type="text"
-                        placeholder="Instalaciones preparadas para tu máximo confort..."
-                        value={propertySettings.amenities_subtitle || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, amenities_subtitle: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Teléfono de Contacto</label>
-                      <input
-                        type="text"
-                        value={propertySettings.contact_phone || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, contact_phone: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Email de Contacto</label>
-                      <input
-                        type="email"
-                        value={propertySettings.contact_email || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, contact_email: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">WhatsApp Anfitrión</label>
-                      <input
-                        type="text"
-                        value={propertySettings.whatsapp_number || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, whatsapp_number: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS (Botón)</label>
-                      <input
-                        type="text"
-                        placeholder="https://maps.google.com/..."
-                        value={propertySettings.location_maps_link || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_maps_link: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">URL de Mapa Interactivo (Iframe Google Maps)</label>
-                      <input
-                        type="text"
-                        placeholder="https://maps.google.com/maps?q=Calle+15+Chichiriviche..."
-                        value={propertySettings.location_map_embed || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, location_map_embed: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Banner Promocional Activo</label>
-                      <select
-                        value={propertySettings.banner_enabled ?? 'true'}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, banner_enabled: e.target.value })}
-                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                      >
-                        <option value="true">Sí (Activado)</option>
-                        <option value="false">No (Desactivado)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Texto Destacado del Banner</label>
-                      <input
-                        type="text"
-                        placeholder="Ej: Suministro constante de agua, planta eléctrica 24/7..."
-                        value={propertySettings.banner_text || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, banner_text: e.target.value })}
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Descripción Principal de la Finca</label>
+                      <textarea
+                        rows={3}
+                        value={propertySettings.property_description || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, property_description: e.target.value })}
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Descripción de la Propiedad</label>
-                    <textarea
-                      rows={3}
-                      value={propertySettings.property_description || ''}
-                      onChange={(e) => setPropertySettings({ ...propertySettings, property_description: e.target.value })}
-                      className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                    />
+                  {/* Tarifas y Reglas */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                      2. Tarifas y Estancia
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Precio por Noche (€)</label>
+                        <input
+                          type="number"
+                          value={propertySettings.price_per_night || 150}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, price_per_night: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Gastos de Limpieza (€)</label>
+                        <input
+                          type="number"
+                          value={propertySettings.cleaning_fee || 50}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, cleaning_fee: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Estancia Mínima (Noches)</label>
+                        <input
+                          type="number"
+                          value={propertySettings.minimum_stay_nights || 2}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, minimum_stay_nights: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Normas de la Casa (1 por línea)</label>
-                    <textarea
-                      rows={4}
-                      value={propertySettings.house_rules || ''}
-                      onChange={(e) => setPropertySettings({ ...propertySettings, house_rules: e.target.value })}
-                      className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                    />
+                  {/* Ubicación y Contacto */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                      3. Ubicación y Contacto
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Dirección Completa</label>
+                        <input
+                          type="text"
+                          value={propertySettings.location_address || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, location_address: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Teléfono / WhatsApp</label>
+                        <input
+                          type="text"
+                          value={propertySettings.whatsapp_number || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, whatsapp_number: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Email de Contacto</label>
+                        <input
+                          type="email"
+                          value={propertySettings.contact_email || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, contact_email: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS</label>
+                        <input
+                          type="text"
+                          value={propertySettings.location_maps_link || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, location_maps_link: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Descripción de la Ubicación</label>
+                      <textarea
+                        rows={2}
+                        value={propertySettings.location_description || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_description: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Política de Cancelación</label>
-                    <input
-                      type="text"
-                      value={propertySettings.cancellation_policy || ''}
-                      onChange={(e) => setPropertySettings({ ...propertySettings, cancellation_policy: e.target.value })}
-                      className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
-                    />
+                  {/* Banner Config */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                      4. Banner Promocional Superior
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Banner Promocional Activo</label>
+                        <select
+                          value={propertySettings.banner_enabled ?? 'true'}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, banner_enabled: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        >
+                          <option value="true">Sí (Activado)</option>
+                          <option value="false">No (Desactivado)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Texto Destacado del Banner</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Suministro constante de agua, planta eléctrica 24/7..."
+                          value={propertySettings.banner_text || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, banner_text: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Upload Image & Gallery Management Section */}
+                  {/* Visual Gallery Images Manager */}
                   <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
                     <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
-                      <Upload className="w-4 h-4 text-emerald-400" />
-                      Gestión de Fotos del Carrusel & Galería
+                      <ImageIcon className="w-4 h-4 text-emerald-400" />
+                      5. Gestor Visual de Fotos de la Galería y Carrusel
                     </h4>
 
-                    {/* Current Photos Grid */}
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-semibold text-emerald-300 block">Fotos Actuales en la Web:</span>
-                      {(() => {
-                        let imagesList: string[] = [];
-                        try {
-                          const parsed = typeof propertySettings.gallery_images === 'string'
-                            ? JSON.parse(propertySettings.gallery_images)
-                            : propertySettings.gallery_images;
-                          if (Array.isArray(parsed)) {
-                            imagesList = parsed.map((item: any) => typeof item === 'string' ? item : item.url || item.imageUrl || item);
-                          }
-                        } catch {}
-
-                        if (imagesList.length === 0) {
-                          return <p className="text-xs text-emerald-300/60 italic">No hay fotos personalizadas todavía.</p>;
-                        }
-
+                    {/* Image Grid with Delete Option */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {(Array.isArray(propertySettings.gallery_images)
+                        ? propertySettings.gallery_images
+                        : typeof propertySettings.gallery_images === 'string'
+                        ? (() => { try { return JSON.parse(propertySettings.gallery_images); } catch { return []; } })()
+                        : []
+                      ).map((imgUrl: any, idx: number) => {
+                        const src = typeof imgUrl === 'string' ? imgUrl : imgUrl.url || imgUrl.imageUrl;
                         return (
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            {imagesList.map((imgUrl, idx) => (
-                              <div key={idx} className="relative group rounded-xl overflow-hidden border border-emerald-500/30 aspect-[4/3] bg-emerald-950">
-                                <img src={imgUrl} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const updated = imagesList.filter((_, i) => i !== idx);
-                                    setPropertySettings({
-                                      ...propertySettings,
-                                      gallery_images: JSON.stringify(updated),
-                                    });
-                                  }}
-                                  className="absolute top-1 right-1 bg-red-600/90 text-white p-1 rounded-lg hover:bg-red-500 transition-colors shadow-md"
-                                  title="Eliminar esta foto"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            ))}
+                          <div key={idx} className="relative rounded-xl overflow-hidden group border border-emerald-500/30 aspect-[4/3] bg-emerald-950">
+                            <img src={src} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                let currentList = Array.isArray(propertySettings.gallery_images)
+                                  ? propertySettings.gallery_images
+                                  : typeof propertySettings.gallery_images === 'string'
+                                  ? JSON.parse(propertySettings.gallery_images)
+                                  : [];
+                                const updated = currentList.filter((_: any, i: number) => i !== idx);
+                                setPropertySettings({ ...propertySettings, gallery_images: updated });
+                              }}
+                              className="absolute top-1 right-1 p-1 rounded-full bg-red-600 text-white hover:bg-red-700 transition-colors shadow-md"
+                              title="Eliminar esta foto"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         );
-                      })()}
+                      })}
                     </div>
 
-                    {/* File Upload Input */}
+                    {/* Upload File Input */}
                     <div className="pt-2 border-t border-emerald-500/20 space-y-2">
                       <label className="block text-xs font-semibold text-emerald-300">Subir Nueva Foto desde tu Dispositivo</label>
                       <input
@@ -710,11 +597,38 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
                   </div>
 
+                  {/* Normas y Cancelación */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                      6. Normas de la Casa y Política de Cancelación
+                    </h4>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Normas de la Casa (1 por línea)</label>
+                      <textarea
+                        rows={4}
+                        value={propertySettings.house_rules || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, house_rules: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Política de Cancelación</label>
+                      <input
+                        type="text"
+                        value={propertySettings.cancellation_policy || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, cancellation_policy: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+                  </div>
+
                   <button
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-md hover:from-emerald-400 hover:to-teal-400 transition-all"
+                    className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg hover:from-emerald-400 hover:to-teal-300 transition-all min-h-[44px]"
                   >
-                    Guardar Cambios de Propiedad
+                    Guardar Todos los Cambios de Propiedad
                   </button>
                 </form>
               )}
