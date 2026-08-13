@@ -181,59 +181,158 @@ async function initializeDatabase() {
       {
         code: 'BOOKING_CONFIRMATION',
         name: 'Confirmación de Reserva (Huésped)',
-        subject: '¡Tu reserva en Villa María está confirmada!',
-        variables: JSON.stringify(['guest_name', 'start_date', 'end_date', 'total_price', 'reservation_id']),
+        subject: '🌴 ¡Tu reserva en Villa María está confirmada!',
+        variables: JSON.stringify(['guest_name', 'start_date', 'end_date', 'total_price', 'reservation_id', 'location_address', 'location_maps_link']),
         bodyHtml: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-            <h2 style="color: #059669;">¡Hola {{guest_name}}!</h2>
-            <p>Nos complace confirmarte que tu reserva en <strong>Villa María</strong> ha sido procesada con éxito.</p>
-            <div style="background-color: #f3f4f6; padding: 15px; border-radius: 6px; margin: 20px 0;">
-              <p style="margin: 5px 0;"><strong>ID Reserva:</strong> {{reservation_id}}</p>
-              <p style="margin: 5px 0;"><strong>Entrada:</strong> {{start_date}}</p>
-              <p style="margin: 5px 0;"><strong>Salida:</strong> {{end_date}}</p>
-              <p style="margin: 5px 0;"><strong>Precio Total:</strong> {{total_price}}€</p>
+          <div style="background-color: #F8F5F0; padding: 30px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">
+              
+              <!-- Header Banner -->
+              <div style="background-color: #1B3B36; padding: 25px 20px; text-align: center; border-bottom: 3px solid #C17D5C;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-family: Georgia, serif; letter-spacing: 1px;">
+                  VILLA MARÍA 🌴
+                </h1>
+                <p style="color: #A3E635; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">
+                  Casa de Campo & Relax • Chichiriviche
+                </p>
+              </div>
+
+              <!-- Body Container -->
+              <div style="padding: 25px 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <span style="background-color: rgba(27,59,54,0.08); color: #1B3B36; font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                    ✨ Reserva Solicitada con Éxito
+                  </span>
+                  <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 10px 0 5px 0; font-size: 22px;">
+                    ¡Hola {{guest_name}}!
+                  </h2>
+                  <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0; line-height: 1.5;">
+                    Nos complace informarte que tus fechas han sido reservadas en nuestro sistema.
+                  </p>
+                </div>
+
+                <!-- Ticket Voucher Box -->
+                <div style="background-color: #EAE3D8; border: 1px solid rgba(27,59,54,0.15); border-radius: 18px; padding: 20px; margin-bottom: 20px;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <tr>
+                      <td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Código de Reserva:</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: bold; font-family: monospace; font-size: 14px; color: #1B3B36;">{{reservation_id}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Fecha de Llegada:</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{start_date}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Fecha de Salida:</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{end_date}}</td>
+                    </tr>
+                    <tr style="border-top: 1px solid rgba(27,59,54,0.15);">
+                      <td style="padding: 10px 0 0 0; font-weight: bold; color: #1B3B36; font-size: 14px;">Monto Total Estancia:</td>
+                      <td style="padding: 10px 0 0 0; text-align: right; font-weight: bold; font-family: Georgia, serif; font-size: 18px; color: #1B3B36;">{{total_price}}€</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <!-- Dynamic GPS Location Link Box -->
+                <div style="background-color: #ffffff; border: 1px solid rgba(27,59,54,0.15); border-radius: 14px; padding: 15px; text-align: center; margin-bottom: 20px;">
+                  <p style="margin: 0 0 8px 0; font-size: 12px; color: #1B3B36; font-weight: bold;">
+                    📍 Ubicación Exacta de la Propiedad:
+                  </p>
+                  <p style="margin: 0 0 12px 0; font-size: 12px; color: rgba(27,59,54,0.8);">
+                    {{location_address}}
+                  </p>
+                  <a href="{{location_maps_link}}" target="_blank" style="display: inline-block; background-color: #1B3B36; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 10px 20px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                    🗺️ Abrir en Google Maps GPS
+                  </a>
+                </div>
+
+                <!-- WhatsApp CTA -->
+                <div style="text-align: center;">
+                  <p style="font-size: 12px; color: rgba(27,59,54,0.8); margin-bottom: 10px;">
+                    ¿Deseas enviar el comprobante o consultar detalles?
+                  </p>
+                  <a href="{{whatsapp_url}}" target="_blank" style="display: block; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: bold; padding: 12px 20px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                    💬 Enviar Comprobante por WhatsApp
+                  </a>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <div style="background-color: #F8F5F0; padding: 15px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
+                © Villa María • Chichiriviche, Falcón, Venezuela
+              </div>
+
             </div>
-            <p>¡Esperamos darle la bienvenida pronto!</p>
-            <p style="font-size: 12px; color: #6b7280; margin-top: 30px;">Villa María - Casa de Campo & Relax</p>
           </div>
         `,
       },
       {
         code: 'ADMIN_NEW_BOOKING',
         name: 'Aviso de Nueva Reserva (Admin)',
-        subject: 'NUEVA RESERVA: {{guest_name}} en Villa María',
+        subject: '🔔 NUEVA RESERVA: {{guest_name}} en Villa María',
         variables: JSON.stringify(['guest_name', 'guest_email', 'guest_phone', 'start_date', 'end_date', 'total_price']),
         bodyHtml: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
-            <h2 style="color: #2563eb;">Nueva Reserva Recibida</h2>
-            <p>Se ha registrado una nueva reserva en el sistema:</p>
-            <ul>
-              <li><strong>Cliente:</strong> {{guest_name}} ({{guest_email}} | {{guest_phone}})</li>
-              <li><strong>Fechas:</strong> {{start_date}} - {{end_date}}</li>
-              <li><strong>Total:</strong> {{total_price}}€</li>
-            </ul>
+          <div style="background-color: #F8F5F0; padding: 30px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden;">
+              
+              <div style="background-color: #1B3B36; padding: 20px; text-align: center;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 20px; font-family: Georgia, serif;">
+                  🔔 Nueva Solicitud de Reserva
+                </h2>
+              </div>
+
+              <div style="padding: 20px;">
+                <p style="font-size: 13px; margin-bottom: 15px;">Se ha registrado una nueva solicitud de reserva en la web:</p>
+                
+                <div style="background-color: #EAE3D8; padding: 15px; border-radius: 14px; font-size: 13px;">
+                  <p style="margin: 4px 0;"><strong>Huésped:</strong> {{guest_name}}</p>
+                  <p style="margin: 4px 0;"><strong>Email:</strong> {{guest_email}}</p>
+                  <p style="margin: 4px 0;"><strong>Teléfono:</strong> {{guest_phone}}</p>
+                  <p style="margin: 4px 0;"><strong>Fechas:</strong> {{start_date}} ➔ {{end_date}}</p>
+                  <p style="margin: 4px 0;"><strong>Monto Total:</strong> {{total_price}}€</p>
+                </div>
+              </div>
+
+            </div>
           </div>
         `,
       },
       {
         code: 'BOOKING_CANCELLED',
         name: 'Cancelación de Reserva',
-        subject: 'Reserva Cancelada - Villa María',
+        subject: '⚠️ Reserva Cancelada - Villa María',
         variables: JSON.stringify(['guest_name', 'start_date', 'end_date', 'reservation_id']),
         bodyHtml: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ef4444; border-radius: 8px;">
-            <h2 style="color: #dc2626;">Reserva Cancelada</h2>
-            <p>Hola {{guest_name}}, tu reserva (ID: {{reservation_id}}) del {{start_date}} al {{end_date}} ha sido cancelada.</p>
+          <div style="background-color: #F8F5F0; padding: 30px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden;">
+              
+              <div style="background-color: #991B1B; padding: 20px; text-align: center;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 20px; font-family: Georgia, serif;">
+                  Reserva Cancelada
+                </h2>
+              </div>
+
+              <div style="padding: 20px; font-size: 13px;">
+                <p>Hola {{guest_name}}, tu reserva con código <strong>{{reservation_id}}</strong> para las fechas {{start_date}} al {{end_date}} ha sido cancelada.</p>
+              </div>
+
+            </div>
           </div>
         `,
       },
     ];
 
     for (const tpl of defaultTemplates) {
-      const existing = await prisma.emailTemplate.findUnique({ where: { code: tpl.code } });
-      if (!existing) {
-        await prisma.emailTemplate.create({ data: tpl });
-      }
+      await prisma.emailTemplate.upsert({
+        where: { code: tpl.code },
+        update: {
+          name: tpl.name,
+          subject: tpl.subject,
+          bodyHtml: tpl.bodyHtml,
+          variables: tpl.variables,
+        },
+        create: tpl,
+      });
     }
 
     console.log('[Init] Database initialization complete.');
@@ -492,12 +591,23 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
     // Send Confirmation Email to Client using stored template
     const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_CONFIRMATION' } });
     if (tpl) {
+      const locAddr = await prisma.propertySetting.findUnique({ where: { key: 'location_address' } });
+      const locMap = await prisma.propertySetting.findUnique({ where: { key: 'location_maps_link' } });
+      const waPhone = await prisma.propertySetting.findUnique({ where: { key: 'whatsapp_number' } });
+
+      const mapsLinkVal = locMap?.value || 'https://maps.google.com/?q=Chichiriviche,Venezuela';
+      const addressVal = locAddr?.value || 'Calle 15, Urbanización Privada, Chichiriviche, Estado Falcón, Venezuela';
+      const waVal = (waPhone?.value || '+584141234567').replace(/[^0-9]/g, '');
+
       let html = tpl.bodyHtml
         .replace(/{{guest_name}}/g, guestName)
         .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
         .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
         .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
-        .replace(/{{total_price}}/g, totalPrice.toString());
+        .replace(/{{total_price}}/g, totalPrice.toString())
+        .replace(/{{location_address}}/g, addressVal)
+        .replace(/{{location_maps_link}}/g, mapsLinkVal)
+        .replace(/{{whatsapp_url}}/g, `https://wa.me/${waVal}`);
 
       sendEmail(guestEmail, tpl.subject, html);
     }
