@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className="fixed z-50 left-1/2 -translate-x-1/2 bottom-4 md:bottom-auto md:top-4 w-[92%] max-w-sm md:max-w-2xl transition-all duration-300"
+      className="fixed z-50 left-1/2 -translate-x-1/2 bottom-4 md:bottom-auto md:top-4 w-[90%] max-w-xs md:max-w-2xl transition-all duration-300"
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
@@ -42,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         }`}
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens) */}
-        {/* 5 Equal Targets: [Fotos] [Servicios] [ VM (Inicio) - CENTRO ] [Reservar] [Acceder/User] */}
+        {/* 5 Equal-Sized Circular Targets (w-10 h-10): [Fotos] [Servicios] [ VM (Inicio) ] [Reservar] [Acceder/User] */}
         <div className="flex md:hidden items-center justify-between w-full px-1">
           {/* 1. Fotos */}
           <button
@@ -50,7 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="Fotos"
             className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${
               activeSection === 'gallery'
-                ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 scale-105'
+                ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 font-bold scale-105'
                 : 'text-emerald-300/80 hover:text-white hover:bg-white/10'
             }`}
           >
@@ -63,25 +63,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="Servicios"
             className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${
               activeSection === 'amenities'
-                ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 scale-105'
+                ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 font-bold scale-105'
                 : 'text-emerald-300/80 hover:text-white hover:bg-white/10'
             }`}
           >
             <Sparkles className="w-5 h-5" />
           </button>
 
-          {/* 3. VM / INICIO (BOTÓN CENTRAL FUSIONADO - HACE LA FUNCIÓN DE HOME) */}
+          {/* 3. VM (CENTRAL - INICIO) */}
           <button
             onClick={() => onNavigate('hero')}
             title="Inicio - Villa María"
-            className={`relative w-11 h-11 rounded-full flex flex-col items-center justify-center transition-all duration-300 active:scale-95 shadow-xl ${
+            className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 shadow-md ${
               activeSection === 'hero'
-                ? 'bg-gradient-to-tr from-emerald-400 via-teal-300 to-emerald-500 text-emerald-950 font-black shadow-emerald-400/60 scale-110 ring-2 ring-emerald-300'
-                : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 font-bold shadow-emerald-600/30'
+                ? 'bg-gradient-to-tr from-emerald-400 via-teal-300 to-emerald-500 text-emerald-950 font-black shadow-emerald-400/50 scale-105 ring-2 ring-emerald-300'
+                : 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 font-bold shadow-emerald-600/30'
             }`}
           >
-            <span className="font-serif text-xs font-black tracking-tighter leading-none">VM</span>
-            <Home className="w-3 h-3 text-emerald-950 mt-0.5" />
+            <span className="font-serif text-xs font-black tracking-tighter">VM</span>
           </button>
 
           {/* 4. Reservar */}
@@ -90,14 +89,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="Reservar"
             className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${
               activeSection === 'booking'
-                ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 scale-105'
+                ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 font-bold scale-105'
                 : 'text-emerald-300/80 hover:text-white hover:bg-white/10'
             }`}
           >
             <Calendar className="w-5 h-5" />
           </button>
 
-          {/* 5. ACCEDER / USER / ADMIN (UN SOLO ICONO CIRCULAR LIMPIO) */}
+          {/* 5. ACCEDER / USER / ADMIN */}
           {currentUser ? (
             currentUser.role === 'ADMIN' ? (
               <button
