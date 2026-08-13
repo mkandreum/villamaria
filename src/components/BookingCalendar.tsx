@@ -18,6 +18,7 @@ import {
   isRangeOccupied,
   calculatePriceBreakdown
 } from '../utils/dateUtils';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface BookingCalendarProps {
   checkIn: string;
@@ -111,6 +112,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
   const priceBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, pricing);
   const isOccupiedError = checkIn && checkOut && isRangeOccupied(checkIn, checkOut, bookings);
+  const { formatPrice } = useCurrency();
 
   return (
     <section id="disponibilidad" className="py-10 sm:py-16 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
@@ -261,16 +263,16 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             {priceBreakdown.nights > 0 && !isOccupiedError && (
               <div className="pt-3 border-t border-[#1B3B36]/15 space-y-2">
                 <div className="flex justify-between text-xs text-[#1B3B36]/80">
-                  <span>{priceBreakdown.nights} noche(s) x {pricing.baseNightlyRate}€</span>
-                  <span>{priceBreakdown.baseNightsSubtotal}€</span>
+                  <span>{priceBreakdown.nights} noche(s) x {formatPrice(pricing.baseNightlyRate)}</span>
+                  <span>{formatPrice(priceBreakdown.baseNightsSubtotal)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-[#1B3B36]/80">
                   <span>Gastos de limpieza</span>
-                  <span>{priceBreakdown.cleaningFee}€</span>
+                  <span>{formatPrice(priceBreakdown.cleaningFee)}</span>
                 </div>
                 <div className="flex justify-between items-center text-base font-serif font-bold text-[#1B3B36] pt-2 border-t border-[#1B3B36]/15">
                   <span>Total Estancia:</span>
-                  <span className="text-xl text-[#1B3B36]">{priceBreakdown.totalPrice}€</span>
+                  <span className="text-xl text-[#1B3B36]">{formatPrice(priceBreakdown.totalPrice)}</span>
                 </div>
 
                 <button

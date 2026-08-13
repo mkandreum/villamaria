@@ -12,6 +12,7 @@ import { prisma } from './db.js';
 import { encryptText, decryptText } from './utils/crypto.js';
 import { getActiveTransporter, sendEmail, testSmtpConnection, sendTestEmailDirect } from './utils/mailer.js';
 import { createCalendarEvent, deleteCalendarEvent, fetchExternalBlockedEvents } from './utils/googleCalendar.js';
+import { fetchBcvRate, venezuelaDateNow } from './utils/bcv.js';
 
 dotenv.config();
 
@@ -111,6 +112,9 @@ async function initializeDatabase() {
       price_per_night: { value: '150', category: 'pricing' },
       cleaning_fee: { value: '50', category: 'pricing' },
       minimum_stay_nights: { value: '2', category: 'pricing' },
+      bcv_usd_rate: { value: '60.00', category: 'pricing' },
+      bcv_usd_rate_date: { value: '', category: 'pricing' },
+      bcv_usd_rate_updated: { value: '', category: 'pricing' },
       max_guests: { value: '8', category: 'property' },
       property_title: { value: 'Villa María - Casa de Campo & Relax', category: 'general' },
       property_subtitle: { value: 'Tu refugio exclusivo en plena naturaleza con piscina privada y vistas panorámicas', category: 'general' },
@@ -503,6 +507,72 @@ async function initializeDatabase() {
 }
 
 // ----------------------------------------------------
+// BCV Exchange Rate (USD -> Bs) Helpers
+// ----------------------------------------------------
+
+interface BcvRateInfo {
+  rate: number | null;
+  date: string | null;
+  updatedAt: string | null;
+  source: string;
+  fresh?: 'cached' | 'fetched' | 'unavailable';
+}
+
+async function getStoredBcvRate(): Promise<BcvRateInfo> {
+  const [rate, date, updated] = await Promise.all([
+    prisma.propertySetting.findUnique({ where: { key: 'bcv_usd_rate' } }),
+    prisma.propertySetting.findUnique({ where: { key: 'bcv_usd_rate_date' } }),
+    prisma.propertySetting.findUnique({ where: { key: 'bcv_usd_rate_updated' } }),
+  ]);
+
+  return {
+    rate: rate ? parseFloat(rate.value) : null,
+    date: date?.value || null,
+    updatedAt: updated?.value || null,
+    source: 'BCV',
+  };
+}
+
+/**
+ * Ensures the BCV rate is up to date (once per day in Venezuela timezone).
+ * If `force` is true, always hits the BCV website.
+ */
+async function refreshBcvRate(force = false): Promise<BcvRateInfo> {
+  const today = venezuelaDateNow();
+  const stored = await getStoredBcvRate();
+
+  if (!force && stored.rate != null && stored.date === today) {
+    return { ...stored, fresh: 'cached' };
+  }
+
+  const rate = await fetchBcvRate();
+  if (rate == null) {
+    console.warn(`[BCV] No se pudo obtener la tasa automática. Usando tasa almacenada: ${stored.rate}`);
+    return { ...stored, fresh: 'unavailable' };
+  }
+
+  const iso = new Date().toISOString();
+  await prisma.propertySetting.upsert({
+    where: { key: 'bcv_usd_rate' },
+    update: { value: String(rate) },
+    create: { key: 'bcv_usd_rate', value: String(rate), category: 'pricing' },
+  });
+  await prisma.propertySetting.upsert({
+    where: { key: 'bcv_usd_rate_date' },
+    update: { value: today },
+    create: { key: 'bcv_usd_rate_date', value: today, category: 'pricing' },
+  });
+  await prisma.propertySetting.upsert({
+    where: { key: 'bcv_usd_rate_updated' },
+    update: { value: iso },
+    create: { key: 'bcv_usd_rate_updated', value: iso, category: 'pricing' },
+  });
+
+  console.log(`[BCV] Tasa actualizada (${today}): Bs. ${rate}`);
+  return { rate, date: today, updatedAt: iso, source: 'BCV', fresh: 'fetched' };
+}
+
+// ----------------------------------------------------
 // API ROUTES
 // ----------------------------------------------------
 
@@ -622,7 +692,7 @@ app.get('/api/property', async (_req, res) => {
       }
     }
 
-    res.json({ settings: map });
+    res.json({ settings: map, exchange: await getStoredBcvRate() });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -641,6 +711,32 @@ app.put('/api/admin/property', authenticateToken, requireAdmin, async (req, res)
     }
 
     res.json({ success: true, message: 'Configuración actualizada correctamente.' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ---------------- Exchange Rate (BCV) Routes ----------------
+
+// PUBLIC: current USD -> Bs rate (BCV)
+app.get('/api/exchange-rate', async (_req, res) => {
+  try {
+    const stored = await getStoredBcvRate();
+    if (stored.rate == null) {
+      const fetched = await refreshBcvRate(true);
+      return res.json(fetched);
+    }
+    res.json(stored);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: force a fresh fetch from the BCV website
+app.post('/api/admin/exchange-rate/refresh', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const result = await refreshBcvRate(true);
+    res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -1399,4 +1495,15 @@ if (fs.existsSync(distPath)) {
 app.listen(PORT, async () => {
   console.log(`[Server] Villa María backend listening on port ${PORT}`);
   await initializeDatabase();
+
+  // Automatic daily BCV rate refresh (checks hourly, only fetches once per day)
+  const bcvTick = () =>
+    refreshBcvRate(false)
+      .then((r) => {
+        if (r.rate != null) console.log(`[BCV] Tasa del día (${r.date || venezuelaDateNow()}): Bs. ${r.rate}`);
+      })
+      .catch(() => {});
+
+  bcvTick();
+  setInterval(bcvTick, 3600 * 1000);
 });

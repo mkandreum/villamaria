@@ -2,6 +2,7 @@ import React from 'react';
 import { Booking } from '../types';
 import { PROPERTY_INFO } from '../data/mockData';
 import { formatDateSpanish, calculateNights } from '../utils/dateUtils';
+import { useCurrency } from '../context/CurrencyContext';
 import {
   CheckCircle2,
   X,
@@ -22,6 +23,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
   onClose,
 }) => {
   const nights = calculateNights(booking.checkIn, booking.checkOut);
+  const { formatPrice } = useCurrency();
 
   const waText = encodeURIComponent(
     `¡Hola Villa María! Acabo de solicitar una reserva:\n\n` +
@@ -30,7 +32,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
       `📅 *Llegada:* ${formatDateSpanish(booking.checkIn)}\n` +
       `📅 *Salida:* ${formatDateSpanish(booking.checkOut)} (${nights} noches)\n` +
       `👥 *Huéspedes:* ${booking.adults} adultos, ${booking.children} niños\n` +
-      `💵 *Monto Total:* ${booking.totalPrice}€\n\n` +
+      `💵 *Monto Total:* ${formatPrice(booking.totalPrice)}\n\n` +
       `Agradezco me envíen las indicaciones para concretar el anticipo. ¡Gracias!`
   );
 
@@ -111,7 +113,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               </div>
               <div className="flex justify-between pt-2 border-t border-[#1B3B36]/10">
                 <span className="text-[#1B3B36] font-bold">Monto Total:</span>
-                <span className="text-base font-serif font-bold text-[#1B3B36]">{booking.totalPrice}€</span>
+                <span className="text-base font-serif font-bold text-[#1B3B36]">{formatPrice(booking.totalPrice)}</span>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, MessageCircle, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface HeroProps {
   checkIn: string;
@@ -73,6 +74,7 @@ export const Hero: React.FC<HeroProps> = ({
 
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
+  const { formatPrice } = useCurrency();
 
   // Auto slide photos every 4 seconds
   useEffect(() => {
@@ -184,7 +186,7 @@ export const Hero: React.FC<HeroProps> = ({
                     Tarifa Estándar 🏷️
                   </span>
                   <span className="text-3xl font-serif font-bold text-[#1B3B36]">
-                    {pricePerNight}€ <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
+                    {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
                   </span>
                 </div>
 

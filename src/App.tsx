@@ -18,6 +18,7 @@ import { Footer } from './components/Footer';
 import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
+import { CurrencyProvider } from './context/CurrencyContext';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(() => getAuthUser());
@@ -115,7 +116,8 @@ export default function App() {
   const isBannerActive = propertySettings.banner_enabled !== 'false';
 
   return (
-    <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-20 md:pb-0 overflow-x-hidden">
+    <CurrencyProvider>
+      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-20 md:pb-0 overflow-x-hidden">
       {/* Top Announcement Promo Banner */}
       <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} />
 
@@ -335,6 +337,7 @@ export default function App() {
           }}
         />
       )}
-    </div>
+      </div>
+    </CurrencyProvider>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Booking } from '../types';
 import { formatDateSpanish } from '../utils/dateUtils';
 import { X, BookmarkCheck, Calendar, Users, DollarSign, Search, Trash2 } from 'lucide-react';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface MyBookingsModalProps {
   bookings: Booking[];
@@ -15,6 +16,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   onCancelBooking,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const { formatPrice } = useCurrency();
 
   const userBookings = bookings.filter((b) => b.status !== 'blocked_by_owner');
 
@@ -111,9 +113,9 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                     <span>{b.adults} adultos, {b.children} niños</span>
                   </div>
                   <div className="flex items-center gap-1.5 font-bold text-[#1B3B36]">
-                    <DollarSign className="w-3.5 h-3.5 text-[#C17D5C]" />
-                    <span>${b.totalPrice} USD</span>
-                  </div>
+                  <DollarSign className="w-3.5 h-3.5 text-[#C17D5C]" />
+                  <span>{formatPrice(b.totalPrice)}</span>
+                </div>
                 </div>
 
                 {b.status !== 'cancelled' && (

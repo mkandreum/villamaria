@@ -66,6 +66,10 @@ export const api = {
   getPropertySettings: () => request('/property'),
   updatePropertySettings: (settings: any) => request('/admin/property', { method: 'PUT', body: JSON.stringify(settings) }),
 
+  // Exchange rate / BCV
+  getExchangeRate: () => request('/exchange-rate'),
+  refreshExchangeRate: () => request('/admin/exchange-rate/refresh', { method: 'POST' }),
+
   // Uploads
   uploadFile: async (file: File) => {
     const token = getAuthToken();

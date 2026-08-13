@@ -42,6 +42,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const [templates, setTemplates] = useState<any[]>([]);
   const [propertySettings, setPropertySettings] = useState<any>({});
   const [adminReviews, setAdminReviews] = useState<any[]>([]);
+  const [exchangeRate, setExchangeRate] = useState<any>(null);
+  const [refreshingRate, setRefreshingRate] = useState(false);
 
   // Form states
   const [newBlock, setNewBlock] = useState({ startDate: '', endDate: '', reason: '' });
@@ -67,7 +69,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const loadAllAdminData = async () => {
     setLoading(true);
     try {
-      const [dashRes, resRes, usersRes, blockRes, tplRes, propRes, revRes] = await Promise.all([
+      const [dashRes, resRes, usersRes, blockRes, tplRes, propRes, revRes, exchRes] = await Promise.all([
         api.getDashboardMetrics().catch(() => ({ metrics: null })),
         api.getAdminReservations().catch(() => ({ reservations: [] })),
         api.getAdminUsers().catch(() => ({ users: [] })),
@@ -75,6 +77,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
         api.getEmailTemplates().catch(() => ({ templates: [] })),
         api.getPropertySettings().catch(() => ({ settings: {} })),
         api.getAdminReviews().catch(() => ({ reviews: [] })),
+        api.getExchangeRate().catch(() => ({})),
       ]);
 
       setMetrics(dashRes.metrics);
@@ -84,6 +87,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       setTemplates(tplRes.templates || []);
       setPropertySettings(propRes.settings || {});
       setAdminReviews(revRes.reviews || []);
+      setExchangeRate(exchRes || null);
 
       if (tplRes.templates && tplRes.templates.length > 0) {
         setSelectedTemplate(tplRes.templates[0]);
@@ -168,6 +172,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       setAdminReviews(prev => prev.map(r => r.id === id ? { ...r, visible: !currentVisible } : r));
     } catch (err: any) {
       setStatusAlert({ type: 'error', text: err.message || 'Error al cambiar visibilidad.' });
+    }
+  };
+
+  const handleRefreshExchangeRate = async () => {
+    setRefreshingRate(true);
+    try {
+      const result: any = await api.refreshExchangeRate();
+      setExchangeRate(result);
+      const rateVal = result?.rate != null ? `Bs. ${result.rate}` : 'no disponible';
+      setStatusAlert({ type: 'success', text: `Tasa BCV actualizada: ${rateVal}` });
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al actualizar la tasa BCV.' });
+    } finally {
+      setRefreshingRate(false);
     }
   };
 
@@ -366,7 +384,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5">
                       <span className="text-xs text-emerald-300/70 font-semibold uppercase tracking-wider">Ingresos Este Mes</span>
-                      <p className="text-2xl font-bold text-emerald-400 mt-2">{metrics?.monthlyIncome || 0}€</p>
+                      <p className="text-2xl font-bold text-emerald-400 mt-2">US$ {Number(metrics?.monthlyIncome || 0).toLocaleString('en-US')}</p>
                     </div>
 
                     <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5">
@@ -446,7 +464,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                           </p>
                           <p className="text-xs text-emerald-400/90 font-medium">
                             Fechas: {new Date(resItem.startDate).toLocaleDateString('es-ES')} ➔{' '}
-                            {new Date(resItem.endDate).toLocaleDateString('es-ES')} | Total: <strong>{resItem.totalPrice}€</strong>
+                            {new Date(resItem.endDate).toLocaleDateString('es-ES')} | Total: <strong>US$ {resItem.totalPrice}</strong>
                           </p>
                           {resItem.notes && <p className="text-xs text-emerald-300/60 italic">Notas: "{resItem.notes}"</p>}
                           {resItem.internalNotes && (
@@ -550,7 +568,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
                             {rescheduleForm.additionalCost && (
                               <div>
-                                <label className="block text-[10px] font-bold text-amber-300/70 mb-1 uppercase">Importe adicional (€)</label>
+                                <label className="block text-[10px] font-bold text-amber-300/70 mb-1 uppercase">Importe adicional (US$)</label>
                                 <input
                                   type="number"
                                   min={0}
@@ -696,7 +714,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Precio por Noche (€)</label>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Precio por Noche (US$)</label>
                         <input
                           type="number"
                           value={propertySettings.price_per_night || 150}
@@ -706,7 +724,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Gastos de Limpieza (€)</label>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Gastos de Limpieza (US$)</label>
                         <input
                           type="number"
                           value={propertySettings.cleaning_fee || 50}
@@ -724,6 +742,36 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                           className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                         />
                       </div>
+                    </div>
+
+                    {/* Tasa BCV automática */}
+                    <div className="mt-4 p-3.5 rounded-xl bg-emerald-950/60 border border-amber-500/30 space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/80">Tasa del Día (BCV) — Bs/US$</span>
+                          <p className="text-lg font-serif font-bold text-amber-200 leading-none mt-1">
+                            {exchangeRate?.rate != null ? `Bs. ${exchangeRate.rate}` : 'No disponible'}
+                          </p>
+                          {exchangeRate?.date && (
+                            <p className="text-[10px] text-emerald-300/60 mt-1">
+                              Actualizada: {exchangeRate.date}
+                              {exchangeRate.updatedAt ? ` · ${new Date(exchangeRate.updatedAt).toLocaleString('es-VE')}` : ''}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRefreshExchangeRate}
+                          disabled={refreshingRate}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95 disabled:opacity-60"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${refreshingRate ? 'animate-spin' : ''}`} />
+                          {refreshingRate ? 'Actualizando…' : 'Actualizar ahora'}
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-emerald-300/50">
+                        Se actualiza automáticamente una vez al día desde la web oficial del BCV. Los precios en bolívares se muestran al huésped usando esta tasa.
+                      </p>
                     </div>
                   </div>
 
