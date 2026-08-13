@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, ShieldCheck, MapPin, Sparkles, MessageCircle, Star, Award, Wifi, Sun, Car, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, ShieldCheck, MapPin, Sparkles, MessageCircle, Star, Award, Wifi, Sun, Car, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroProps {
   checkIn: string;
@@ -51,9 +51,12 @@ export const Hero: React.FC<HeroProps> = ({
     }
     if (!Array.isArray(list) || list.length === 0) return DEFAULT_HERO_PHOTOS;
 
-    return list.map((item: any) =>
-      typeof item === 'string' ? item : item.url || item.imageUrl || item
-    );
+    const valid = list
+      .filter(Boolean)
+      .map((item: any) => (typeof item === 'string' ? item : item?.url || item?.imageUrl || ''))
+      .filter((url: string) => typeof url === 'string' && url.trim().length > 0);
+
+    return valid.length > 0 ? valid : DEFAULT_HERO_PHOTOS;
   }, [heroPhotos]);
 
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -61,11 +64,12 @@ export const Hero: React.FC<HeroProps> = ({
 
   // Auto slide photos every 4 seconds
   useEffect(() => {
+    if (!photos || photos.length === 0) return;
     const timer = setInterval(() => {
       setActivePhotoIndex((prev) => (prev + 1) % photos.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [photos.length]);
+  }, [photos]);
 
   const waUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodeURIComponent(
     'Hola Villa María 🌴, me gustaría consultar disponibilidad y precios para reservar.'
@@ -77,7 +81,7 @@ export const Hero: React.FC<HeroProps> = ({
         
         {/* Headline & Title Section */}
         <div className="text-center lg:text-left max-w-4xl mx-auto lg:mx-0 space-y-2 mb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-1">
             <span>✨</span>
             <span>{subtitle}</span>
           </div>

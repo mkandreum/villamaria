@@ -842,7 +842,9 @@ if (fs.existsSync(distPath)) {
 // ----------------------------------------------------
 // Server Start & DB Initialization
 // ----------------------------------------------------
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`[Server] Villa María backend listening on port ${PORT}`);
-  await initializeDatabase();
+  initializeDatabase().catch((err) => {
+    console.error('[Init] Error in database initialization (re-trying on request):', err);
+  });
 });
