@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Booking, PricingConfig } from '../types';
 import { formatDateSpanish, calculatePriceBreakdown } from '../utils/dateUtils';
-import { X, CheckCircle2, CreditCard, DollarSign, Smartphone, Lock, Info } from 'lucide-react';
+import { X, CheckCircle2, CreditCard, DollarSign, Smartphone, Lock, Info, MessageCircle } from 'lucide-react';
 
 interface BookingFormModalProps {
   checkIn: string;
@@ -9,6 +9,10 @@ interface BookingFormModalProps {
   adults: number;
   childrenCount: number;
   pricing: PricingConfig;
+  paymentZelle?: boolean;
+  paymentPagoMovil?: boolean;
+  paymentEfectivo?: boolean;
+  paymentTransferencia?: boolean;
   onClose: () => void;
   onSubmitBooking: (booking: Booking) => void;
 }
@@ -19,14 +23,34 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
   adults,
   childrenCount,
   pricing,
+  paymentZelle = true,
+  paymentPagoMovil = true,
+  paymentEfectivo = true,
+  paymentTransferencia = true,
   onClose,
   onSubmitBooking,
 }) => {
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'zelle' | 'pago_movil' | 'efectivo' | 'transferencia'>('zelle');
-  const [specialRequests, setSpecialRequests] = useState('');
+  
+  const allMethods = [
+    { id: 'zelle', label: 'Zelle (USD)', icon: DollarSign, enabled: paymentZelle },
+    { id: 'pago_movil', label: 'Pago Móvil (Bs)', icon: Smartphone, enabled: paymentPagoMovil },
+    { id: 'efectivo', label: 'Efectivo (USD)', icon: CreditCard, enabled: paymentEfectivo },
+    { id: 'transferencia', label: 'Transferencia', icon: Lock, enabled: paymentTransferencia },
+  ];
+
+  const availableMethods = allMethods.filter((m) => m.enabled !== false);
+  const [paymentMethod, setPaymentMethod] = useState<string>(
+    availableMethods.length > 0 ? availableMethods[0].id : 'coordinacion_whatsapp'
+  );
+
+  useEffect(() => {
+    if (availableMethods.length > 0 && !availableMethods.some((m) => m.id === paymentMethod)) {
+      setPaymentMethod(availableMethods[0].id);
+    }
+  }, [paymentZelle, paymentPagoMovil, paymentEfectivo, paymentTransferencia]);
 
   const breakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, pricing);
 
@@ -47,11 +71,13 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
       status: 'confirmed',
       createdAt: new Date().toISOString().split('T')[0],
       specialRequests,
-      paymentMethod,
+      paymentMethod: paymentMethod as any,
     };
 
     onSubmitBooking(newBooking);
   };
+
+  const [specialRequests, setSpecialRequests] = useState('');
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
@@ -129,44 +155,44 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
           {/* Payment Method Preferences */}
           <div className="space-y-2 pt-2 border-t border-[#1B3B36]/10">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
-                2. Preferencia de Pago (Anticipo 50%) 💳
-              </h3>
-            </div>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
+              2. Método de Pago (Anticipo 50%) 💳
+            </h3>
             
             <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[10px] text-[#1B3B36] flex items-start gap-2">
               <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <span>
-                <strong>Coordinación Directa:</strong> Las instrucciones exactas de pago se envían por WhatsApp al solicitar la reserva. Ninguna pasarela cobró automáticamente.
+                Las instrucciones detalladas para el pago del anticipo se enviarán por WhatsApp tras enviar la solicitud.
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              {[
-                { id: 'zelle', label: 'Zelle (USD)', icon: DollarSign },
-                { id: 'pago_movil', label: 'Pago Móvil (Bs)', icon: Smartphone },
-                { id: 'efectivo', label: 'Efectivo (USD)', icon: CreditCard },
-                { id: 'transferencia', label: 'Transferencia', icon: Lock },
-              ].map((m) => {
-                const IconComp = m.icon;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setPaymentMethod(m.id as any)}
-                    className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all ${
-                      paymentMethod === m.id
-                        ? 'bg-[#1B3B36] text-white border-[#1B3B36] font-bold shadow-sm'
-                        : 'bg-white border-[#1B3B36]/15 text-[#1B3B36]/80'
-                    }`}
-                  >
-                    <IconComp className="w-3.5 h-3.5 shrink-0" />
-                    <span className="text-[11px] font-sans">{m.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {availableMethods.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                {availableMethods.map((m) => {
+                  const IconComp = m.icon;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id)}
+                      className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all ${
+                        paymentMethod === m.id
+                          ? 'bg-[#1B3B36] text-white border-[#1B3B36] font-bold shadow-sm'
+                          : 'bg-white border-[#1B3B36]/15 text-[#1B3B36]/80'
+                      }`}
+                    >
+                      <IconComp className="w-3.5 h-3.5 shrink-0" />
+                      <span className="text-[11px] font-sans">{m.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="p-3 bg-white rounded-xl border border-[#1B3B36]/15 text-xs text-[#1B3B36] flex items-center gap-2 font-semibold">
+                <MessageCircle className="w-4 h-4 text-emerald-800" />
+                <span>Coordinación Directa por WhatsApp con el Anfitrión</span>
+              </div>
+            )}
           </div>
 
           {/* Special Requests */}

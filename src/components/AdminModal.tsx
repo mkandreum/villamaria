@@ -794,6 +794,66 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
                   </div>
 
+                  {/* Activar/Desactivar Métodos de Pago Individualmente */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
+                      7. Métodos de Pago Aceptados (Opciones de Reserva)
+                    </h4>
+                    <p className="text-xs text-emerald-300/70">
+                      Puedes activar o desactivar individualmente cada opción. Si desactivas todas, se ofrecerá la opción de coordinación directa por WhatsApp.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Zelle (USD)</label>
+                        <select
+                          value={propertySettings.payment_zelle_enabled ?? 'true'}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, payment_zelle_enabled: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        >
+                          <option value="true">Activo ✅</option>
+                          <option value="false">Desactivado ❌</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Pago Móvil (Bs)</label>
+                        <select
+                          value={propertySettings.payment_pago_movil_enabled ?? 'true'}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, payment_pago_movil_enabled: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        >
+                          <option value="true">Activo ✅</option>
+                          <option value="false">Desactivado ❌</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Efectivo (USD)</label>
+                        <select
+                          value={propertySettings.payment_efectivo_enabled ?? 'true'}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, payment_efectivo_enabled: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        >
+                          <option value="true">Activo ✅</option>
+                          <option value="false">Desactivado ❌</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Transferencia Bancaria</label>
+                        <select
+                          value={propertySettings.payment_transferencia_enabled ?? 'true'}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, payment_transferencia_enabled: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        >
+                          <option value="true">Activo ✅</option>
+                          <option value="false">Desactivado ❌</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
                   <button
                     type="submit"
                     className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg hover:from-emerald-400 hover:to-teal-300 transition-all min-h-[44px]"
