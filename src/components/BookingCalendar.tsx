@@ -19,6 +19,7 @@ import {
   calculatePriceBreakdown
 } from '../utils/dateUtils';
 import { useCurrency } from '../context/CurrencyContext';
+import { CurrencyToggle } from './CurrencyToggle';
 
 interface BookingCalendarProps {
   checkIn: string;
@@ -271,7 +272,10 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                   <span>{formatPrice(priceBreakdown.cleaningFee)}</span>
                 </div>
                 <div className="flex justify-between items-center text-base font-serif font-bold text-[#1B3B36] pt-2 border-t border-[#1B3B36]/15">
-                  <span>Total Estancia:</span>
+                  <span className="flex items-center gap-2">
+                    Total Estancia:
+                    <CurrencyToggle />
+                  </span>
                   <span className="text-xl text-[#1B3B36]">{formatPrice(priceBreakdown.totalPrice)}</span>
                 </div>
 

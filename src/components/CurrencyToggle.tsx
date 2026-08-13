@@ -8,7 +8,7 @@ export const CurrencyToggle: React.FC = () => {
 
   return (
     <div
-      className="flex items-center gap-1 rounded-full bg-emerald-900/60 border border-emerald-500/30 p-0.5"
+      className="inline-flex items-center gap-1 rounded-full bg-white border border-[#1B3B36]/20 p-0.5 shadow-sm"
       title={exchange.rate != null ? `Tasa del día (BCV): ${rateLabel} · ${exchange.date || ''}` : 'Tasa BCV'}
     >
       {(['USD', 'BS'] as const).map((c) => (
@@ -19,8 +19,8 @@ export const CurrencyToggle: React.FC = () => {
           aria-pressed={currency === c}
           className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all active:scale-95 ${
             currency === c
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30'
-              : 'text-emerald-200/80 hover:text-white hover:bg-white/10'
+              ? 'bg-[#1B3B36] text-white shadow'
+              : 'text-[#1B3B36]/70 hover:text-[#1B3B36] hover:bg-[#EAE3D8]/60'
           }`}
         >
           {c === 'USD' ? 'USD' : 'Bs'}

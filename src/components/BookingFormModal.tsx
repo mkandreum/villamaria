@@ -3,6 +3,7 @@ import { Booking, PricingConfig } from '../types';
 import { formatDateSpanish, calculatePriceBreakdown } from '../utils/dateUtils';
 import { X, CheckCircle2, CreditCard, DollarSign, Smartphone, Lock, Info, MessageCircle } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { CurrencyToggle } from './CurrencyToggle';
 
 interface BookingFormModalProps {
   checkIn: string;
@@ -212,14 +213,17 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           </div>
 
           {/* Summary Box */}
-          <div className="bg-[#EAE3D8] p-3 rounded-2xl border border-[#1B3B36]/15 flex items-center justify-between">
-            <div>
+          <div className="bg-[#EAE3D8] p-3 rounded-2xl border border-[#1B3B36]/15 space-y-2">
+            <div className="flex items-center justify-between">
               <span className="text-[10px] text-[#1B3B36]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
-              <span className="text-lg font-serif font-bold text-[#1B3B36]">{formatPrice(breakdown.totalPrice)}</span>
+              <CurrencyToggle />
             </div>
-            <div className="text-right text-[11px] text-[#1B3B36]/80">
-              <span>Anticipo 50%: </span>
-              <strong className="text-emerald-800 font-bold">{formatPrice(Math.round(breakdown.totalPrice / 2))}</strong>
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-serif font-bold text-[#1B3B36]">{formatPrice(breakdown.totalPrice)}</span>
+              <div className="text-right text-[11px] text-[#1B3B36]/80">
+                <span>Anticipo 50%: </span>
+                <strong className="text-emerald-800 font-bold">{formatPrice(Math.round(breakdown.totalPrice / 2))}</strong>
+              </div>
             </div>
           </div>
 

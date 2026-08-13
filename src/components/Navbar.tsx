@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Image as ImageIcon, Sparkles, Calendar, User, ShieldCheck, LogOut } from 'lucide-react';
-import { CurrencyToggle } from './CurrencyToggle';
 
 interface NavbarProps {
   activeSection: string;
@@ -128,11 +127,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <User className="w-5 h-5" />
             </button>
           )}
-
-          {/* Currency toggle (mobile) */}
-          <div className="flex items-center">
-            <CurrencyToggle />
-          </div>
         </div>
 
         {/* DESKTOP / TABLET NAVIGATION LAYOUT (>= md screens) */}
@@ -179,8 +173,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Desktop Auth */}
           <div className="flex items-center gap-2">
-            <CurrencyToggle />
-
             {currentUser ? (
               <div className="flex items-center gap-2">
                 {currentUser.role === 'ADMIN' ? (
