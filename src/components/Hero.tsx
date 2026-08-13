@@ -37,7 +37,7 @@ export const Hero: React.FC<HeroProps> = ({
   )}`;
 
   return (
-    <section className="relative pt-20 sm:pt-32 pb-8 sm:pb-20 overflow-hidden bg-emerald-950/90 text-emerald-100 border-b border-emerald-500/20">
+    <section className="relative pt-4 md:pt-28 lg:pt-32 pb-8 md:pb-20 overflow-hidden bg-emerald-950/90 text-emerald-100 border-b border-emerald-500/20">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-12 items-center">
           {/* Headline & Story */}
