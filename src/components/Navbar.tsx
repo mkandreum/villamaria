@@ -42,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         }`}
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens) */}
-        {/* 5 Equal Circular Targets: [Fotos] [Servicios] [ VM (Inicio) - CENTRO ] [Reservar] [Acceder/User] */}
+        {/* 5 Equal Targets: [Fotos] [Servicios] [ VM (Inicio) - CENTRO ] [Reservar] [Acceder/User] */}
         <div className="flex md:hidden items-center justify-between w-full px-1">
           {/* 1. Fotos */}
           <button
@@ -70,17 +70,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Sparkles className="w-5 h-5" />
           </button>
 
-          {/* 3. VM / INICIO (FUSIONADO EN EL CENTRO) */}
+          {/* 3. VM / INICIO (BOTÓN CENTRAL FUSIONADO - HACE LA FUNCIÓN DE HOME) */}
           <button
             onClick={() => onNavigate('hero')}
             title="Inicio - Villa María"
-            className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 shadow-lg ${
+            className={`relative w-11 h-11 rounded-full flex flex-col items-center justify-center transition-all duration-300 active:scale-95 shadow-xl ${
               activeSection === 'hero'
-                ? 'bg-gradient-to-tr from-emerald-400 via-teal-300 to-emerald-500 text-emerald-950 font-black shadow-emerald-400/50 scale-110 ring-2 ring-emerald-300'
-                : 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 font-bold shadow-emerald-600/30'
+                ? 'bg-gradient-to-tr from-emerald-400 via-teal-300 to-emerald-500 text-emerald-950 font-black shadow-emerald-400/60 scale-110 ring-2 ring-emerald-300'
+                : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 font-bold shadow-emerald-600/30'
             }`}
           >
-            <span className="font-serif text-sm font-black tracking-tighter">VM</span>
+            <span className="font-serif text-xs font-black tracking-tighter leading-none">VM</span>
+            <Home className="w-3 h-3 text-emerald-950 mt-0.5" />
           </button>
 
           {/* 4. Reservar */}
@@ -96,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Calendar className="w-5 h-5" />
           </button>
 
-          {/* 5. ACCEDER / USER / ADMIN (UN SOLO ICONO LIMPIO EN MÓVIL) */}
+          {/* 5. ACCEDER / USER / ADMIN (UN SOLO ICONO CIRCULAR LIMPIO) */}
           {currentUser ? (
             currentUser.role === 'ADMIN' ? (
               <button
