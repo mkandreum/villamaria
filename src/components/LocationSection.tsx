@@ -16,40 +16,57 @@ interface LocationSectionProps {
 }
 
 /**
- * Converts any Google Maps URL to the proper embed-compatible URL.
- * Google blocks iframes using regular maps.google.com URLs — only
- * google.com/maps/embed?pb=... or maps.google.com/maps?q=...&output=embed work.
+ * Resolves the embed URL to use in the iframe.
+ *
+ * Priority:
+ *  1. If user pasted a full <iframe> tag → extract the src and use it directly.
+ *  2. If the URL already is a proper google.com/maps/embed?pb=... → use it directly.
+ *  3. Otherwise → fall back to OpenStreetMap (no API key required, no errors).
+ *
+ * NOTE: The old maps.google.com/maps?q=...&output=embed format now requires
+ * a Google Maps Embed API key and shows "couldn't load custom map content"
+ * without one. OpenStreetMap is a reliable, always-free alternative.
  */
-function normalizeGoogleMapsUrl(url: string): string {
-  if (!url) return 'https://maps.google.com/maps?q=Chichiriviche%2C+Venezuela&z=14&output=embed';
+function resolveEmbedUrl(raw: string | undefined): string {
+  // Default OSM embed centered on Chichiriviche, Venezuela
+  const OSM_DEFAULT =
+    'https://www.openstreetmap.org/export/embed.html?bbox=-68.3136%2C10.8917%2C-68.2336%2C10.9717&layer=mapnik&marker=10.9317%2C-68.2736';
 
-  // Already a proper embed URL — let it through unchanged
-  if (url.includes('google.com/maps/embed')) return url;
-  if (url.includes('output=embed')) return url;
+  if (!raw || raw.trim() === '') return OSM_DEFAULT;
 
-  // maps.google.com/maps?q=... → add &output=embed
-  if (url.includes('maps.google.com/maps')) {
-    const sep = url.includes('?') ? '&' : '?';
-    return `${url}${sep}output=embed`.replace(/&output=embed&output=embed/, '&output=embed');
+  // If the admin pasted a complete <iframe ...> tag, extract the src attribute
+  if (raw.includes('src=')) {
+    const match = raw.match(/src=["']([^"']+)["']/);
+    if (match && match[1]) return match[1]; // trust what Google generated
   }
 
-  // www.google.com/maps/place/... or /maps/@... → convert to embed
-  if (url.includes('google.com/maps')) {
-    // Extract query param if present
-    const qMatch = url.match(/[?&]q=([^&]+)/);
-    const query = qMatch ? qMatch[1] : 'Chichiriviche%2C+Venezuela';
-    return `https://maps.google.com/maps?q=${query}&z=14&output=embed`;
+  // If it's already a proper Google Maps Embed API URL (share → embed map)
+  if (raw.includes('google.com/maps/embed')) return raw;
+
+  // If it looks like a Google Maps URL (but NOT a proper embed URL),
+  // we cannot convert it without an API key — fall back to OSM
+  if (raw.includes('google.com/maps') || raw.includes('maps.google.com')) {
+    return OSM_DEFAULT;
   }
 
-  // Raw coordinates like 10.9317,-68.2736
-  const coordMatch = url.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
+  // If the admin pasted an OSM embed URL directly, use it
+  if (raw.includes('openstreetmap.org')) return raw;
+
+  // Raw coordinates  "lat,lng"  e.g. "10.9317,-68.2736"
+  const coordMatch = raw.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
   if (coordMatch) {
-    return `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&z=15&output=embed`;
+    const lat = parseFloat(coordMatch[1]);
+    const lng = parseFloat(coordMatch[2]);
+    const delta = 0.04;
+    return (
+      `https://www.openstreetmap.org/export/embed.html?` +
+      `bbox=${lng - delta}%2C${lat - delta}%2C${lng + delta}%2C${lat + delta}` +
+      `&layer=mapnik&marker=${lat}%2C${lng}`
+    );
   }
 
-  // Fallback: treat as search query
-  const encoded = encodeURIComponent(url);
-  return `https://maps.google.com/maps?q=${encoded}&z=14&output=embed`;
+  // Anything else → OSM default
+  return OSM_DEFAULT;
 }
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
@@ -59,29 +76,17 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   address = PROPERTY_INFO.locationName,
   description = PROPERTY_INFO.locationDescription,
   mapsLink = PROPERTY_INFO.googleMapsUrl,
-  embedUrl = 'https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed',
+  embedUrl,
   bullet1 = '5 minutos de los embarcaderos a Cayo Sombrero',
   bullet2 = 'Condominio privado con vigilancia las 24 horas',
   bullet3 = 'Supermercados y servicios a 3 minutos',
 }) => {
-// Clean and normalize any Google Maps URL to the proper embed format
-  const cleanedEmbedUrl = React.useMemo(() => {
-    const raw = embedUrl || '';
-
-    // 1. If it's a full <iframe> tag, extract the src
-    if (raw.includes('src=')) {
-      const match = raw.match(/src=["']([^"']+)["']/);
-      if (match && match[1]) return normalizeGoogleMapsUrl(match[1]);
-    }
-
-    return normalizeGoogleMapsUrl(raw);
-  }, [embedUrl]);
-
+  const resolvedEmbed = React.useMemo(() => resolveEmbedUrl(embedUrl), [embedUrl]);
 
   return (
     <section id="location" className="py-12 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
@@ -136,14 +141,15 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             </div>
           </div>
 
-          {/* Dynamic Map Preview iframe */}
+          {/* Map iframe */}
           <div className="lg:col-span-7 rounded-3xl overflow-hidden shadow-xl border-4 border-white h-[350px] sm:h-[420px] relative bg-[#EAE3D8]">
             <iframe
               title="Ubicación Villa María"
-              src={cleanedEmbedUrl}
+              src={resolvedEmbed}
               className="w-full h-full border-0"
               allowFullScreen
               loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </div>
