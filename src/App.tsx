@@ -76,7 +76,10 @@ export default function App() {
       const res = await api.getMyBookings();
       setMyBookings(res.bookings || []);
     } catch (err) {
-      console.error('Error cargando mis reservas:', err);
+      setAuthToken(null);
+      setAuthUser(null);
+      setCurrentUser(null);
+      setMyBookings([]);
     }
   };
 

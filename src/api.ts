@@ -46,6 +46,10 @@ async function request<T = any>(endpoint: string, options: RequestInit = {}): Pr
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      setAuthToken(null);
+      setAuthUser(null);
+    }
     throw new Error(data.error || data.message || `Error HTTP ${response.status}`);
   }
 
