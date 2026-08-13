@@ -539,13 +539,25 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Email de Contacto</label>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Email de Contacto Principal</label>
                         <input
                           type="email"
                           value={propertySettings.contact_email || ''}
                           onChange={(e) => setPropertySettings({ ...propertySettings, contact_email: e.target.value })}
                           className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                         />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Correos de Socios (Notificaciones de Reserva)</label>
+                        <input
+                          type="text"
+                          placeholder="socio1@gmail.com, socio2@gmail.com"
+                          value={propertySettings.partner_emails || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, partner_emails: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                        <span className="text-[10px] text-emerald-300/70 block mt-0.5">Separados por comas. Recibirán copia automática de cada reserva.</span>
                       </div>
 
                       <div>

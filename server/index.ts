@@ -612,11 +612,25 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
       sendEmail(guestEmail, tpl.subject, html);
     }
 
-    // Send Notification Email to Admin using ADMIN_NEW_BOOKING template
+    // Send Notification Email to Admin and Partners using ADMIN_NEW_BOOKING template
     const adminTpl = await prisma.emailTemplate.findUnique({ where: { code: 'ADMIN_NEW_BOOKING' } });
     if (adminTpl) {
       const contactEmailSetting = await prisma.propertySetting.findUnique({ where: { key: 'contact_email' } });
-      const adminEmail = contactEmailSetting?.value || process.env.SMTP_USER || process.env.SMTP_FROM || 'reservas.villamaria@gmail.com';
+      const partnerEmailSetting = await prisma.propertySetting.findUnique({ where: { key: 'partner_emails' } });
+
+      const mainAdminEmail = contactEmailSetting?.value || process.env.SMTP_USER || process.env.SMTP_FROM || 'reservas.villamaria@gmail.com';
+      const partnerEmailsRaw = partnerEmailSetting?.value || '';
+      
+      const recipients = new Set<string>();
+      if (mainAdminEmail) recipients.add(mainAdminEmail.trim());
+      
+      partnerEmailsRaw.split(',').forEach((em) => {
+        const cleaned = em.trim();
+        if (cleaned && cleaned.includes('@')) {
+          recipients.add(cleaned);
+        }
+      });
+
       const cleanPhone = (guestPhone || '').replace(/[^0-9]/g, '');
 
       let adminHtml = adminTpl.bodyHtml
@@ -631,7 +645,9 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
         .replace(/{{total_price}}/g, totalPrice.toString())
         .replace(/{{notes}}/g, notes || 'Sin solicitudes especiales');
 
-      sendEmail(adminEmail, adminTpl.subject.replace(/{{guest_name}}/g, guestName), adminHtml);
+      for (const targetEmail of recipients) {
+        sendEmail(targetEmail, adminTpl.subject.replace(/{{guest_name}}/g, guestName), adminHtml);
+      }
     }
 
     res.json({ success: true, reservation });
