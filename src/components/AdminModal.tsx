@@ -459,7 +459,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                   {/* Ubicación y Contacto */}
                   <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
                     <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
-                      3. Ubicación y Contacto
+                      3. Ubicación y Mapa Google Embed
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -493,12 +493,58 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS</label>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS (Botón)</label>
                         <input
                           type="text"
                           value={propertySettings.location_maps_link || ''}
                           onChange={(e) => setPropertySettings({ ...propertySettings, location_maps_link: e.target.value })}
                           className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Google Maps Iframe / URL de Mapa (Embed)</label>
+                      <input
+                        type="text"
+                        placeholder="Ej: https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed o pegue el <iframe> entero"
+                        value={propertySettings.location_embed_url || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_embed_url: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-emerald-500/20">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Punto 1 Ubicación</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: 5 minutos de los embarcaderos a Cayo Sombrero"
+                          value={propertySettings.location_bullet_1 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, location_bullet_1: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Punto 2 Ubicación</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Condominio privado con vigilancia las 24 horas"
+                          value={propertySettings.location_bullet_2 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, location_bullet_2: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Punto 3 Ubicación</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Supermercados y servicios a 3 minutos"
+                          value={propertySettings.location_bullet_3 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, location_bullet_3: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                         />
                       </div>
                     </div>
@@ -549,8 +595,75 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                   <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
                     <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
                       <ImageIcon className="w-4 h-4 text-emerald-400" />
-                      5. Gestor Visual de Fotos de la Galería y Carrusel
+                      5. Galería de Fotos, Títulos y Etiquetas
                     </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-3 border-b border-emerald-500/20">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Título de la Sección Galería</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Fotos de Villa María 🌴"
+                          value={propertySettings.gallery_title || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, gallery_title: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo de la Galería</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Galería dinámica de la propiedad..."
+                          value={propertySettings.gallery_subtitle || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, gallery_subtitle: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pb-3 border-b border-emerald-500/20">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Pestaña 1</label>
+                        <input
+                          type="text"
+                          placeholder="Todas 📸"
+                          value={propertySettings.gallery_cat1 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, gallery_cat1: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Pestaña 2</label>
+                        <input
+                          type="text"
+                          placeholder="Fachada & Porche 🏡"
+                          value={propertySettings.gallery_cat2 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, gallery_cat2: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Pestaña 3</label>
+                        <input
+                          type="text"
+                          placeholder="Piscina & Jardines 🏊‍♂️"
+                          value={propertySettings.gallery_cat3 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, gallery_cat3: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Pestaña 4</label>
+                        <input
+                          type="text"
+                          placeholder="Habitaciones & Salón 🛋️"
+                          value={propertySettings.gallery_cat4 || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, gallery_cat4: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                        />
+                      </div>
+                    </div>
 
                     {/* Image Grid with Delete Option */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

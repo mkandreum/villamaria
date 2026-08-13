@@ -3,22 +3,40 @@ import { MapPin, Navigation, ExternalLink } from 'lucide-react';
 import { PROPERTY_INFO } from '../data/mockData';
 
 interface LocationSectionProps {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
   address?: string;
   description?: string;
   mapsLink?: string;
+  embedUrl?: string;
   bullet1?: string;
   bullet2?: string;
   bullet3?: string;
 }
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
+  badge = '📍 Ubicación Privilegiada',
+  title = 'Chichiriviche • Calle 15 🌴',
+  subtitle = 'Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.',
   address = PROPERTY_INFO.locationName,
   description = PROPERTY_INFO.locationDescription,
   mapsLink = PROPERTY_INFO.googleMapsUrl,
+  embedUrl = 'https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed',
   bullet1 = '5 minutos de los embarcaderos a Cayo Sombrero',
   bullet2 = 'Condominio privado con vigilancia las 24 horas',
   bullet3 = 'Supermercados y servicios a 3 minutos',
 }) => {
+  // Clean embed URL if user pasted an entire <iframe> tag
+  const cleanedEmbedUrl = React.useMemo(() => {
+    if (!embedUrl) return 'https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed';
+    if (embedUrl.includes('src=')) {
+      const match = embedUrl.match(/src=["']([^"']+)["']/);
+      if (match && match[1]) return match[1];
+    }
+    return embedUrl;
+  }, [embedUrl]);
+
   return (
     <section id="location" className="py-12 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,13 +44,13 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
-            <span>📍 Ubicación Privilegiada</span>
+            <span>{badge}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            Chichiriviche • Calle 15 🌴
+            {title}
           </h2>
           <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-2">
-            Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.
+            {subtitle}
           </p>
         </div>
 
@@ -77,11 +95,11 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             </div>
           </div>
 
-          {/* Map Preview iframe / visual container */}
+          {/* Dynamic Map Preview iframe */}
           <div className="lg:col-span-7 rounded-3xl overflow-hidden shadow-xl border-4 border-white h-[350px] sm:h-[420px] relative bg-[#EAE3D8]">
             <iframe
               title="Ubicación Villa María"
-              src="https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              src={cleanedEmbedUrl}
               className="w-full h-full border-0"
               allowFullScreen
               loading="lazy"

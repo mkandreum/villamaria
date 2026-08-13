@@ -173,20 +173,41 @@ export default function App() {
 
         {/* Photo Gallery */}
         <section id="gallery">
-          <GallerySection images={propertySettings.gallery_images} />
+          <GallerySection
+            images={propertySettings.gallery_images}
+            badge={propertySettings.gallery_badge}
+            title={propertySettings.gallery_title}
+            subtitle={propertySettings.gallery_subtitle}
+            cat1Label={propertySettings.gallery_cat1}
+            cat2Label={propertySettings.gallery_cat2}
+            cat3Label={propertySettings.gallery_cat3}
+            cat4Label={propertySettings.gallery_cat4}
+          />
         </section>
 
         {/* Amenities */}
         <section id="amenities">
-          <AmenitiesSection amenities={propertySettings.amenities} />
+          <AmenitiesSection
+            amenities={propertySettings.amenities}
+            badge={propertySettings.amenities_badge}
+            title={propertySettings.amenities_title}
+            subtitle={propertySettings.amenities_subtitle}
+          />
         </section>
 
         {/* Location */}
         <section id="location">
           <LocationSection
+            badge={propertySettings.location_badge}
+            title={propertySettings.location_title}
+            subtitle={propertySettings.location_subtitle}
             address={propertySettings.location_address}
             description={propertySettings.location_description}
             mapsLink={propertySettings.location_maps_link}
+            embedUrl={propertySettings.location_embed_url}
+            bullet1={propertySettings.location_bullet_1}
+            bullet2={propertySettings.location_bullet_2}
+            bullet3={propertySettings.location_bullet_3}
           />
         </section>
 
