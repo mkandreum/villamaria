@@ -136,6 +136,10 @@ export default function App() {
               setChildrenCount(0);
             }}
             onSearch={() => handleNavigate('booking')}
+            title={propertySettings.property_title}
+            subtitle={propertySettings.property_subtitle}
+            description={propertySettings.property_description}
+            pricePerNight={pricePerNight}
           />
         </section>
 
