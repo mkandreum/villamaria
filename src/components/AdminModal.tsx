@@ -467,6 +467,29 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Banner Promocional Activo</label>
+                      <select
+                        value={propertySettings.banner_enabled ?? 'true'}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, banner_enabled: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      >
+                        <option value="true">Sí (Activado)</option>
+                        <option value="false">No (Desactivado)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Texto Destacado del Banner</label>
+                      <input
+                        type="text"
+                        placeholder="Ej: Suministro constante de agua, planta eléctrica 24/7..."
+                        value={propertySettings.banner_text || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, banner_text: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
                   </div>
 
                   <div>

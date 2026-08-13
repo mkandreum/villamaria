@@ -110,10 +110,12 @@ export default function App() {
 
   const liveBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, mockPricing);
 
+  const isBannerActive = propertySettings.banner_enabled !== 'false';
+
   return (
-    <div className="min-h-screen bg-[#132A26] text-emerald-100 font-sans antialiased selection:bg-emerald-500 selection:text-emerald-950 pb-20 md:pb-0 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-20 md:pb-0 overflow-x-hidden">
       {/* Top Announcement Promo Banner */}
-      <PromoBanner />
+      <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} />
 
       {/* Floating Pill Navigation */}
       <Navbar
@@ -124,6 +126,7 @@ export default function App() {
         onOpenMyBookingsModal={() => setIsMyBookingsModalOpen(true)}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
         onLogout={handleLogout}
+        hasBanner={isBannerActive}
       />
 
       {/* Main Sections */}

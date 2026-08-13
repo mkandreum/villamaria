@@ -9,6 +9,7 @@ interface NavbarProps {
   onOpenMyBookingsModal: () => void;
   onOpenAdminModal: () => void;
   onLogout: () => void;
+  hasBanner?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -19,6 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMyBookingsModal,
   onOpenAdminModal,
   onLogout,
+  hasBanner = true,
 }) => {
   const [scrolled, setScrolled] = useState(false);
 
@@ -33,7 +35,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className="fixed z-50 left-1/2 -translate-x-1/2 bottom-4 md:bottom-auto md:top-4 w-[90%] max-w-xs md:max-w-2xl transition-all duration-300"
+      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-4 md:bottom-auto transition-all duration-300 w-[90%] max-w-xs md:max-w-2xl ${
+        hasBanner ? 'md:top-14' : 'md:top-4'
+      }`}
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
@@ -42,7 +46,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         }`}
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens) */}
-        {/* 5 Equal-Sized Circular Targets (w-10 h-10): [Fotos] [Servicios] [ VM (Inicio) ] [Reservar] [Acceder/User] */}
         <div className="flex md:hidden items-center justify-between w-full px-1">
           {/* 1. Fotos */}
           <button
