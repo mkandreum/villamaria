@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #F8F5F0;
+    color: #1B3B36;
+  }
+
+  h1, h2, h3, h4, .font-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+/* Custom theme color utility helpers if needed */
+.bg-art-canvas { background-color: #F8F5F0; }
+.bg-art-sand { background-color: #EAE3D8; }
+.bg-art-forest { background-color: #1B3B36; }
+.bg-art-terracotta { background-color: #C17D5C; }
+
+.text-art-forest { color: #1B3B36; }
+.text-art-terracotta { color: #C17D5C; }
+.text-art-sand { color: #EAE3D8; }
+.border-art-forest { border-color: rgba(27, 59, 54, 0.15); }
+

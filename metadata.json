@@ -1,0 +1,6 @@
+{
+  "name": "Villa María - Casa de Playa en Chichiriviche",
+  "description": "Exclusiva casa de playa vacacional en Chichiriviche (Calle 15). Calendario de reservas en vivo, piscina comunitaria, mapa interactivo y comodidades completas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
