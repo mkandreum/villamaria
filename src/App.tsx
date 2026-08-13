@@ -146,6 +146,7 @@ export default function App() {
             subtitle={propertySettings.property_subtitle}
             description={propertySettings.property_description}
             pricePerNight={pricePerNight}
+            heroPhotos={propertySettings.gallery_images}
           />
         </section>
 

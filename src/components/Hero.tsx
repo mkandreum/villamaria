@@ -14,7 +14,7 @@ interface HeroProps {
   description?: string;
   pricePerNight?: number;
   whatsappNumber?: string;
-  heroImage?: string;
+  heroPhotos?: any;
 }
 
 const DEFAULT_HERO_PHOTOS = [
@@ -37,9 +37,25 @@ export const Hero: React.FC<HeroProps> = ({
   description = 'Villa María es una elegante finca vacacional totalmente equipada. Disfruta de piscina privada climatizada, servicio de agua constante 24/7, planta eléctrica y cercanía a los cayos de Morrocoy.',
   pricePerNight = 150,
   whatsappNumber = '+34600000000',
-  heroImage,
+  heroPhotos,
 }) => {
-  const photos = heroImage ? [heroImage, ...DEFAULT_HERO_PHOTOS.slice(1)] : DEFAULT_HERO_PHOTOS;
+  const photos = React.useMemo(() => {
+    if (!heroPhotos) return DEFAULT_HERO_PHOTOS;
+    let list = heroPhotos;
+    if (typeof heroPhotos === 'string') {
+      try {
+        list = JSON.parse(heroPhotos);
+      } catch {
+        list = [];
+      }
+    }
+    if (!Array.isArray(list) || list.length === 0) return DEFAULT_HERO_PHOTOS;
+
+    return list.map((item: any) =>
+      typeof item === 'string' ? item : item.url || item.imageUrl || item
+    );
+  }, [heroPhotos]);
+
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
 
@@ -79,7 +95,7 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
           
-          {/* PHOTO CAROUSEL "AL AIRE" (Full-width, large, rounded corners, arrows on touch/hover) 📸 */}
+          {/* DYNAMIC PHOTO CAROUSEL FROM DB "AL AIRE" 📸 */}
           <div className="lg:col-span-7">
             <div
               onTouchStart={() => setShowArrows(true)}
@@ -88,11 +104,11 @@ export const Hero: React.FC<HeroProps> = ({
               onMouseLeave={() => setShowArrows(false)}
               className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[16/10] sm:aspect-[16/9] group bg-emerald-950"
             >
-              {photos.map((img, idx) => (
+              {photos.map((img: string, idx: number) => (
                 <img
                   key={idx}
                   src={img}
-                  alt={`Villa María ${idx + 1}`}
+                  alt={`Villa María foto ${idx + 1}`}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
                     idx === activePhotoIndex ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
                   }`}
@@ -103,7 +119,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/70 via-transparent to-transparent" />
 
               {/* Left/Right Controls - ONLY APPEAR ON TOUCH / HOVER */}
-              {showArrows && (
+              {showArrows && photos.length > 1 && (
                 <>
                   <button
                     onClick={() => setActivePhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)}
@@ -123,17 +139,19 @@ export const Hero: React.FC<HeroProps> = ({
               )}
 
               {/* Photo Dots */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
-                {photos.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActivePhotoIndex(idx)}
-                    className={`h-2 rounded-full transition-all ${
-                      idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2 bg-white/60'
-                    }`}
-                  />
-                ))}
-              </div>
+              {photos.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+                  {photos.map((_: any, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActivePhotoIndex(idx)}
+                      className={`h-2 rounded-full transition-all ${
+                        idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2 bg-white/60'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Badge Overlay */}
               <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1">

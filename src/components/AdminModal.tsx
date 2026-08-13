@@ -522,22 +522,68 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     />
                   </div>
 
-                  {/* Upload Image Section */}
-                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
+                  {/* Upload Image & Gallery Management Section */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
                     <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
                       <Upload className="w-4 h-4 text-emerald-400" />
-                      Subir Imagen a Galería (Volumen Docker Persistente)
+                      Gestión de Fotos del Carrusel & Galería
                     </h4>
-                    <p className="text-xs text-emerald-300/70">
-                      Las imágenes se guardarán en el directorio persistente <code>/app/uploads</code> del servidor.
-                    </p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploadingImage}
-                      className="text-xs text-emerald-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-emerald-950 hover:file:bg-emerald-400 cursor-pointer"
-                    />
+
+                    {/* Current Photos Grid */}
+                    <div className="space-y-2">
+                      <span className="text-[11px] font-semibold text-emerald-300 block">Fotos Actuales en la Web:</span>
+                      {(() => {
+                        let imagesList: string[] = [];
+                        try {
+                          const parsed = typeof propertySettings.gallery_images === 'string'
+                            ? JSON.parse(propertySettings.gallery_images)
+                            : propertySettings.gallery_images;
+                          if (Array.isArray(parsed)) {
+                            imagesList = parsed.map((item: any) => typeof item === 'string' ? item : item.url || item.imageUrl || item);
+                          }
+                        } catch {}
+
+                        if (imagesList.length === 0) {
+                          return <p className="text-xs text-emerald-300/60 italic">No hay fotos personalizadas todavía.</p>;
+                        }
+
+                        return (
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            {imagesList.map((imgUrl, idx) => (
+                              <div key={idx} className="relative group rounded-xl overflow-hidden border border-emerald-500/30 aspect-[4/3] bg-emerald-950">
+                                <img src={imgUrl} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = imagesList.filter((_, i) => i !== idx);
+                                    setPropertySettings({
+                                      ...propertySettings,
+                                      gallery_images: JSON.stringify(updated),
+                                    });
+                                  }}
+                                  className="absolute top-1 right-1 bg-red-600/90 text-white p-1 rounded-lg hover:bg-red-500 transition-colors shadow-md"
+                                  title="Eliminar esta foto"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* File Upload Input */}
+                    <div className="pt-2 border-t border-emerald-500/20 space-y-2">
+                      <label className="block text-xs font-semibold text-emerald-300">Subir Nueva Foto desde tu Dispositivo</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploadingImage}
+                        className="text-xs text-emerald-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-emerald-950 hover:file:bg-emerald-400 cursor-pointer"
+                      />
+                    </div>
                   </div>
 
                   <button
