@@ -1,0 +1,825 @@
+import express from 'express';
+import path from 'node:path';
+import fs from 'node:fs';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import multer from 'multer';
+import { fileURLToPath } from 'node:url';
+
+import { prisma } from './db.js';
+import { encryptText, decryptText } from './utils/crypto.js';
+import { getActiveTransporter, sendEmail, testSmtpConnection, sendTestEmailDirect } from './utils/mailer.js';
+import { createCalendarEvent, deleteCalendarEvent, fetchExternalBlockedEvents } from './utils/googleCalendar.js';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'villamaria-jwt-secret-key-2026-production';
+const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
+
+// Ensure uploads directory exists
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Multer storage config
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, UPLOADS_DIR);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'img-' + uniqueSuffix + ext);
+  },
+});
+const upload = multer({ storage });
+
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+app.use('/uploads', express.static(UPLOADS_DIR));
+
+// ----------------------------------------------------
+// Middleware Authentication & Authorization
+// ----------------------------------------------------
+export interface AuthenticatedRequest extends express.Request {
+  user?: {
+    id: string;
+    email: string;
+    role: 'ADMIN' | 'CLIENT';
+  };
+}
+
+function authenticateToken(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Token de acceso no proporcionado.' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
+    if (err) {
+      return res.status(403).json({ error: 'Token inválido o expirado.' });
+    }
+    req.user = decoded;
+    next();
+  });
+}
+
+function requireAdmin(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    return res.status(403).json({ error: 'Acceso denegado. Se requieren permisos de administrador.' });
+  }
+  next();
+}
+
+// ----------------------------------------------------
+// Database Initializer & Seeder
+// ----------------------------------------------------
+async function initializeDatabase() {
+  try {
+    // 1. Ensure Admin User
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@villamaria.com';
+    const rawAdminPass = process.env.ADMIN_PASSWORD || 'admin123456';
+    const adminHash = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync(rawAdminPass, 10);
+
+    const existingAdmin = await prisma.user.findFirst({
+      where: { role: 'ADMIN' },
+    });
+
+    if (!existingAdmin) {
+      await prisma.user.create({
+        data: {
+          email: adminEmail,
+          passwordHash: adminHash,
+          name: 'Administrador Villa María',
+          role: 'ADMIN',
+        },
+      });
+      console.log(`[Init] Admin user created (${adminEmail})`);
+    }
+
+    // 2. Ensure Property Settings Defaults
+    const defaultSettings: Record<string, { value: string; category: string }> = {
+      price_per_night: { value: '150', category: 'pricing' },
+      cleaning_fee: { value: '50', category: 'pricing' },
+      minimum_stay_nights: { value: '2', category: 'pricing' },
+      max_guests: { value: '8', category: 'property' },
+      property_title: { value: 'Villa María - Casa de Campo & Relax', category: 'general' },
+      property_subtitle: { value: 'Tu refugio exclusivo en plena naturaleza con piscina privada y vistas panorámicas', category: 'general' },
+      property_description: {
+        value: 'Villa María es una elegante finca rústica equipada con todas las comodidades modernas. Disfruta de amplios jardines, piscina privada, zona de barbacoa y espacios luminosos diseñados para el descanso perfecto en familia o con amigos.',
+        category: 'general',
+      },
+      check_in_time: { value: '16:00', category: 'policies' },
+      check_out_time: { value: '11:00', category: 'policies' },
+      cancellation_policy: { value: 'Cancelación gratuita hasta 7 días antes de la fecha de llegada.', category: 'policies' },
+      house_rules: { value: 'No se permiten fiestas ni eventos ruidosos. Respetar las horas de descanso de 23:00 a 08:00. Mascotas bajo consulta previa.', category: 'policies' },
+      gallery_images: {
+        value: JSON.stringify([
+          'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
+        ]),
+        category: 'media',
+      },
+      amenities: {
+        value: JSON.stringify([
+          { id: 'wifi', name: 'Wi-Fi de Alta Velocidad', icon: 'Wifi', description: 'Fibra óptica 600Mb en toda la propiedad' },
+          { id: 'pool', name: 'Piscina Privada', icon: 'Waves', description: 'Piscina climatizada con hamacas y solárium' },
+          { id: 'parking', name: 'Aparcamiento Gratuito', icon: 'Car', description: 'Plaza privada dentro del recinto para 3 vehículos' },
+          { id: 'ac', name: 'Aire Acondicionado & Calefacción', icon: 'AirVent', description: 'Climatizador frío/calor en todas las estancias' },
+          { id: 'bbq', name: 'Barbacoa & Jardín', icon: 'Flame', description: 'Zona de barbacoa exterior cubierta con comedor' },
+          { id: 'kitchen', name: 'Cocina Totalmente Equipada', icon: 'Utensils', description: 'Lavavajillas, horno, microondas y cafetera expreso' },
+        ]),
+        category: 'amenities',
+      },
+    };
+
+    for (const [key, obj] of Object.entries(defaultSettings)) {
+      const existing = await prisma.propertySetting.findUnique({ where: { key } });
+      if (!existing) {
+        await prisma.propertySetting.create({
+          data: { key, value: obj.value, category: obj.category },
+        });
+      }
+    }
+
+    // 3. Ensure Default Email Templates
+    const defaultTemplates = [
+      {
+        code: 'BOOKING_CONFIRMATION',
+        name: 'Confirmación de Reserva (Huésped)',
+        subject: '¡Tu reserva en Villa María está confirmada!',
+        variables: JSON.stringify(['guest_name', 'start_date', 'end_date', 'total_price', 'reservation_id']),
+        bodyHtml: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <h2 style="color: #059669;">¡Hola {{guest_name}}!</h2>
+            <p>Nos complace confirmarte que tu reserva en <strong>Villa María</strong> ha sido procesada con éxito.</p>
+            <div style="background-color: #f3f4f6; padding: 15px; border-radius: 6px; margin: 20px 0;">
+              <p style="margin: 5px 0;"><strong>ID Reserva:</strong> {{reservation_id}}</p>
+              <p style="margin: 5px 0;"><strong>Entrada:</strong> {{start_date}}</p>
+              <p style="margin: 5px 0;"><strong>Salida:</strong> {{end_date}}</p>
+              <p style="margin: 5px 0;"><strong>Precio Total:</strong> {{total_price}}€</p>
+            </div>
+            <p>¡Esperamos darle la bienvenida pronto!</p>
+            <p style="font-size: 12px; color: #6b7280; margin-top: 30px;">Villa María - Casa de Campo & Relax</p>
+          </div>
+        `,
+      },
+      {
+        code: 'ADMIN_NEW_BOOKING',
+        name: 'Aviso de Nueva Reserva (Admin)',
+        subject: 'NUEVA RESERVA: {{guest_name}} en Villa María',
+        variables: JSON.stringify(['guest_name', 'guest_email', 'guest_phone', 'start_date', 'end_date', 'total_price']),
+        bodyHtml: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <h2 style="color: #2563eb;">Nueva Reserva Recibida</h2>
+            <p>Se ha registrado una nueva reserva en el sistema:</p>
+            <ul>
+              <li><strong>Cliente:</strong> {{guest_name}} ({{guest_email}} | {{guest_phone}})</li>
+              <li><strong>Fechas:</strong> {{start_date}} - {{end_date}}</li>
+              <li><strong>Total:</strong> {{total_price}}€</li>
+            </ul>
+          </div>
+        `,
+      },
+      {
+        code: 'BOOKING_CANCELLED',
+        name: 'Cancelación de Reserva',
+        subject: 'Reserva Cancelada - Villa María',
+        variables: JSON.stringify(['guest_name', 'start_date', 'end_date', 'reservation_id']),
+        bodyHtml: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ef4444; border-radius: 8px;">
+            <h2 style="color: #dc2626;">Reserva Cancelada</h2>
+            <p>Hola {{guest_name}}, tu reserva (ID: {{reservation_id}}) del {{start_date}} al {{end_date}} ha sido cancelada.</p>
+          </div>
+        `,
+      },
+    ];
+
+    for (const tpl of defaultTemplates) {
+      const existing = await prisma.emailTemplate.findUnique({ where: { code: tpl.code } });
+      if (!existing) {
+        await prisma.emailTemplate.create({ data: tpl });
+      }
+    }
+
+    console.log('[Init] Database initialization complete.');
+  } catch (error) {
+    console.error('[Init] Error during database initialization:', error);
+  }
+}
+
+// ----------------------------------------------------
+// API ROUTES
+// ----------------------------------------------------
+
+// Healthcheck endpoint
+app.get('/api/health', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'ok', timestamp: new Date().toISOString(), database: 'connected' });
+  } catch (err: any) {
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// ---------------- Authentication Routes ----------------
+
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, name, phone } = req.body;
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Email, contraseña y nombre son obligatorios.' });
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        name,
+        phone,
+        role: 'CLIENT',
+      },
+    });
+
+    const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
+    res.json({
+      token: accessToken,
+      refreshToken,
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone, role: user.role },
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Error en el registro.' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email y contraseña requeridos.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciales inválidas.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Credenciales inválidas.' });
+    }
+
+    const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+    const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
+    res.json({
+      token: accessToken,
+      refreshToken,
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone, role: user.role },
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Error al iniciar sesión.' });
+  }
+});
+
+app.get('/api/auth/me', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true },
+    });
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado.' });
+    res.json({ user });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ---------------- Property Settings Routes ----------------
+
+app.get('/api/property', async (_req, res) => {
+  try {
+    const settings = await prisma.propertySetting.findMany();
+    const map: Record<string, any> = {};
+
+    for (const item of settings) {
+      try {
+        map[item.key] = JSON.parse(item.value);
+      } catch {
+        map[item.key] = item.value;
+      }
+    }
+
+    res.json({ settings: map });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/property', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const settingsObj = req.body;
+    for (const [key, value] of Object.entries(settingsObj)) {
+      const valStr = typeof value === 'object' ? JSON.stringify(value) : String(value);
+      await prisma.propertySetting.upsert({
+        where: { key },
+        update: { value: valStr },
+        create: { key, value: valStr, category: 'general' },
+      });
+    }
+
+    res.json({ success: true, message: 'Configuración actualizada correctamente.' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ---------------- Upload Route ----------------
+
+app.post('/api/uploads', authenticateToken, requireAdmin, upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se ha adjuntado ningún archivo.' });
+  }
+  const fileUrl = `/uploads/${req.file.filename}`;
+  res.json({ url: fileUrl, filename: req.file.filename });
+});
+
+// ---------------- Reservations & Availability Routes ----------------
+
+app.get('/api/reservations/availability', async (_req, res) => {
+  try {
+    const dbReservations = await prisma.reservation.findMany({
+      where: { status: { in: ['CONFIRMED', 'PENDING'] } },
+      select: { startDate: true, endDate: true, status: true },
+    });
+
+    const dbBlocked = await prisma.blockedDate.findMany({
+      select: { startDate: true, endDate: true, reason: true },
+    });
+
+    const googleBlocked = await fetchExternalBlockedEvents();
+
+    res.json({
+      reservations: dbReservations,
+      blockedDates: dbBlocked,
+      googleCalendarEvents: googleBlocked,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
+  try {
+    const { guestName, guestEmail, guestPhone, startDate, endDate, guestsCount, notes } = req.body;
+    if (!guestName || !guestEmail || !guestPhone || !startDate || !endDate) {
+      return res.status(400).json({ error: 'Todos los campos obligatorios deben ser completados.' });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start >= end) {
+      return res.status(400).json({ error: 'La fecha de salida debe ser posterior a la fecha de entrada.' });
+    }
+
+    // Check overlap with existing reservations
+    const overlap = await prisma.reservation.findFirst({
+      where: {
+        status: { in: ['CONFIRMED', 'PENDING'] },
+        AND: [{ startDate: { lt: end } }, { endDate: { gt: start } }],
+      },
+    });
+
+    if (overlap) {
+      return res.status(400).json({ error: 'Las fechas seleccionadas ya no están disponibles.' });
+    }
+
+    // Calculate total price
+    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    const priceSetting = await prisma.propertySetting.findUnique({ where: { key: 'price_per_night' } });
+    const cleaningSetting = await prisma.propertySetting.findUnique({ where: { key: 'cleaning_fee' } });
+    const pricePerNight = priceSetting ? parseFloat(priceSetting.value) : 150;
+    const cleaningFee = cleaningSetting ? parseFloat(cleaningSetting.value) : 50;
+    const totalPrice = nights * pricePerNight + cleaningFee;
+
+    const reservation = await prisma.reservation.create({
+      data: {
+        userId: req.user ? req.user.id : null,
+        guestName,
+        guestEmail,
+        guestPhone,
+        startDate: start,
+        endDate: end,
+        guestsCount: Number(guestsCount) || 1,
+        totalPrice,
+        notes,
+        status: 'PENDING',
+      },
+    });
+
+    // Create Google Calendar event if credentials configured
+    const googleEventId = await createCalendarEvent({
+      guestName,
+      guestEmail,
+      guestPhone,
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+      guestsCount: Number(guestsCount) || 1,
+      totalPrice,
+      notes,
+    });
+
+    if (googleEventId) {
+      await prisma.reservation.update({
+        where: { id: reservation.id },
+        data: { googleEventId },
+      });
+    }
+
+    // Send Confirmation Email to Client using stored template
+    const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_CONFIRMATION' } });
+    if (tpl) {
+      let html = tpl.bodyHtml
+        .replace(/{{guest_name}}/g, guestName)
+        .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
+        .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
+        .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
+        .replace(/{{total_price}}/g, totalPrice.toString());
+
+      sendEmail(guestEmail, tpl.subject, html);
+    }
+
+    res.json({ success: true, reservation });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/reservations/my-bookings', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  try {
+    const bookings = await prisma.reservation.findMany({
+      where: { userId: req.user!.id },
+      orderBy: { startDate: 'desc' },
+    });
+    res.json({ bookings });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ---------------- Admin Management Routes ----------------
+
+app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const totalReservations = await prisma.reservation.count();
+    const pendingReservations = await prisma.reservation.count({ where: { status: 'PENDING' } });
+    const confirmedReservations = await prisma.reservation.count({ where: { status: 'CONFIRMED' } });
+    const totalUsers = await prisma.user.count({ where: { role: 'CLIENT' } });
+
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const monthIncome = await prisma.reservation.aggregate({
+      _sum: { totalPrice: true },
+      where: {
+        status: 'CONFIRMED',
+        createdAt: { gte: firstDayOfMonth },
+      },
+    });
+
+    res.json({
+      metrics: {
+        totalReservations,
+        pendingReservations,
+        confirmedReservations,
+        totalUsers,
+        monthlyIncome: monthIncome._sum.totalPrice || 0,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/reservations', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const reservations = await prisma.reservation.findMany({
+      include: { user: { select: { id: true, email: true, name: true, phone: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ reservations });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/reservations/:id/status', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, internalNotes } = req.body;
+
+    const reservation = await prisma.reservation.findUnique({ where: { id } });
+    if (!reservation) return res.status(404).json({ error: 'Reserva no encontrada.' });
+
+    const updated = await prisma.reservation.update({
+      where: { id },
+      data: { status, internalNotes },
+    });
+
+    // If cancelled, remove Google Event
+    if (status === 'CANCELLED' && reservation.googleEventId) {
+      await deleteCalendarEvent(reservation.googleEventId);
+    }
+
+    res.json({ success: true, reservation: updated });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/users', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: { id: true, email: true, name: true, phone: true, role: true, createdAt: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ users });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Blocked dates
+app.get('/api/admin/blocked-dates', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const blocked = await prisma.blockedDate.findMany({ orderBy: { startDate: 'asc' } });
+    res.json({ blockedDates: blocked });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/blocked-dates', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { startDate, endDate, reason } = req.body;
+    const item = await prisma.blockedDate.create({
+      data: {
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        reason,
+        createdBy: req.user!.email,
+      },
+    });
+    res.json({ success: true, item });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/admin/blocked-dates/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    await prisma.blockedDate.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Email templates
+app.get('/api/admin/email-templates', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const templates = await prisma.emailTemplate.findMany();
+    res.json({ templates });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/email-templates/:code', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { code } = req.params;
+    const { subject, bodyHtml } = req.body;
+    const tpl = await prisma.emailTemplate.update({
+      where: { code },
+      data: { subject, bodyHtml },
+    });
+    res.json({ success: true, template: tpl });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/send-email', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { to, subject, bodyHtml } = req.body;
+    const ok = await sendEmail(to, subject, bodyHtml);
+    if (!ok) return res.status(500).json({ error: 'No se pudo enviar el email. Verifica la configuración SMTP.' });
+    res.json({ success: true, message: 'Email enviado correctamente.' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ---------------- GUI SMTP Configuration Routes ----------------
+
+app.get('/api/admin/smtp', authenticateToken, requireAdmin, async (_req, res) => {
+  try {
+    const dbSmtp = await prisma.smtpSetting.findFirst({
+      where: { isActive: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    if (!dbSmtp) {
+      return res.json({ configured: false, settings: null });
+    }
+
+    res.json({
+      configured: true,
+      settings: {
+        host: dbSmtp.host,
+        port: dbSmtp.port,
+        user: dbSmtp.user,
+        passwordMasked: '********',
+        fromEmail: dbSmtp.fromEmail,
+        fromName: dbSmtp.fromName,
+        security: dbSmtp.security,
+        replyTo: dbSmtp.replyTo,
+        isActive: dbSmtp.isActive,
+        updatedAt: dbSmtp.updatedAt,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/smtp', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { host, port, user, password, fromEmail, fromName, security, replyTo } = req.body;
+    if (!host || !port || !user || !fromEmail || !fromName) {
+      return res.status(400).json({ error: 'Host, puerto, usuario, remitente y nombre son obligatorios.' });
+    }
+
+    // Check existing
+    const existing = await prisma.smtpSetting.findFirst({ where: { isActive: true } });
+    let encryptedPassword = existing ? existing.encryptedPassword : '';
+
+    if (password && password !== '********') {
+      encryptedPassword = encryptText(password);
+    }
+
+    let item;
+    if (existing) {
+      item = await prisma.smtpSetting.update({
+        where: { id: existing.id },
+        data: {
+          host,
+          port: Number(port),
+          user,
+          encryptedPassword,
+          fromEmail,
+          fromName,
+          security: security || 'STARTTLS',
+          replyTo,
+          updatedBy: req.user!.email,
+        },
+      });
+    } else {
+      item = await prisma.smtpSetting.create({
+        data: {
+          host,
+          port: Number(port),
+          user,
+          encryptedPassword: encryptText(password || ''),
+          fromEmail,
+          fromName,
+          security: security || 'STARTTLS',
+          replyTo,
+          isActive: true,
+          updatedBy: req.user!.email,
+        },
+      });
+    }
+
+    // Audit log
+    await prisma.auditLog.create({
+      data: {
+        action: 'UPDATE_SMTP_CONFIG',
+        performedBy: req.user!.email,
+        details: `Configuración SMTP actualizada: ${host}:${port} (${fromEmail})`,
+      },
+    });
+
+    res.json({ success: true, message: 'Configuración SMTP guardada correctamente.' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/smtp/test-connection', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { host, port, user, password, security } = req.body;
+
+    let clearPassword = password;
+    if (password === '********' || !password) {
+      const existing = await prisma.smtpSetting.findFirst({ where: { isActive: true } });
+      if (existing) {
+        clearPassword = decryptText(existing.encryptedPassword);
+      }
+    }
+
+    const result = await testSmtpConnection({
+      host,
+      port: Number(port),
+      user,
+      password: clearPassword,
+      fromEmail: '',
+      fromName: '',
+      security: security || 'STARTTLS',
+    });
+
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post('/api/admin/smtp/test-email', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { host, port, user, password, fromEmail, fromName, security, targetEmail } = req.body;
+
+    let clearPassword = password;
+    if (password === '********' || !password) {
+      const existing = await prisma.smtpSetting.findFirst({ where: { isActive: true } });
+      if (existing) {
+        clearPassword = decryptText(existing.encryptedPassword);
+      }
+    }
+
+    const result = await sendTestEmailDirect(
+      {
+        host,
+        port: Number(port),
+        user,
+        password: clearPassword,
+        fromEmail,
+        fromName,
+        security: security || 'STARTTLS',
+      },
+      targetEmail
+    );
+
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ----------------------------------------------------
+// Serve Production Static Files
+// ----------------------------------------------------
+const distPath = path.join(process.cwd(), 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+
+// ----------------------------------------------------
+// Server Start & DB Initialization
+// ----------------------------------------------------
+app.listen(PORT, async () => {
+  console.log(`[Server] Villa María backend listening on port ${PORT}`);
+  await initializeDatabase();
+});

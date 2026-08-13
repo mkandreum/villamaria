@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Booking, PricingConfig } from './types';
-import { INITIAL_BOOKINGS, INITIAL_PRICING } from './data/mockData';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BookingCalendar } from './components/BookingCalendar';
@@ -14,242 +13,282 @@ import { BookingFormModal } from './components/BookingFormModal';
 import { BookingConfirmationModal } from './components/BookingConfirmationModal';
 import { MyBookingsModal } from './components/MyBookingsModal';
 import { AdminModal } from './components/AdminModal';
+import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import { StickyMobileBar } from './components/StickyMobileBar';
 import { calculatePriceBreakdown } from './utils/dateUtils';
+import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
 
 export default function App() {
-  // Persistence state
-  const [bookings, setBookings] = useState<Booking[]>(() => {
-    try {
-      const saved = localStorage.getItem('villa_maria_bookings');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error('Error loading bookings from localStorage', e);
-    }
-    return INITIAL_BOOKINGS;
+  const [currentUser, setCurrentUser] = useState<any>(() => getAuthUser());
+  const [activeSection, setActiveSection] = useState('hero');
+
+  // Dynamic Property Settings & Availability from Database
+  const [propertySettings, setPropertySettings] = useState<any>({});
+  const [availability, setAvailability] = useState<{ reservations: any[]; blockedDates: any[]; googleCalendarEvents: any[] }>({
+    reservations: [],
+    blockedDates: [],
+    googleCalendarEvents: [],
   });
 
-  const [pricing, setPricing] = useState<PricingConfig>(() => {
-    try {
-      const saved = localStorage.getItem('villa_maria_pricing');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error('Error loading pricing from localStorage', e);
-    }
-    return INITIAL_PRICING;
-  });
+  // Client Bookings
+  const [myBookings, setMyBookings] = useState<any[]>([]);
 
-  // Save changes to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('villa_maria_bookings', JSON.stringify(bookings));
-    } catch (e) {
-      console.error('Error saving bookings to localStorage', e);
-    }
-  }, [bookings]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('villa_maria_pricing', JSON.stringify(pricing));
-    } catch (e) {
-      console.error('Error saving pricing to localStorage', e);
-    }
-  }, [pricing]);
-
-  // Date selection state
+  // Selection state
   const [checkIn, setCheckIn] = useState<string>('');
   const [checkOut, setCheckOut] = useState<string>('');
-  const [adults, setAdults] = useState<number>(4);
-  const [childrenCount, setChildrenCount] = useState<number>(2);
+  const [adults, setAdults] = useState<number>(2);
+  const [childrenCount, setChildrenCount] = useState<number>(0);
 
   // Modals state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [lastSubmittedBooking, setLastSubmittedBooking] = useState<Booking | null>(null);
+  const [lastSubmittedBooking, setLastSubmittedBooking] = useState<any | null>(null);
   const [isMyBookingsModalOpen, setIsMyBookingsModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-  const [isAdminMode, setIsAdminMode] = useState(false);
 
-  // Search trigger from Hero
-  const handleHeroSearch = () => {
-    const el = document.getElementById('disponibilidad');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    loadPublicData();
+  }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      loadUserBookings();
+    }
+  }, [currentUser]);
+
+  const loadPublicData = async () => {
+    try {
+      const [propRes, availRes] = await Promise.all([
+        api.getPropertySettings().catch(() => ({ settings: {} })),
+        api.getAvailability().catch(() => ({ reservations: [], blockedDates: [], googleCalendarEvents: [] })),
+      ]);
+
+      setPropertySettings(propRes.settings || {});
+      setAvailability(availRes);
+    } catch (err) {
+      console.error('Error cargando datos públicos:', err);
     }
   };
 
-  // Handlers for bookings
-  const handleInitiateBooking = () => {
-    if (!checkIn || !checkOut) {
-      alert('Por favor selecciona las fechas de llegada y salida en el calendario.');
-      return;
+  const loadUserBookings = async () => {
+    try {
+      const res = await api.getMyBookings();
+      setMyBookings(res.bookings || []);
+    } catch (err) {
+      console.error('Error cargando mis reservas:', err);
     }
-    setIsBookingModalOpen(true);
   };
 
-  const handleSubmitBooking = (newBooking: Booking) => {
-    setBookings((prev) => [newBooking, ...prev]);
-    setIsBookingModalOpen(false);
-    setLastSubmittedBooking(newBooking);
+  const handleNavigate = (sectionId: string) => {
+    setActiveSection(sectionId);
+    if (sectionId === 'booking') {
+      const el = document.getElementById('disponibilidad');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  const handleCancelBooking = (bookingId: string) => {
-    setBookings((prev) =>
-      prev.map((b) => (b.id === bookingId ? { ...b, status: 'cancelled' } : b))
-    );
+  const handleLogout = () => {
+    setAuthToken(null);
+    setAuthUser(null);
+    setCurrentUser(null);
   };
 
-  const handleDeleteBooking = (bookingId: string) => {
-    setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+  const pricePerNight = propertySettings.price_per_night ? Number(propertySettings.price_per_night) : 150;
+  const cleaningFee = propertySettings.cleaning_fee ? Number(propertySettings.cleaning_fee) : 50;
+
+  const mockPricing: PricingConfig = {
+    baseNightlyRate: pricePerNight,
+    weekendRate: pricePerNight,
+    cleaningFee: cleaningFee,
+    currency: '€',
   };
 
-  const handleAddBlockDates = (start: string, end: string, reason: string) => {
-    const blockedBooking: Booking = {
-      id: `BLOCK-${Math.floor(1000 + Math.random() * 9000)}`,
-      guestName: reason || 'Bloqueo por el Propietario',
-      guestEmail: 'admin@villamaria.com',
-      guestPhone: 'Propietario',
-      checkIn: start,
-      checkOut: end,
-      adults: 0,
-      children: 0,
-      totalPrice: 0,
-      status: 'blocked_by_owner',
-      createdAt: new Date().toISOString().split('T')[0],
-      paymentMethod: 'efectivo',
-    };
-    setBookings((prev) => [blockedBooking, ...prev]);
-  };
-
-  const handleUpdatePricing = (newPricing: PricingConfig) => {
-    setPricing(newPricing);
-  };
-
-  const userActiveBookingsCount = bookings.filter(
-    (b) => b.status === 'confirmed' || b.status === 'pending'
-  ).length;
-
-  const liveBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, pricing);
+  const liveBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, mockPricing);
 
   return (
-    <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-[#C17D5C] selection:text-white pb-20 sm:pb-0">
-      {/* Navigation Header */}
+    <div className="min-h-screen bg-[#132A26] text-emerald-100 font-sans antialiased selection:bg-emerald-500 selection:text-emerald-950 pb-20 md:pb-0 overflow-x-hidden">
+      {/* Floating Pill Navigation */}
       <Navbar
-        onOpenBookingModal={() => {
-          if (!checkIn || !checkOut) {
-            handleHeroSearch();
-          } else {
-            setIsBookingModalOpen(true);
-          }
-        }}
-        onOpenMyBookings={() => setIsMyBookingsModalOpen(true)}
-        onOpenAdmin={() => {
-          setIsAdminModalOpen(true);
-          setIsAdminMode(true);
-        }}
-        isAdminMode={isAdminMode}
-        activeBookingsCount={userActiveBookingsCount}
+        activeSection={activeSection}
+        onNavigate={handleNavigate}
+        currentUser={currentUser}
+        onOpenLoginModal={() => setIsAuthModalOpen(true)}
+        onOpenMyBookingsModal={() => setIsMyBookingsModalOpen(true)}
+        onOpenAdminModal={() => setIsAdminModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Sections */}
-      <main>
-        {/* Hero Section */}
-        <Hero
-          checkIn={checkIn}
-          checkOut={checkOut}
-          guests={adults + childrenCount}
-          onCheckInChange={setCheckIn}
-          onCheckOutChange={setCheckOut}
-          onGuestsChange={(total) => {
-            setAdults(Math.max(1, total));
-            setChildrenCount(0);
-          }}
-          onSearch={handleHeroSearch}
-        />
+      <main className="relative">
+        <section id="hero">
+          <Hero
+            checkIn={checkIn}
+            checkOut={checkOut}
+            guests={adults + childrenCount}
+            onCheckInChange={setCheckIn}
+            onCheckOutChange={setCheckOut}
+            onGuestsChange={(total) => {
+              setAdults(Math.max(1, total));
+              setChildrenCount(0);
+            }}
+            onSearch={() => handleNavigate('booking')}
+          />
+        </section>
 
-        {/* Live Reservation Calendar & Price Calculator */}
-        <BookingCalendar
-          checkIn={checkIn}
-          checkOut={checkOut}
-          adults={adults}
-          childrenCount={childrenCount}
-          bookings={bookings}
-          pricing={pricing}
-          onCheckInChange={setCheckIn}
-          onCheckOutChange={setCheckOut}
-          onAdultsChange={setAdults}
-          onChildrenChange={setChildrenCount}
-          onInitiateBooking={handleInitiateBooking}
-        />
+        {/* Live Reservation Calendar */}
+        <section id="disponibilidad">
+          <BookingCalendar
+            checkIn={checkIn}
+            checkOut={checkOut}
+            adults={adults}
+            childrenCount={childrenCount}
+            bookings={availability.reservations}
+            pricing={mockPricing}
+            onCheckInChange={setCheckIn}
+            onCheckOutChange={setCheckOut}
+            onAdultsChange={setAdults}
+            onChildrenChange={setChildrenCount}
+            onInitiateBooking={() => setIsBookingModalOpen(true)}
+          />
+        </section>
 
-        {/* Photo Gallery & Lightbox */}
-        <GallerySection />
+        {/* Photo Gallery */}
+        <section id="gallery">
+          <GallerySection images={propertySettings.gallery_images} />
+        </section>
 
-        {/* Amenities & Property Specs */}
-        <AmenitiesSection />
+        {/* Amenities */}
+        <section id="amenities">
+          <AmenitiesSection amenities={propertySettings.amenities} />
+        </section>
 
-        {/* Location & Google Maps Link Integration */}
-        <LocationSection />
+        {/* Location */}
+        <section id="location">
+          <LocationSection />
+        </section>
 
-        {/* Morrocoy Tourist Attractions */}
-        <AttractionsSection />
+        {/* Local Attractions */}
+        <section id="attractions">
+          <AttractionsSection />
+        </section>
 
-        {/* Guest Testimonials & Review Submission */}
-        <ReviewsSection />
+        {/* Testimonials & Reviews */}
+        <section id="reviews">
+          <ReviewsSection />
+        </section>
 
-        {/* House Rules & Accordion FAQ */}
-        <HouseRulesAndFAQ />
+        {/* House Rules & FAQ */}
+        <section id="faq">
+          <HouseRulesAndFAQ rules={propertySettings.house_rules} cancellationPolicy={propertySettings.cancellation_policy} />
+        </section>
       </main>
 
       {/* Footer */}
       <Footer />
 
-      {/* Mobile Sticky Bar for Quick Booking & WhatsApp */}
+      {/* Mobile Sticky Bar for Quick Booking */}
       <StickyMobileBar
         checkIn={checkIn}
         checkOut={checkOut}
         totalPrice={liveBreakdown.totalPrice}
         nights={liveBreakdown.nights}
         onOpenBooking={() => setIsBookingModalOpen(true)}
-        onScrollToCalendar={handleHeroSearch}
+        onScrollToCalendar={() => handleNavigate('booking')}
       />
 
-      {/* Modals */}
+      {/* Auth Modal */}
+      {isAuthModalOpen && (
+        <AuthModal
+          onClose={() => setIsAuthModalOpen(false)}
+          onSuccess={(user) => {
+            setCurrentUser(user);
+            loadUserBookings();
+          }}
+        />
+      )}
+
+      {/* Booking Form Modal */}
       {isBookingModalOpen && (
         <BookingFormModal
           checkIn={checkIn}
           checkOut={checkOut}
           adults={adults}
           childrenCount={childrenCount}
-          pricing={pricing}
+          pricing={mockPricing}
           onClose={() => setIsBookingModalOpen(false)}
-          onSubmitBooking={handleSubmitBooking}
+          onSubmitBooking={async (formData: any) => {
+            try {
+              const res = await api.createReservation({
+                guestName: formData.guestName,
+                guestEmail: formData.guestEmail,
+                guestPhone: formData.guestPhone,
+                startDate: checkIn,
+                endDate: checkOut,
+                guestsCount: adults + childrenCount,
+                notes: formData.notes,
+              });
+
+              setIsBookingModalOpen(false);
+              setLastSubmittedBooking(res.reservation);
+              loadPublicData();
+              if (currentUser) loadUserBookings();
+            } catch (err: any) {
+              alert(err.message || 'Error al crear la reserva.');
+            }
+          }}
         />
       )}
 
+      {/* Booking Confirmation Modal */}
       {lastSubmittedBooking && (
         <BookingConfirmationModal
-          booking={lastSubmittedBooking}
+          booking={{
+            id: lastSubmittedBooking.id,
+            guestName: lastSubmittedBooking.guestName,
+            guestEmail: lastSubmittedBooking.guestEmail,
+            guestPhone: lastSubmittedBooking.guestPhone,
+            checkIn: lastSubmittedBooking.startDate,
+            checkOut: lastSubmittedBooking.endDate,
+            adults,
+            children: childrenCount,
+            totalPrice: lastSubmittedBooking.totalPrice,
+            status: 'confirmed',
+            createdAt: lastSubmittedBooking.createdAt,
+            paymentMethod: 'transferencia',
+          }}
           onClose={() => setLastSubmittedBooking(null)}
         />
       )}
 
+      {/* Client My Bookings Modal */}
       {isMyBookingsModalOpen && (
         <MyBookingsModal
-          bookings={bookings}
+          bookings={myBookings}
           onClose={() => setIsMyBookingsModalOpen(false)}
-          onCancelBooking={handleCancelBooking}
+          onCancelBooking={async (id: string) => {
+            try {
+              await api.updateReservationStatus(id, { status: 'CANCELLED' });
+              loadUserBookings();
+              loadPublicData();
+            } catch (err: any) {
+              alert(err.message || 'Error al cancelar la reserva.');
+            }
+          }}
         />
       )}
 
+      {/* Admin Management Hub Modal */}
       {isAdminModalOpen && (
         <AdminModal
-          bookings={bookings}
-          pricing={pricing}
           onClose={() => setIsAdminModalOpen(false)}
-          onAddBlockDates={handleAddBlockDates}
-          onDeleteBooking={handleDeleteBooking}
-          onUpdatePricing={handleUpdatePricing}
+          onRefreshData={() => {
+            loadPublicData();
+            if (currentUser) loadUserBookings();
+          }}
         />
       )}
     </div>

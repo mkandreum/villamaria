@@ -1,264 +1,638 @@
-import React, { useState } from 'react';
-import { Booking, PricingConfig } from '../types';
-import { formatDateSpanish } from '../utils/dateUtils';
-import { X, Shield, Lock, Plus, Calendar, DollarSign, Check, Trash2, Edit3, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  X,
+  Shield,
+  Calendar as CalendarIcon,
+  DollarSign,
+  Users,
+  Settings,
+  Lock,
+  Mail,
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  Trash2,
+  Edit3,
+  Send,
+  Plus,
+} from 'lucide-react';
+import { api } from '../api';
+import { SmtpSettingsSection } from './admin/SmtpSettingsSection';
 
 interface AdminModalProps {
-  bookings: Booking[];
-  pricing: PricingConfig;
   onClose: () => void;
-  onAddBlockDates: (checkIn: string, checkOut: string, reason: string) => void;
-  onDeleteBooking: (id: string) => void;
-  onUpdatePricing: (newPricing: PricingConfig) => void;
+  onRefreshData?: () => void;
 }
 
-export const AdminModal: React.FC<AdminModalProps> = ({
-  bookings,
-  pricing,
-  onClose,
-  onAddBlockDates,
-  onDeleteBooking,
-  onUpdatePricing,
-}) => {
-  const [blockCheckIn, setBlockCheckIn] = useState('');
-  const [blockCheckOut, setBlockCheckOut] = useState('');
-  const [blockReason, setBlockReason] = useState('Uso familiar / Mantenimiento');
+export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }) => {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'reservations' | 'property' | 'blocked' | 'templates' | 'smtp'>('dashboard');
 
-  const [baseRate, setBaseRate] = useState(pricing.baseNightlyRate);
-  const [weekendRate, setWeekendRate] = useState(pricing.weekendRate);
-  const [activeTab, setActiveTab] = useState<'bookings' | 'block' | 'pricing'>('bookings');
+  // Data states
+  const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState<any>(null);
+  const [reservations, setReservations] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [blockedDates, setBlockedDates] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [propertySettings, setPropertySettings] = useState<any>({});
 
-  const handleCreateBlock = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!blockCheckIn || !blockCheckOut) return;
-    onAddBlockDates(blockCheckIn, blockCheckOut, blockReason);
-    setBlockCheckIn('');
-    setBlockCheckOut('');
-    alert('¡Fechas bloqueadas con éxito en el calendario!');
+  // Form states
+  const [newBlock, setNewBlock] = useState({ startDate: '', endDate: '', reason: '' });
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [manualEmail, setManualEmail] = useState({ to: '', subject: '', bodyHtml: '' });
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [statusAlert, setStatusAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    loadAllAdminData();
+  }, []);
+
+  const loadAllAdminData = async () => {
+    setLoading(true);
+    try {
+      const [dashRes, resRes, usersRes, blockRes, tplRes, propRes] = await Promise.all([
+        api.getDashboardMetrics().catch(() => ({ metrics: null })),
+        api.getAdminReservations().catch(() => ({ reservations: [] })),
+        api.getAdminUsers().catch(() => ({ users: [] })),
+        api.getBlockedDates().catch(() => ({ blockedDates: [] })),
+        api.getEmailTemplates().catch(() => ({ templates: [] })),
+        api.getPropertySettings().catch(() => ({ settings: {} })),
+      ]);
+
+      setMetrics(dashRes.metrics);
+      setReservations(resRes.reservations || []);
+      setUsers(usersRes.users || []);
+      setBlockedDates(blockRes.blockedDates || []);
+      setTemplates(tplRes.templates || []);
+      setPropertySettings(propRes.settings || {});
+
+      if (tplRes.templates && tplRes.templates.length > 0) {
+        setSelectedTemplate(tplRes.templates[0]);
+      }
+    } catch (err: any) {
+      console.error('Error cargando datos de administración:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSaveRates = (e: React.FormEvent) => {
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
+    try {
+      await api.updateReservationStatus(id, { status: newStatus });
+      setStatusAlert({ type: 'success', text: `Estado de la reserva actualizado a ${newStatus}` });
+      loadAllAdminData();
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al actualizar reserva' });
+    }
+  };
+
+  const handleSavePropertySettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdatePricing({
-      ...pricing,
-      baseNightlyRate: Number(baseRate),
-      weekendRate: Number(weekendRate),
-    });
-    alert('¡Tarifas actualizadas correctamente!');
+    try {
+      await api.updatePropertySettings(propertySettings);
+      setStatusAlert({ type: 'success', text: 'Configuración de la propiedad guardada con éxito.' });
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al guardar la configuración.' });
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const result = await api.uploadFile(file);
+      const currentImages = Array.isArray(propertySettings.gallery_images)
+        ? propertySettings.gallery_images
+        : typeof propertySettings.gallery_images === 'string'
+        ? JSON.parse(propertySettings.gallery_images)
+        : [];
+
+      const updatedImages = [...currentImages, result.url];
+      const newSettings = { ...propertySettings, gallery_images: updatedImages };
+
+      setPropertySettings(newSettings);
+      await api.updatePropertySettings(newSettings);
+      setStatusAlert({ type: 'success', text: 'Imagen subida e incorporada a la galería correctamente.' });
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al subir la imagen.' });
+    } fontally: {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleAddBlockedDate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBlock.startDate || !newBlock.endDate) return;
+
+    try {
+      await api.addBlockedDate(newBlock);
+      setNewBlock({ startDate: '', endDate: '', reason: '' });
+      setStatusAlert({ type: 'success', text: 'Rango de fechas bloqueado en el calendario.' });
+      loadAllAdminData();
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al bloquear fechas.' });
+    }
+  };
+
+  const handleDeleteBlockedDate = async (id: string) => {
+    try {
+      await api.deleteBlockedDate(id);
+      setStatusAlert({ type: 'success', text: 'Bloqueo eliminado correctamente.' });
+      loadAllAdminData();
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleSaveEmailTemplate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTemplate) return;
+
+    try {
+      await api.updateEmailTemplate(selectedTemplate.code, {
+        subject: selectedTemplate.subject,
+        bodyHtml: selectedTemplate.bodyHtml,
+      });
+      setStatusAlert({ type: 'success', text: 'Plantilla de email actualizada.' });
+      loadAllAdminData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleSendManualEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.sendManualEmail(manualEmail);
+      setStatusAlert({ type: 'success', text: 'Correo electrónico enviado correctamente.' });
+      setManualEmail({ to: '', subject: '', bodyHtml: '' });
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message });
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1B3B36]/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-8 font-sans">
+    <div className="fixed inset-0 z-50 bg-emerald-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="bg-emerald-950 border border-emerald-500/30 rounded-3xl max-w-5xl w-full p-5 sm:p-8 shadow-2xl relative my-6 text-emerald-100 font-sans max-h-[90vh] flex flex-col">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#C17D5C] hover:text-white transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
-        <div className="mb-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#1B3B36] text-[#F8F5F0] flex items-center justify-center">
-            <Shield className="w-5 h-5 text-[#C17D5C]" />
+        <div className="mb-6 flex items-center gap-3 shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20">
+            <Shield className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-serif text-[#1B3B36]">
-              Panel de Administración / Anfitrión
+            <h2 className="text-xl sm:text-2xl font-bold text-white font-serif tracking-tight">
+              Panel de Administración Villa María
             </h2>
-            <p className="text-xs text-[#1B3B36]/70 font-sans">
-              Gestión de fechas, bloqueos del propietario y tarifas de Villa María
+            <p className="text-xs text-emerald-300/70">
+              Gestión integral en tiempo real: reservas, precios, contenidos, fotos y configuración SMTP
             </p>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex border-b border-[#1B3B36]/15 gap-2 mb-6 text-xs font-sans">
-          <button
-            onClick={() => setActiveTab('bookings')}
-            className={`pb-3 font-bold uppercase tracking-wider transition-all px-3 border-b-2 ${
-              activeTab === 'bookings'
-                ? 'border-[#C17D5C] text-[#C17D5C]'
-                : 'border-transparent text-[#1B3B36]/60 hover:text-[#1B3B36]'
+        {/* Alert notification */}
+        {statusAlert && (
+          <div
+            className={`mb-4 p-3.5 rounded-xl border flex items-center justify-between text-xs shrink-0 ${
+              statusAlert.type === 'success'
+                ? 'bg-emerald-900/60 border-emerald-500/40 text-emerald-200'
+                : 'bg-red-950/80 border-red-500/40 text-red-200'
             }`}
           >
-            Todas las Reservas ({bookings.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('block')}
-            className={`pb-3 font-bold uppercase tracking-wider transition-all px-3 border-b-2 ${
-              activeTab === 'block'
-                ? 'border-[#C17D5C] text-[#C17D5C]'
-                : 'border-transparent text-[#1B3B36]/60 hover:text-[#1B3B36]'
-            }`}
-          >
-            Bloquear Fechas
-          </button>
-          <button
-            onClick={() => setActiveTab('pricing')}
-            className={`pb-3 font-bold uppercase tracking-wider transition-all px-3 border-b-2 ${
-              activeTab === 'pricing'
-                ? 'border-[#C17D5C] text-[#C17D5C]'
-                : 'border-transparent text-[#1B3B36]/60 hover:text-[#1B3B36]'
-            }`}
-          >
-            Ajustar Tarifas
-          </button>
+            <div className="flex items-center gap-2">
+              {statusAlert.type === 'success' ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-red-400" />
+              )}
+              <span>{statusAlert.text}</span>
+            </div>
+            <button onClick={() => setStatusAlert(null)} className="text-emerald-400/60 hover:text-emerald-200">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Tabs Bar */}
+        <div className="flex overflow-x-auto border-b border-emerald-500/20 gap-1 pb-2 mb-6 text-xs font-medium shrink-0 scrollbar-none">
+          {[
+            { id: 'dashboard', label: 'Dashboard', icon: DollarSign },
+            { id: 'reservations', label: `Reservas (${reservations.length})`, icon: CalendarIcon },
+            { id: 'property', label: 'Propiedad & Tarifas', icon: Settings },
+            { id: 'blocked', label: 'Fechas Bloqueadas', icon: Lock },
+            { id: 'templates', label: 'Plantillas Email', icon: Mail },
+            { id: 'smtp', label: 'Configuración SMTP', icon: Shield },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-3.5 py-2 rounded-xl flex items-center gap-2 whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-emerald-500 text-emerald-950 font-bold shadow-md shadow-emerald-500/20'
+                    : 'text-emerald-300/70 hover:text-emerald-100 hover:bg-emerald-900/40'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Tab 1: All Bookings List */}
-        {activeTab === 'bookings' && (
-          <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1 font-sans">
-            {bookings.length === 0 ? (
-              <p className="text-center text-xs text-[#1B3B36]/60 py-8">No hay reservas registradas.</p>
-            ) : (
-              bookings.map((b) => (
-                <div
-                  key={b.id}
-                  className="bg-white border border-[#1B3B36]/15 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-[#1B3B36] font-bold bg-[#EAE3D8] px-2 py-0.5 rounded border border-[#1B3B36]/10">
-                        {b.id}
-                      </span>
-                      <span
-                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                          b.status === 'blocked_by_owner'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-emerald-100 text-emerald-800'
-                        }`}
-                      >
-                        {b.status === 'blocked_by_owner' ? 'Bloqueo Dueño' : 'Huésped'}
-                      </span>
+        {/* Tab Contents Container */}
+        <div className="flex-1 overflow-y-auto pr-1 space-y-6 text-sm">
+          {loading ? (
+            <div className="flex items-center justify-center py-16 text-emerald-300">
+              <RefreshCw className="w-6 h-6 animate-spin mr-2" />
+              <span>Cargando datos del servidor...</span>
+            </div>
+          ) : (
+            <>
+              {/* 1. Dashboard Tab */}
+              {activeTab === 'dashboard' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5">
+                      <span className="text-xs text-emerald-300/70 font-semibold uppercase tracking-wider">Ingresos Este Mes</span>
+                      <p className="text-2xl font-bold text-emerald-400 mt-2">{metrics?.monthlyIncome || 0}€</p>
                     </div>
-                    <h4 className="text-xs font-bold text-[#1B3B36] mt-1">{b.guestName}</h4>
-                    <p className="text-[11px] text-[#1B3B36]/70 mt-0.5">
-                      {formatDateSpanish(b.checkIn)} ➔ {formatDateSpanish(b.checkOut)} (${b.totalPrice} USD)
+
+                    <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5">
+                      <span className="text-xs text-emerald-300/70 font-semibold uppercase tracking-wider">Reservas Pendientes</span>
+                      <p className="text-2xl font-bold text-amber-400 mt-2">{metrics?.pendingReservations || 0}</p>
+                    </div>
+
+                    <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5">
+                      <span className="text-xs text-emerald-300/70 font-semibold uppercase tracking-wider">Reservas Confirmadas</span>
+                      <p className="text-2xl font-bold text-emerald-400 mt-2">{metrics?.confirmedReservations || 0}</p>
+                    </div>
+
+                    <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5">
+                      <span className="text-xs text-emerald-300/70 font-semibold uppercase tracking-wider">Clientes Registrados</span>
+                      <p className="text-2xl font-bold text-teal-300 mt-2">{metrics?.totalUsers || 0}</p>
+                    </div>
+                  </div>
+
+                  {/* Registered Users List */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5">
+                    <h3 className="text-base font-bold text-emerald-100 mb-3 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-emerald-400" />
+                      Últimos Clientes Registrados
+                    </h3>
+                    {users.length === 0 ? (
+                      <p className="text-xs text-emerald-400/60 py-4">No hay clientes registrados.</p>
+                    ) : (
+                      <div className="divide-y divide-emerald-500/10">
+                        {users.map((u) => (
+                          <div key={u.id} className="py-2.5 flex items-center justify-between text-xs">
+                            <div>
+                              <p className="font-semibold text-emerald-100">{u.name}</p>
+                              <p className="text-emerald-400/60">{u.email} {u.phone ? `• ${u.phone}` : ''}</p>
+                            </div>
+                            <span className="text-[10px] text-emerald-400/50 font-mono">
+                              {new Date(u.createdAt).toLocaleDateString('es-ES')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Reservations Tab */}
+              {activeTab === 'reservations' && (
+                <div className="space-y-4">
+                  {reservations.length === 0 ? (
+                    <p className="text-center text-xs text-emerald-400/60 py-12">No hay reservas guardadas en la base de datos.</p>
+                  ) : (
+                    reservations.map((resItem) => (
+                      <div
+                        key={resItem.id}
+                        className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded">
+                              ID: {resItem.id.slice(0, 8)}
+                            </span>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                                resItem.status === 'CONFIRMED'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                  : resItem.status === 'PENDING'
+                                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                                  : 'bg-red-500/20 text-red-300 border border-red-500/40'
+                              }`}
+                            >
+                              {resItem.status}
+                            </span>
+                          </div>
+                          <h4 className="text-base font-bold text-white">{resItem.guestName}</h4>
+                          <p className="text-xs text-emerald-300/80">
+                            {resItem.guestEmail} • {resItem.guestPhone} • {resItem.guestsCount} huésped(es)
+                          </p>
+                          <p className="text-xs text-emerald-400/90 font-medium">
+                            Fechas: {new Date(resItem.startDate).toLocaleDateString('es-ES')} ➔{' '}
+                            {new Date(resItem.endDate).toLocaleDateString('es-ES')} | Total: <strong>{resItem.totalPrice}€</strong>
+                          </p>
+                          {resItem.notes && <p className="text-xs text-emerald-300/60 italic">Notas: "{resItem.notes}"</p>}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={resItem.status}
+                            onChange={(e) => handleUpdateStatus(resItem.id, e.target.value)}
+                            className="bg-emerald-950 border border-emerald-500/30 rounded-lg px-3 py-1.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                          >
+                            <option value="PENDING">PENDING</option>
+                            <option value="CONFIRMED">CONFIRMED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                          </select>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* 3. Property & Pricing Tab */}
+              {activeTab === 'property' && (
+                <form onSubmit={handleSavePropertySettings} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Precio por Noche (€)</label>
+                      <input
+                        type="number"
+                        value={propertySettings.price_per_night || 150}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, price_per_night: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Gastos de Limpieza (€)</label>
+                      <input
+                        type="number"
+                        value={propertySettings.cleaning_fee || 50}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, cleaning_fee: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Estancia Mínima (Noches)</label>
+                      <input
+                        type="number"
+                        value={propertySettings.minimum_stay_nights || 2}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, minimum_stay_nights: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título de la Propiedad</label>
+                      <input
+                        type="text"
+                        value={propertySettings.property_title || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, property_title: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Descripción</label>
+                    <textarea
+                      rows={3}
+                      value={propertySettings.property_description || ''}
+                      onChange={(e) => setPropertySettings({ ...propertySettings, property_description: e.target.value })}
+                      className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                    />
+                  </div>
+
+                  {/* Upload Image Section */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
+                      <Upload className="w-4 h-4 text-emerald-400" />
+                      Subir Imagen a Galería (Volumen Docker Persistente)
+                    </h4>
+                    <p className="text-xs text-emerald-300/70">
+                      Las imágenes se guardarán en el directorio persistente <code>/app/uploads</code> del servidor.
                     </p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="text-xs text-emerald-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-emerald-950 hover:file:bg-emerald-400 cursor-pointer"
+                    />
                   </div>
 
                   <button
-                    onClick={() => {
-                      if (confirm(`¿Eliminar la reserva ${b.id}?`)) {
-                        onDeleteBooking(b.id);
-                      }
-                    }}
-                    className="p-2 rounded-xl bg-[#EAE3D8] hover:bg-rose-100 text-rose-700 transition-colors"
-                    title="Eliminar"
+                    type="submit"
+                    className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-md hover:from-emerald-400 hover:to-teal-400 transition-all"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    Guardar Cambios de Propiedad
                   </button>
+                </form>
+              )}
+
+              {/* 4. Blocked Dates Tab */}
+              {activeTab === 'blocked' && (
+                <div className="space-y-6">
+                  <form onSubmit={handleAddBlockedDate} className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Bloquear Nuevo Rango de Fechas</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Fecha Inicio</label>
+                        <input
+                          type="date"
+                          required
+                          value={newBlock.startDate}
+                          onChange={(e) => setNewBlock({ ...newBlock, startDate: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Fecha Fin</label>
+                        <input
+                          type="date"
+                          required
+                          value={newBlock.endDate}
+                          onChange={(e) => setNewBlock({ ...newBlock, endDate: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Motivo del Bloqueo</label>
+                      <input
+                        type="text"
+                        placeholder="Ej. Mantenimiento de piscina / Uso del propietario"
+                        value={newBlock.reason}
+                        onChange={(e) => setNewBlock({ ...newBlock, reason: e.target.value })}
+                        className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 bg-emerald-500 text-emerald-950 font-bold rounded-lg text-xs hover:bg-emerald-400 transition-all flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Añadir Bloqueo</span>
+                    </button>
+                  </form>
+
+                  {/* List of Blocked Dates */}
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Rangos Bloqueados Actualmente</h4>
+                    {blockedDates.length === 0 ? (
+                      <p className="text-xs text-emerald-400/60 py-4">No hay fechas bloqueadas manualmente.</p>
+                    ) : (
+                      blockedDates.map((item) => (
+                        <div
+                          key={item.id}
+                          className="bg-emerald-900/30 border border-emerald-500/20 rounded-xl p-3 flex items-center justify-between text-xs"
+                        >
+                          <div>
+                            <p className="font-semibold text-emerald-100">
+                              {new Date(item.startDate).toLocaleDateString('es-ES')} ➔ {new Date(item.endDate).toLocaleDateString('es-ES')}
+                            </p>
+                            {item.reason && <p className="text-emerald-400/70 text-[11px]">{item.reason}</p>}
+                          </div>
+                          <button
+                            onClick={() => handleDeleteBlockedDate(item.id)}
+                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
-              ))
-            )}
-          </div>
-        )}
+              )}
 
-        {/* Tab 2: Block Dates */}
-        {activeTab === 'block' && (
-          <form onSubmit={handleCreateBlock} className="space-y-4 font-sans">
-            <p className="text-xs text-[#1B3B36]/80">
-              Selecciona las fechas que deseas marcar como <strong>Ocupadas / Bloqueadas</strong> en el calendario para evitar reservas de usuarios.
-            </p>
+              {/* 5. Email Templates Tab */}
+              {activeTab === 'templates' && (
+                <div className="space-y-6">
+                  {/* Select Template */}
+                  <div className="flex gap-2">
+                    {templates.map((tpl) => (
+                      <button
+                        key={tpl.code}
+                        onClick={() => setSelectedTemplate(tpl)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          selectedTemplate?.code === tpl.code
+                            ? 'bg-emerald-500 text-emerald-950 font-bold'
+                            : 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-800'
+                        }`}
+                      >
+                        {tpl.name}
+                      </button>
+                    ))}
+                  </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-[#1B3B36]/70 block mb-1">
-                  Fecha Inicio (Desde)
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={blockCheckIn}
-                  onChange={(e) => setBlockCheckIn(e.target.value)}
-                  className="w-full bg-white border border-[#1B3B36]/15 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none focus:border-[#C17D5C]"
-                />
-              </div>
+                  {selectedTemplate && (
+                    <form onSubmit={handleSaveEmailTemplate} className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Asunto del Correo</label>
+                        <input
+                          type="text"
+                          value={selectedTemplate.subject}
+                          onChange={(e) => setSelectedTemplate({ ...selectedTemplate, subject: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none"
+                        />
+                      </div>
 
-              <div>
-                <label className="text-xs font-semibold text-[#1B3B36]/70 block mb-1">
-                  Fecha Fin (Hasta)
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={blockCheckOut}
-                  onChange={(e) => setBlockCheckOut(e.target.value)}
-                  className="w-full bg-white border border-[#1B3B36]/15 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none focus:border-[#C17D5C]"
-                />
-              </div>
-            </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">
+                          Cuerpo HTML (Variables disponibles: {selectedTemplate.variables})
+                        </label>
+                        <textarea
+                          rows={8}
+                          value={selectedTemplate.bodyHtml}
+                          onChange={(e) => setSelectedTemplate({ ...selectedTemplate, bodyHtml: e.target.value })}
+                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 font-mono focus:outline-none"
+                        />
+                      </div>
 
-            <div>
-              <label className="text-xs font-semibold text-[#1B3B36]/70 block mb-1">
-                Motivo del Bloqueo
-              </label>
-              <input
-                type="text"
-                value={blockReason}
-                onChange={(e) => setBlockReason(e.target.value)}
-                placeholder="Ej. Mantenimiento de piscina, Uso familiar"
-                className="w-full bg-white border border-[#1B3B36]/15 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none focus:border-[#C17D5C]"
-              />
-            </div>
+                      <button
+                        type="submit"
+                        className="px-5 py-2.5 bg-emerald-500 text-emerald-950 font-bold rounded-lg text-xs hover:bg-emerald-400 transition-all"
+                      >
+                        Guardar Plantilla
+                      </button>
+                    </form>
+                  )}
 
-            <button
-              type="submit"
-              className="w-full bg-[#1B3B36] hover:bg-[#C17D5C] text-[#F8F5F0] font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-colors"
-            >
-              <Lock className="w-4 h-4" />
-              <span>Bloquear Fechas en Calendario</span>
-            </button>
-          </form>
-        )}
+                  {/* Send Manual Email Card */}
+                  <form onSubmit={handleSendManualEmail} className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
+                      <Send className="w-4 h-4 text-emerald-400" />
+                      Enviar Email Personalizado Manualmente
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email del huésped"
+                        value={manualEmail.to}
+                        onChange={(e) => setManualEmail({ ...manualEmail, to: e.target.value })}
+                        className="bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                      />
+                      <input
+                        type="text"
+                        required
+                        placeholder="Asunto"
+                        value={manualEmail.subject}
+                        onChange={(e) => setManualEmail({ ...manualEmail, subject: e.target.value })}
+                        className="bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                      />
+                    </div>
+                    <textarea
+                      rows={3}
+                      required
+                      placeholder="Mensaje HTML o Texto..."
+                      value={manualEmail.bodyHtml}
+                      onChange={(e) => setManualEmail({ ...manualEmail, bodyHtml: e.target.value })}
+                      className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                    />
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-lg text-xs flex items-center gap-2"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>Enviar Email Manual</span>
+                    </button>
+                  </form>
+                </div>
+              )}
 
-        {/* Tab 3: Pricing */}
-        {activeTab === 'pricing' && (
-          <form onSubmit={handleSaveRates} className="space-y-4 font-sans">
-            <p className="text-xs text-[#1B3B36]/80">
-              Modifica la tarifa nocturna base y de fin de semana para ajustar las cotizaciones automáticas.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-[#1B3B36]/70 block mb-1">
-                  Tarifa Noche Normal (USD)
-                </label>
-                <input
-                  type="number"
-                  min="50"
-                  max="1000"
-                  value={baseRate}
-                  onChange={(e) => setBaseRate(Number(e.target.value))}
-                  className="w-full bg-white border border-[#1B3B36]/15 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none focus:border-[#C17D5C]"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-[#1B3B36]/70 block mb-1">
-                  Tarifa Fin de Semana (Vier-Sáb USD)
-                </label>
-                <input
-                  type="number"
-                  min="50"
-                  max="1000"
-                  value={weekendRate}
-                  onChange={(e) => setWeekendRate(Number(e.target.value))}
-                  className="w-full bg-white border border-[#1B3B36]/15 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none focus:border-[#C17D5C]"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-[#1B3B36] hover:bg-[#C17D5C] text-[#F8F5F0] font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-colors"
-            >
-              <Settings className="w-4 h-4" />
-              <span>Guardar Nuevas Tarifas</span>
-            </button>
-          </form>
-        )}
+              {/* 6. SMTP Settings Tab */}
+              {activeTab === 'smtp' && <SmtpSettingsSection />}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

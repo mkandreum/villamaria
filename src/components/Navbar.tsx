@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Palmtree, Calendar, MapPin, Shield, Sparkles, Menu, X, UserCheck, BookmarkCheck } from 'lucide-react';
-import { PROPERTY_INFO } from '../data/mockData';
+import { Home, Image as ImageIcon, Sparkles, Calendar, User, ShieldCheck, LogOut } from 'lucide-react';
 
 interface NavbarProps {
-  onOpenBookingModal: () => void;
-  onOpenMyBookings: () => void;
-  onOpenAdmin: () => void;
-  isAdminMode: boolean;
-  activeBookingsCount: number;
+  activeSection: string;
+  onNavigate: (sectionId: string) => void;
+  currentUser: { name: string; role: 'ADMIN' | 'CLIENT'; email: string } | null;
+  onOpenLoginModal: () => void;
+  onOpenMyBookingsModal: () => void;
+  onOpenAdminModal: () => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  onOpenBookingModal,
-  onOpenMyBookings,
-  onOpenAdmin,
-  isAdminMode,
-  activeBookingsCount,
+  activeSection,
+  onNavigate,
+  currentUser,
+  onOpenLoginModal,
+  onOpenMyBookingsModal,
+  onOpenAdminModal,
+  onLogout,
 }) => {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,157 +30,110 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Disponibilidad', href: '#disponibilidad' },
-    { name: 'Galería', href: '#galeria' },
-    { name: 'Comodidades', href: '#comodidades' },
-    { name: 'Ubicación (Calle 15)', href: '#ubicacion' },
-    { name: 'Opiniones', href: '#opiniones' },
-    { name: 'Preguntas', href: '#faq' },
+  const navItems = [
+    { id: 'hero', label: 'Inicio', icon: Home },
+    { id: 'gallery', label: 'Fotos', icon: ImageIcon },
+    { id: 'amenities', label: 'Servicios', icon: Sparkles },
+    { id: 'booking', label: 'Reservar', icon: Calendar },
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#F8F5F0]/95 backdrop-blur-md border-b border-[#1B3B36]/10 shadow-sm py-3'
-          : 'bg-[#F8F5F0]/80 backdrop-blur-sm border-b border-[#1B3B36]/10 py-5'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          {/* Brand Logo */}
-          <a href="#" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-[#1B3B36] text-[#F8F5F0] p-0.5 shadow-sm group-hover:scale-105 transition-transform flex items-center justify-center">
-              <Palmtree className="w-5 h-5 text-[#C17D5C]" />
+    <>
+      {/* Floating Pill Navigation Container */}
+      {/* Mobile: Fixed at Bottom | Desktop & Tablet: Fixed at Top */}
+      <nav
+        aria-label="Navegación principal"
+        className={`fixed z-50 transition-all duration-300 left-1/2 -translate-x-1/2
+          bottom-4 md:bottom-auto md:top-4
+          w-[92%] max-w-2xl
+        `}
+      >
+        <div
+          className={`flex items-center justify-between px-3 py-2 rounded-full
+            bg-emerald-950/80 backdrop-blur-md border border-emerald-500/20
+            shadow-xl shadow-black/40 text-emerald-100 transition-all duration-300
+            ${scrolled ? 'bg-emerald-950/90 border-emerald-500/30' : ''}
+          `}
+        >
+          {/* Brand Logo / Short Title */}
+          <button
+            onClick={() => onNavigate('hero')}
+            className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-300 flex items-center justify-center text-emerald-950 font-bold text-sm shadow-md">
+              VM
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.15em] uppercase text-[#1B3B36] group-hover:text-[#C17D5C] transition-colors">
-                  {PROPERTY_INFO.name}
-                </span>
-                <span className="bg-[#C17D5C]/15 text-[#C17D5C] text-[10px] font-sans tracking-widest uppercase font-semibold px-2 py-0.5 rounded-full border border-[#C17D5C]/30">
-                  Chichiriviche
-                </span>
+            <span className="hidden sm:inline font-serif text-sm font-semibold tracking-wide text-emerald-50">
+              Villa María
+            </span>
+          </button>
+
+          {/* Navigation Items (Max 5) */}
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  id={`nav-${item.id}`}
+                  onClick={() => onNavigate(item.id)}
+                  className={`relative min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-900/50'
+                      : 'text-emerald-200/80 hover:text-emerald-50 hover:bg-white/10'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="hidden xs:inline sm:inline">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Auth Actions (Login / User Dropdown / Admin Button) */}
+          <div className="flex items-center gap-1.5 pr-1">
+            {currentUser ? (
+              <div className="flex items-center gap-1">
+                {currentUser.role === 'ADMIN' ? (
+                  <button
+                    onClick={onOpenAdminModal}
+                    title="Panel de Administración"
+                    className="min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 flex items-center gap-1 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-amber-400" />
+                    <span className="hidden lg:inline">Admin</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={onOpenMyBookingsModal}
+                    title="Mis Reservas"
+                    className="min-w-[44px] min-h-[44px] px-2.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 flex items-center gap-1 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  >
+                    <User className="w-4 h-4" />
+                    <span className="hidden lg:inline">{currentUser.name.split(' ')[0]}</span>
+                  </button>
+                )}
+                <button
+                  onClick={onLogout}
+                  title="Cerrar sesión"
+                  className="min-w-[44px] min-h-[44px] p-2 rounded-full text-emerald-300/70 hover:text-red-400 hover:bg-red-500/10 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
-              <p className="text-[10px] font-sans uppercase tracking-widest text-[#1B3B36]/60 hidden sm:block">
-                Calle 15 (c15) • Casa de Playa & Piscina
-              </p>
-            </div>
-          </a>
-
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="font-sans text-xs uppercase tracking-widest font-medium text-[#1B3B36]/80 hover:text-[#C17D5C] transition-colors py-1"
+            ) : (
+              <button
+                onClick={onOpenLoginModal}
+                className="min-w-[44px] min-h-[44px] px-3 py-1.5 rounded-full bg-emerald-500 text-emerald-950 hover:bg-emerald-400 flex items-center gap-1 text-xs font-bold transition-all shadow-md shadow-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-emerald-300"
               >
-                {link.name}
-              </a>
-            ))}
-          </nav>
-
-          {/* Actions & Buttons */}
-          <div className="hidden sm:flex items-center gap-3">
-            {/* My Bookings Button */}
-            <button
-              onClick={onOpenMyBookings}
-              className="relative flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#EAE3D8] hover:bg-[#1B3B36] hover:text-[#F8F5F0] border border-[#1B3B36]/15 text-[#1B3B36] text-xs font-sans uppercase tracking-wider font-medium transition-colors"
-              title="Ver mis reservas"
-            >
-              <BookmarkCheck className="w-4 h-4 text-[#C17D5C]" />
-              <span>Mis Reservas</span>
-              {activeBookingsCount > 0 && (
-                <span className="bg-[#C17D5C] text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                  {activeBookingsCount}
-                </span>
-              )}
-            </button>
-
-            {/* Admin Switch */}
-            <button
-              onClick={onOpenAdmin}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full border text-xs font-sans uppercase tracking-wider font-medium transition-all ${
-                isAdminMode
-                  ? 'bg-[#C17D5C]/20 text-[#1B3B36] border-[#C17D5C]/40'
-                  : 'bg-[#1B3B36]/5 text-[#1B3B36]/70 border-[#1B3B36]/15 hover:text-[#1B3B36]'
-              }`}
-              title="Panel de Administración / Anfitrión"
-            >
-              <Shield className="w-3.5 h-3.5 text-[#C17D5C]" />
-              <span>{isAdminMode ? 'Modo Anfitrión' : 'Anfitrión'}</span>
-            </button>
-
-            {/* CTA Reserve Button */}
-            <button
-              onClick={onOpenBookingModal}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1B3B36] hover:bg-[#C17D5C] text-[#F8F5F0] font-sans text-xs uppercase tracking-[0.15em] font-bold shadow-md transition-all transform active:scale-95"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Reservar Ahora</span>
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex sm:hidden items-center gap-2">
-            <button
-              onClick={onOpenBookingModal}
-              className="px-3 py-1.5 rounded-full bg-[#1B3B36] text-[#F8F5F0] font-sans text-xs uppercase tracking-wider font-bold"
-            >
-              Reservar
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-[#F8F5F0] transition-colors"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+                <User className="w-4 h-4" />
+                <span>Acceder</span>
+              </button>
+            )}
           </div>
         </div>
-      </div>
-
-      {/* Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <div className="sm:hidden bg-[#F8F5F0] border-b border-[#1B3B36]/15 px-4 py-4 space-y-3 mt-2 shadow-xl animate-fadeIn">
-          <div className="grid grid-cols-2 gap-2 pb-2 border-b border-[#1B3B36]/10">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenMyBookings();
-              }}
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-[#EAE3D8] text-[#1B3B36] text-xs font-sans uppercase tracking-wider font-medium"
-            >
-              <BookmarkCheck className="w-4 h-4 text-[#C17D5C]" />
-              <span>Mis Reservas ({activeBookingsCount})</span>
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAdmin();
-              }}
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-[#EAE3D8] text-[#1B3B36] text-xs font-sans uppercase tracking-wider font-medium"
-            >
-              <Shield className="w-4 h-4 text-[#C17D5C]" />
-              <span>Panel Anfitrión</span>
-            </button>
-          </div>
-
-          <nav className="flex flex-col gap-2">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-xs uppercase tracking-widest font-medium text-[#1B3B36] hover:text-[#C17D5C] py-2 px-3 rounded-lg hover:bg-[#EAE3D8]"
-              >
-                {link.name}
-              </a>
-            ))}
-          </nav>
-        </div>
-      )}
-    </header>
+      </nav>
+    </>
   );
 };

@@ -1,0 +1,116 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role          @default(CLIENT)
+  refreshToken String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  reservations Reservation[]
+
+  @@map("users")
+}
+
+model Reservation {
+  id            String            @id @default(uuid())
+  userId        String?
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestName     String
+  guestEmail    String
+  guestPhone    String
+  startDate     DateTime
+  endDate       DateTime
+  guestsCount   Int               @default(1)
+  totalPrice    Float
+  status        ReservationStatus @default(PENDING)
+  notes         String?
+  internalNotes String?
+  googleEventId String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("reservations")
+}
+
+model PropertySetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  category  String   @default("general")
+  updatedAt DateTime @updatedAt
+
+  @@map("property_settings")
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  subject   String
+  bodyHtml  String   @db.Text
+  variables String   // JSON array of variables e.g. ["guest_name", "start_date"]
+  updatedAt DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model BlockedDate {
+  id        String   @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  @@map("blocked_dates")
+}
+
+model SmtpSetting {
+  id                String   @id @default(uuid())
+  host              String
+  port              Int      @default(587)
+  user              String
+  encryptedPassword String   @db.Text
+  fromEmail         String
+  fromName          String
+  security          String   @default("STARTTLS") // TLS, STARTTLS, NONE
+  replyTo           String?
+  isActive          Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+  updatedBy         String?
+
+  @@map("smtp_settings")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  performedBy String
+  details     String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@map("audit_logs")
+}
