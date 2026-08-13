@@ -612,6 +612,28 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
       sendEmail(guestEmail, tpl.subject, html);
     }
 
+    // Send Notification Email to Admin using ADMIN_NEW_BOOKING template
+    const adminTpl = await prisma.emailTemplate.findUnique({ where: { code: 'ADMIN_NEW_BOOKING' } });
+    if (adminTpl) {
+      const contactEmailSetting = await prisma.propertySetting.findUnique({ where: { key: 'contact_email' } });
+      const adminEmail = contactEmailSetting?.value || process.env.SMTP_USER || process.env.SMTP_FROM || 'reservas.villamaria@gmail.com';
+      const cleanPhone = (guestPhone || '').replace(/[^0-9]/g, '');
+
+      let adminHtml = adminTpl.bodyHtml
+        .replace(/{{guest_name}}/g, guestName)
+        .replace(/{{guest_email}}/g, guestEmail || 'No provisto')
+        .replace(/{{guest_phone}}/g, guestPhone)
+        .replace(/{{guest_phone_clean}}/g, cleanPhone)
+        .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
+        .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
+        .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
+        .replace(/{{guests_count}}/g, (guestsCount || 1).toString())
+        .replace(/{{total_price}}/g, totalPrice.toString())
+        .replace(/{{notes}}/g, notes || 'Sin solicitudes especiales');
+
+      sendEmail(adminEmail, adminTpl.subject.replace(/{{guest_name}}/g, guestName), adminHtml);
+    }
+
     res.json({ success: true, reservation });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
