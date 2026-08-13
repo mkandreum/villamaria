@@ -15,6 +15,43 @@ interface LocationSectionProps {
   bullet3?: string;
 }
 
+/**
+ * Converts any Google Maps URL to the proper embed-compatible URL.
+ * Google blocks iframes using regular maps.google.com URLs — only
+ * google.com/maps/embed?pb=... or maps.google.com/maps?q=...&output=embed work.
+ */
+function normalizeGoogleMapsUrl(url: string): string {
+  if (!url) return 'https://maps.google.com/maps?q=Chichiriviche%2C+Venezuela&z=14&output=embed';
+
+  // Already a proper embed URL — let it through unchanged
+  if (url.includes('google.com/maps/embed')) return url;
+  if (url.includes('output=embed')) return url;
+
+  // maps.google.com/maps?q=... → add &output=embed
+  if (url.includes('maps.google.com/maps')) {
+    const sep = url.includes('?') ? '&' : '?';
+    return `${url}${sep}output=embed`.replace(/&output=embed&output=embed/, '&output=embed');
+  }
+
+  // www.google.com/maps/place/... or /maps/@... → convert to embed
+  if (url.includes('google.com/maps')) {
+    // Extract query param if present
+    const qMatch = url.match(/[?&]q=([^&]+)/);
+    const query = qMatch ? qMatch[1] : 'Chichiriviche%2C+Venezuela';
+    return `https://maps.google.com/maps?q=${query}&z=14&output=embed`;
+  }
+
+  // Raw coordinates like 10.9317,-68.2736
+  const coordMatch = url.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
+  if (coordMatch) {
+    return `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&z=15&output=embed`;
+  }
+
+  // Fallback: treat as search query
+  const encoded = encodeURIComponent(url);
+  return `https://maps.google.com/maps?q=${encoded}&z=14&output=embed`;
+}
+
 export const LocationSection: React.FC<LocationSectionProps> = ({
   badge = '📍 Ubicación Privilegiada',
   title = 'Chichiriviche • Calle 15 🌴',
@@ -27,15 +64,19 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   bullet2 = 'Condominio privado con vigilancia las 24 horas',
   bullet3 = 'Supermercados y servicios a 3 minutos',
 }) => {
-  // Clean embed URL if user pasted an entire <iframe> tag
+// Clean and normalize any Google Maps URL to the proper embed format
   const cleanedEmbedUrl = React.useMemo(() => {
-    if (!embedUrl) return 'https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed';
-    if (embedUrl.includes('src=')) {
-      const match = embedUrl.match(/src=["']([^"']+)["']/);
-      if (match && match[1]) return match[1];
+    const raw = embedUrl || '';
+
+    // 1. If it's a full <iframe> tag, extract the src
+    if (raw.includes('src=')) {
+      const match = raw.match(/src=["']([^"']+)["']/);
+      if (match && match[1]) return normalizeGoogleMapsUrl(match[1]);
     }
-    return embedUrl;
+
+    return normalizeGoogleMapsUrl(raw);
   }, [embedUrl]);
+
 
   return (
     <section id="location" className="py-12 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
