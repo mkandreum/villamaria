@@ -22,22 +22,22 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
   const hasDatesSelected = checkIn && checkOut && totalPrice && totalPrice > 0;
 
   const waMessage = hasDatesSelected
-    ? `Hola Villa María, quisiera consultar disponibilidad para ingresar el ${checkIn} y salir el ${checkOut} (Total: ${totalPrice}€).`
-    : `Hola Villa María, quisiera información y precios para reservar.`;
+    ? `Hola Villa María 🌴, me gustaría reservar del ${checkIn} al ${checkOut} (Total: ${totalPrice}€).`
+    : `Hola Villa María 🌴, me gustaría solicitar información y disponibilidad.`;
 
   const waUrl = `https://wa.me/${PROPERTY_INFO.phoneWhatsApp.replace('+', '')}?text=${encodeURIComponent(
     waMessage
   )}`;
 
   return (
-    <div className="fixed bottom-[68px] left-1/2 -translate-x-1/2 z-40 md:hidden w-[90%] max-w-xs bg-emerald-950/90 text-emerald-100 border border-emerald-500/30 shadow-[0_10px_25px_rgba(0,0,0,0.4)] rounded-2xl p-2.5 px-3.5 font-sans backdrop-blur-xl transition-all duration-300">
+    <div className="fixed bottom-[84px] left-1/2 -translate-x-1/2 z-40 md:hidden w-[92%] max-w-xs bg-emerald-950/95 text-emerald-100 border border-emerald-400/40 shadow-[0_12px_30px_rgba(0,0,0,0.5)] rounded-2xl p-2.5 px-3.5 font-sans backdrop-blur-xl transition-all duration-300">
       <div className="flex items-center justify-between gap-2 w-full">
         {/* Price & Info */}
         <div className="flex flex-col">
           {hasDatesSelected ? (
             <>
               <span className="text-[9px] text-emerald-300 font-bold uppercase tracking-wider">
-                {nights} {nights === 1 ? 'noche' : 'noches'}
+                {nights} {nights === 1 ? 'noche' : 'noches'} 📅
               </span>
               <span className="text-base font-serif font-bold text-white leading-none mt-0.5">
                 {totalPrice}€ <span className="text-[10px] font-sans font-normal text-emerald-300">total</span>
@@ -46,7 +46,7 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
           ) : (
             <>
               <span className="text-[9px] text-emerald-300 uppercase tracking-widest font-semibold">
-                Villa María
+                Villa María 🌴
               </span>
               <span className="text-sm font-serif font-bold text-white leading-none mt-0.5">
                 Desde 150€ <span className="text-[10px] font-sans font-normal text-emerald-300">/noche</span>
@@ -61,16 +61,16 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
             href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-8 h-8 rounded-xl bg-[#25D366] text-white hover:bg-[#20bd5a] transition-all shadow-sm flex items-center justify-center shrink-0"
+            className="w-9 h-9 rounded-xl bg-[#25D366] text-white hover:bg-[#20bd5a] transition-all shadow-sm flex items-center justify-center shrink-0"
             title="Chat WhatsApp"
           >
-            <MessageCircle className="w-4 h-4 fill-white" />
+            <MessageCircle className="w-4.5 h-4.5 fill-white" />
           </a>
 
           {hasDatesSelected ? (
             <button
               onClick={onOpenBooking}
-              className="bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold py-1.5 px-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1 shadow-md active:scale-95 transition-all min-h-[36px]"
+              className="bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold py-2 px-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1 shadow-md active:scale-95 transition-all min-h-[36px]"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Reservar</span>
@@ -78,9 +78,9 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
           ) : (
             <button
               onClick={onScrollToCalendar}
-              className="bg-emerald-800 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1 shadow-md active:scale-95 transition-all min-h-[36px]"
+              className="bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold py-2 px-3 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1 shadow-md active:scale-95 transition-all min-h-[36px]"
             >
-              <Calendar className="w-3.5 h-3.5 text-emerald-300" />
+              <Calendar className="w-3.5 h-3.5 text-emerald-950" />
               <span>Fechas</span>
             </button>
           )}
