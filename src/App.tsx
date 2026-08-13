@@ -306,6 +306,7 @@ export default function App() {
             createdAt: lastSubmittedBooking.createdAt,
             paymentMethod: 'transferencia',
           }}
+          address={propertySettings.location_address}
           onClose={() => setLastSubmittedBooking(null)}
         />
       )}

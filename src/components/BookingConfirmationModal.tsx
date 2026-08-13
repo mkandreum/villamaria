@@ -16,11 +16,13 @@ import {
 interface BookingConfirmationModalProps {
   booking: Booking;
   onClose: () => void;
+  address?: string;
 }
 
 export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
   booking,
   onClose,
+  address = PROPERTY_INFO.locationName,
 }) => {
   const nights = calculateNights(booking.checkIn, booking.checkOut);
   const { formatPrice } = useCurrency();
@@ -122,7 +124,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
           <div className="p-3 bg-white rounded-xl border border-[#1B3B36]/15 flex items-center justify-between text-xs font-sans">
             <div className="flex items-center gap-2 text-[#1B3B36]/80">
               <MapPin className="w-4 h-4 text-emerald-800" />
-              <span className="text-[11px]">Chichiriviche Calle 15</span>
+              <span className="text-[11px]">{address}</span>
             </div>
             <a
               href={PROPERTY_INFO.googleMapsUrl}
