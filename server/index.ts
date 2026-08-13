@@ -405,6 +405,82 @@ async function initializeDatabase() {
           </div>
         `,
       },
+      {
+        code: 'BOOKING_RESCHEDULED',
+        name: 'Reserva Reprogramada — Confirmada (Huésped)',
+        subject: '📅 Tu reserva en Villa María ha sido reprogramada',
+        variables: JSON.stringify(['guest_name', 'reservation_id', 'old_start_date', 'old_end_date', 'new_start_date', 'new_end_date', 'total_price', 'location_address', 'location_maps_link', 'whatsapp_url']),
+        bodyHtml: `
+          <div style="background-color: #F8F5F0; padding: 30px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">
+              <div style="background-color: #1B3B36; padding: 25px 20px; text-align: center; border-bottom: 3px solid #C17D5C;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-family: Georgia, serif; letter-spacing: 1px;">VILLA MARÍA 🌴</h1>
+                <p style="color: #A3E635; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Casa de Campo &amp; Relax • Chichiriviche</p>
+              </div>
+              <div style="padding: 25px 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <span style="background-color: rgba(27,59,54,0.08); color: #1B3B36; font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">📅 Reserva Reprogramada</span>
+                  <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 10px 0 5px 0; font-size: 22px;">¡Hola {{guest_name}}!</h2>
+                  <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0; line-height: 1.5;">Tu reserva ha sido reprogramada con éxito. Aquí tienes los nuevos detalles:</p>
+                </div>
+                <div style="background-color: #EAE3D8; border-radius: 18px; padding: 20px; margin-bottom: 20px;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Código Reserva:</td><td style="padding: 6px 0; text-align: right; font-weight: bold; font-family: monospace;">{{reservation_id}}</td></tr>
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.5); text-decoration: line-through;">Fechas anteriores:</td><td style="padding: 6px 0; text-align: right; color: rgba(27,59,54,0.5); text-decoration: line-through;">{{old_start_date}} → {{old_end_date}}</td></tr>
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.7); font-weight: bold;">✅ Nueva Llegada:</td><td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{new_start_date}}</td></tr>
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.7); font-weight: bold;">✅ Nueva Salida:</td><td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{new_end_date}}</td></tr>
+                    <tr style="border-top: 1px solid rgba(27,59,54,0.15);"><td style="padding: 10px 0 0 0; font-weight: bold; color: #1B3B36;">Total Confirmado:</td><td style="padding: 10px 0 0 0; text-align: right; font-weight: bold; font-family: Georgia, serif; font-size: 18px;">{{total_price}}€</td></tr>
+                  </table>
+                </div>
+                <div style="background-color: #ffffff; border: 1px solid rgba(27,59,54,0.15); border-radius: 14px; padding: 15px; text-align: center; margin-bottom: 20px;">
+                  <p style="margin: 0 0 8px 0; font-size: 12px; color: #1B3B36; font-weight: bold;">📍 Ubicación:</p>
+                  <p style="margin: 0 0 12px 0; font-size: 12px; color: rgba(27,59,54,0.8);">{{location_address}}</p>
+                  <a href="{{location_maps_link}}" target="_blank" style="display: inline-block; background-color: #1B3B36; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 10px 20px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;">🗺️ Ver en Google Maps</a>
+                </div>
+                <a href="{{whatsapp_url}}" target="_blank" style="display: block; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: bold; padding: 12px 20px; border-radius: 12px; text-align: center; text-transform: uppercase; letter-spacing: 1px;">💬 Contactar por WhatsApp</a>
+              </div>
+              <div style="background-color: #F8F5F0; padding: 15px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">© Villa María • Chichiriviche, Falcón, Venezuela</div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        code: 'BOOKING_RESCHEDULED_PAYMENT',
+        name: 'Reserva Reprogramada — Coste Adicional Pendiente (Huésped)',
+        subject: '💳 Reprogramación de tu reserva en Villa María — Coste adicional pendiente',
+        variables: JSON.stringify(['guest_name', 'reservation_id', 'old_start_date', 'old_end_date', 'new_start_date', 'new_end_date', 'additional_cost', 'whatsapp_url']),
+        bodyHtml: `
+          <div style="background-color: #F8F5F0; padding: 30px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">
+              <div style="background-color: #7C3AED; padding: 25px 20px; text-align: center; border-bottom: 3px solid #C17D5C;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-family: Georgia, serif; letter-spacing: 1px;">VILLA MARÍA 🌴</h1>
+                <p style="color: #DDD6FE; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Reprogramación — Acción Requerida</p>
+              </div>
+              <div style="padding: 25px 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <span style="background-color: #FEF3C7; color: #92400E; font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">💳 Pago Adicional Requerido</span>
+                  <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 10px 0 5px 0; font-size: 22px;">¡Hola {{guest_name}}!</h2>
+                  <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0; line-height: 1.5;">Tu reserva ha sido reprogramada con nuevas fechas. Para completar la reprogramación es necesario gestionar un coste adicional:</p>
+                </div>
+                <div style="background-color: #EAE3D8; border-radius: 18px; padding: 20px; margin-bottom: 20px;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Código Reserva:</td><td style="padding: 6px 0; text-align: right; font-weight: bold; font-family: monospace;">{{reservation_id}}</td></tr>
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.5); text-decoration: line-through;">Fechas anteriores:</td><td style="padding: 6px 0; text-align: right; color: rgba(27,59,54,0.5); text-decoration: line-through;">{{old_start_date}} → {{old_end_date}}</td></tr>
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.7); font-weight: bold;">📅 Nueva Llegada:</td><td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{new_start_date}}</td></tr>
+                    <tr><td style="padding: 6px 0; color: rgba(27,59,54,0.7); font-weight: bold;">📅 Nueva Salida:</td><td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{new_end_date}}</td></tr>
+                    <tr style="border-top: 1px solid rgba(27,59,54,0.15);"><td style="padding: 10px 0 0 0; font-weight: bold; color: #D97706; font-size: 14px;">⚠️ Coste Adicional:</td><td style="padding: 10px 0 0 0; text-align: right; font-weight: bold; font-family: Georgia, serif; font-size: 20px; color: #D97706;">{{additional_cost}}€</td></tr>
+                  </table>
+                </div>
+                <div style="background-color: #FEF9EC; border: 1px solid #FCD34D; border-radius: 14px; padding: 15px; margin-bottom: 20px; text-align: center;">
+                  <p style="margin: 0; font-size: 12px; color: #92400E; font-weight: bold;">Por favor, contacta con el anfitrión para gestionar el pago del importe adicional. Una vez confirmado, recibirás la confirmación definitiva de tu nueva reserva.</p>
+                </div>
+                <a href="{{whatsapp_url}}" target="_blank" style="display: block; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: bold; padding: 12px 20px; border-radius: 12px; text-align: center; text-transform: uppercase; letter-spacing: 1px;">💬 Gestionar pago por WhatsApp</a>
+              </div>
+              <div style="background-color: #F8F5F0; padding: 15px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">© Villa María • Chichiriviche, Falcón, Venezuela</div>
+            </div>
+          </div>
+        `,
+      },
     ];
 
     for (const tpl of defaultTemplates) {
@@ -812,12 +888,121 @@ app.put('/api/admin/reservations/:id/status', authenticateToken, requireAdmin, a
       data: { status, internalNotes },
     });
 
-    // If cancelled, remove Google Event
-    if (status === 'CANCELLED' && reservation.googleEventId) {
-      await deleteCalendarEvent(reservation.googleEventId);
+    // If cancelled: remove Google Event + send cancellation email to client
+    if (status === 'CANCELLED') {
+      if (reservation.googleEventId) {
+        await deleteCalendarEvent(reservation.googleEventId);
+      }
+      if (reservation.guestEmail) {
+        const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_CANCELLED' } });
+        if (tpl) {
+          const html = tpl.bodyHtml
+            .replace(/{{guest_name}}/g, reservation.guestName)
+            .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8).toUpperCase())
+            .replace(/{{start_date}}/g, new Date(reservation.startDate).toLocaleDateString('es-ES'))
+            .replace(/{{end_date}}/g, new Date(reservation.endDate).toLocaleDateString('es-ES'));
+          sendEmail(reservation.guestEmail, tpl.subject, html);
+        }
+      }
     }
 
     res.json({ success: true, reservation: updated });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// RESCHEDULE reservation
+app.post('/api/admin/reservations/:id/reschedule', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newStartDate, newEndDate, additionalCost, additionalCostAmount } = req.body;
+
+    if (!newStartDate || !newEndDate) {
+      return res.status(400).json({ error: 'Se requieren newStartDate y newEndDate.' });
+    }
+
+    const reservation = await prisma.reservation.findUnique({ where: { id } });
+    if (!reservation) return res.status(404).json({ error: 'Reserva no encontrada.' });
+
+    const oldStartDate = new Date(reservation.startDate);
+    const oldEndDate = new Date(reservation.endDate);
+    const newStart = new Date(newStartDate);
+    const newEnd = new Date(newEndDate);
+
+    const hasAdditionalCost = Boolean(additionalCost) && Number(additionalCostAmount) > 0;
+
+    // Update reservation: if additional cost → back to PENDING for re-confirmation
+    const updated = await prisma.reservation.update({
+      where: { id },
+      data: {
+        startDate: newStart,
+        endDate: newEnd,
+        status: hasAdditionalCost ? 'PENDING' : 'CONFIRMED',
+        internalNotes: hasAdditionalCost
+          ? `Reprogramada. Coste adicional pendiente: ${additionalCostAmount}€. ${reservation.internalNotes || ''}`
+          : `Reprogramada sin coste adicional. ${reservation.internalNotes || ''}`,
+      },
+    });
+
+    // Update Google Calendar event if exists
+    if (reservation.googleEventId) {
+      await deleteCalendarEvent(reservation.googleEventId);
+      // Re-create event with new dates
+      await createCalendarEvent({
+        title: `Villa María – ${reservation.guestName}`,
+        description: `Huésped: ${reservation.guestName} | Email: ${reservation.guestEmail} | Teléfono: ${reservation.guestPhone}`,
+        startDate: newStart,
+        endDate: newEnd,
+      }).catch(() => null);
+    }
+
+    // Send email to client
+    if (reservation.guestEmail) {
+      const locAddr = await prisma.propertySetting.findUnique({ where: { key: 'location_address' } });
+      const locMap = await prisma.propertySetting.findUnique({ where: { key: 'location_maps_link' } });
+      const waPhone = await prisma.propertySetting.findUnique({ where: { key: 'whatsapp_number' } });
+
+      const addressVal = locAddr?.value || 'Chichiriviche, Estado Falcón, Venezuela';
+      const mapsLinkVal = locMap?.value || 'https://maps.google.com/?q=Chichiriviche,Venezuela';
+      const waVal = (waPhone?.value || '+584141234567').replace(/[^0-9]/g, '');
+
+      if (hasAdditionalCost) {
+        // Email: additional cost required
+        const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_RESCHEDULED_PAYMENT' } });
+        if (tpl) {
+          const html = tpl.bodyHtml
+            .replace(/{{guest_name}}/g, reservation.guestName)
+            .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8).toUpperCase())
+            .replace(/{{old_start_date}}/g, oldStartDate.toLocaleDateString('es-ES'))
+            .replace(/{{old_end_date}}/g, oldEndDate.toLocaleDateString('es-ES'))
+            .replace(/{{new_start_date}}/g, newStart.toLocaleDateString('es-ES'))
+            .replace(/{{new_end_date}}/g, newEnd.toLocaleDateString('es-ES'))
+            .replace(/{{additional_cost}}/g, String(additionalCostAmount))
+            .replace(/{{whatsapp_url}}/g, `https://wa.me/${waVal}`);
+          sendEmail(reservation.guestEmail, tpl.subject, html);
+        }
+      } else {
+        // Email: rescheduled confirmed
+        const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_RESCHEDULED' } });
+        if (tpl) {
+          const html = tpl.bodyHtml
+            .replace(/{{guest_name}}/g, reservation.guestName)
+            .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8).toUpperCase())
+            .replace(/{{old_start_date}}/g, oldStartDate.toLocaleDateString('es-ES'))
+            .replace(/{{old_end_date}}/g, oldEndDate.toLocaleDateString('es-ES'))
+            .replace(/{{new_start_date}}/g, newStart.toLocaleDateString('es-ES'))
+            .replace(/{{new_end_date}}/g, newEnd.toLocaleDateString('es-ES'))
+            .replace(/{{total_price}}/g, String(reservation.totalPrice))
+            .replace(/{{location_address}}/g, addressVal)
+            .replace(/{{location_maps_link}}/g, mapsLinkVal)
+            .replace(/{{whatsapp_url}}/g, `https://wa.me/${waVal}`);
+          sendEmail(reservation.guestEmail, tpl.subject, html);
+        }
+      }
+    }
+
+    res.json({ success: true, reservation: updated, hasAdditionalCost });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

@@ -3,6 +3,7 @@ import {
   X,
   Shield,
   Calendar as CalendarIcon,
+  CalendarRange,
   DollarSign,
   Users,
   Settings,
@@ -48,6 +49,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const [manualEmail, setManualEmail] = useState({ to: '', subject: '', bodyHtml: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [statusAlert, setStatusAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Reschedule state: which reservation is open for rescheduling
+  const [reschedulingId, setReschedulingId] = useState<string | null>(null);
+  const [rescheduleForm, setRescheduleForm] = useState({
+    newStartDate: '',
+    newEndDate: '',
+    additionalCost: false,
+    additionalCostAmount: 0,
+  });
+  const [rescheduling, setRescheduling] = useState(false);
 
   useEffect(() => {
     loadAllAdminData();
@@ -116,6 +127,38 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       if (onRefreshData) onRefreshData();
     } catch (err: any) {
       setStatusAlert({ type: 'error', text: err.message || 'Error al confirmar el pago.' });
+    }
+  };
+
+  const handleReschedule = async (id: string, guestName: string) => {
+    if (!rescheduleForm.newStartDate || !rescheduleForm.newEndDate) {
+      setStatusAlert({ type: 'error', text: 'Selecciona las nuevas fechas de llegada y salida.' });
+      return;
+    }
+    if (new Date(rescheduleForm.newEndDate) <= new Date(rescheduleForm.newStartDate)) {
+      setStatusAlert({ type: 'error', text: 'La fecha de salida debe ser posterior a la de llegada.' });
+      return;
+    }
+    setRescheduling(true);
+    try {
+      const result: any = await api.rescheduleReservation(id, {
+        newStartDate: rescheduleForm.newStartDate,
+        newEndDate: rescheduleForm.newEndDate,
+        additionalCost: rescheduleForm.additionalCost,
+        additionalCostAmount: rescheduleForm.additionalCostAmount,
+      });
+      const msg = result.hasAdditionalCost
+        ? `✅ Reserva de ${guestName} reprogramada. Email enviado con coste adicional pendiente. Requiere re-confirmación de pago.`
+        : `✅ Reserva de ${guestName} reprogramada y confirmada. Email enviado al cliente.`;
+      setStatusAlert({ type: 'success', text: msg });
+      setReschedulingId(null);
+      setRescheduleForm({ newStartDate: '', newEndDate: '', additionalCost: false, additionalCostAmount: 0 });
+      loadAllAdminData();
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al reprogramar la reserva.' });
+    } finally {
+      setRescheduling(false);
     }
   };
 
@@ -406,6 +449,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                             {new Date(resItem.endDate).toLocaleDateString('es-ES')} | Total: <strong>{resItem.totalPrice}€</strong>
                           </p>
                           {resItem.notes && <p className="text-xs text-emerald-300/60 italic">Notas: "{resItem.notes}"</p>}
+                          {resItem.internalNotes && (
+                            <p className="text-xs text-violet-300/70 italic mt-0.5">🔒 Admin: {resItem.internalNotes}</p>
+                          )}
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -417,6 +463,28 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               Confirmar Pago
+                            </button>
+                          )}
+
+                          {/* Reprogramar — shown when not cancelled */}
+                          {resItem.status !== 'CANCELLED' && (
+                            <button
+                              onClick={() => {
+                                if (reschedulingId === resItem.id) {
+                                  setReschedulingId(null);
+                                } else {
+                                  setReschedulingId(resItem.id);
+                                  setRescheduleForm({ newStartDate: '', newEndDate: '', additionalCost: false, additionalCostAmount: 0 });
+                                }
+                              }}
+                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95 ${
+                                reschedulingId === resItem.id
+                                  ? 'bg-violet-500 text-white shadow'
+                                  : 'bg-violet-500/20 hover:bg-violet-500/40 text-violet-300 border border-violet-500/30'
+                              }`}
+                            >
+                              <CalendarRange className="w-3.5 h-3.5" />
+                              Reprogramar
                             </button>
                           )}
 
@@ -440,6 +508,82 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                             Eliminar
                           </button>
                         </div>
+
+                        {/* Inline Reschedule Form — expands below the card */}
+                        {reschedulingId === resItem.id && (
+                          <div className="col-span-full mt-3 p-4 bg-violet-900/20 border border-violet-500/30 rounded-2xl space-y-3">
+                            <p className="text-xs font-bold text-violet-300 uppercase tracking-wider">📅 Reprogramar Reserva — {resItem.guestName}</p>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-[10px] font-bold text-violet-300/70 mb-1 uppercase">Nueva Llegada</label>
+                                <input
+                                  type="date"
+                                  value={rescheduleForm.newStartDate}
+                                  onChange={e => setRescheduleForm(f => ({ ...f, newStartDate: e.target.value }))}
+                                  min={new Date().toISOString().split('T')[0]}
+                                  className="w-full bg-emerald-950 border border-violet-500/30 rounded-lg px-3 py-2 text-xs text-emerald-100 focus:outline-none focus:border-violet-400"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] font-bold text-violet-300/70 mb-1 uppercase">Nueva Salida</label>
+                                <input
+                                  type="date"
+                                  value={rescheduleForm.newEndDate}
+                                  onChange={e => setRescheduleForm(f => ({ ...f, newEndDate: e.target.value }))}
+                                  min={rescheduleForm.newStartDate || new Date().toISOString().split('T')[0]}
+                                  className="w-full bg-emerald-950 border border-violet-500/30 rounded-lg px-3 py-2 text-xs text-emerald-100 focus:outline-none focus:border-violet-400"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Additional cost toggle */}
+                            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                              <div
+                                onClick={() => setRescheduleForm(f => ({ ...f, additionalCost: !f.additionalCost }))}
+                                className={`w-10 h-5 rounded-full transition-colors flex items-center px-0.5 ${rescheduleForm.additionalCost ? 'bg-amber-500' : 'bg-emerald-800'}`}
+                              >
+                                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${rescheduleForm.additionalCost ? 'translate-x-5' : 'translate-x-0'}`} />
+                              </div>
+                              <span className="text-xs text-emerald-200 font-medium">Coste adicional por reprogramación</span>
+                            </label>
+
+                            {rescheduleForm.additionalCost && (
+                              <div>
+                                <label className="block text-[10px] font-bold text-amber-300/70 mb-1 uppercase">Importe adicional (€)</label>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  step={0.01}
+                                  value={rescheduleForm.additionalCostAmount}
+                                  onChange={e => setRescheduleForm(f => ({ ...f, additionalCostAmount: parseFloat(e.target.value) || 0 }))}
+                                  className="w-full bg-emerald-950 border border-amber-500/40 rounded-lg px-3 py-2 text-xs text-amber-200 focus:outline-none focus:border-amber-400"
+                                  placeholder="Ej: 50"
+                                />
+                                <p className="text-[10px] text-amber-400/60 mt-1">
+                                  La reserva volverá a estado PENDING hasta que confirmes el pago adicional.
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleReschedule(resItem.id, resItem.guestName)}
+                                disabled={rescheduling}
+                                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95 disabled:opacity-60"
+                              >
+                                {rescheduling ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CalendarRange className="w-3.5 h-3.5" />}
+                                {rescheduling ? 'Procesando…' : 'Confirmar Reprogramación'}
+                              </button>
+                              <button
+                                onClick={() => setReschedulingId(null)}
+                                className="px-3 py-2 rounded-xl bg-emerald-900/40 text-emerald-400 text-[11px] font-bold uppercase tracking-wide hover:bg-emerald-800/60 transition-all"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}

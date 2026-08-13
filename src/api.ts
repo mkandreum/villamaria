@@ -94,6 +94,8 @@ export const api = {
     request(`/admin/reservations/${id}/status`, { method: 'PUT', body: JSON.stringify(payload) }),
   deleteReservation: (id: string) => request(`/admin/reservations/${id}`, { method: 'DELETE' }),
   confirmPayment: (id: string) => request(`/admin/reservations/${id}/confirm-payment`, { method: 'POST' }),
+  rescheduleReservation: (id: string, payload: { newStartDate: string; newEndDate: string; additionalCost: boolean; additionalCostAmount: number }) =>
+    request(`/admin/reservations/${id}/reschedule`, { method: 'POST', body: JSON.stringify(payload) }),
   getAdminUsers: () => request('/admin/users'),
 
   // Blocked Dates
