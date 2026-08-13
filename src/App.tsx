@@ -16,6 +16,7 @@ import { AdminModal } from './components/AdminModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import { StickyMobileBar } from './components/StickyMobileBar';
+import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
 
@@ -111,6 +112,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#132A26] text-emerald-100 font-sans antialiased selection:bg-emerald-500 selection:text-emerald-950 pb-20 md:pb-0 overflow-x-hidden">
+      {/* Top Announcement Promo Banner */}
+      <PromoBanner />
+
       {/* Floating Pill Navigation */}
       <Navbar
         activeSection={activeSection}
