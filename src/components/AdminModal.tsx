@@ -16,6 +16,7 @@ import {
   Edit3,
   Send,
   Plus,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { api } from '../api';
 import { SmtpSettingsSection } from './admin/SmtpSettingsSection';
