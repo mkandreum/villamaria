@@ -41,5 +41,5 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 3000
 
-# Fast startup CMD: Starts Express immediately on port 3000 to prevent Traefik 504 timeouts, while DB sync runs asynchronously
+# Fast startup CMD: Generates Prisma Client matching DATABASE_URL before starting Node.js server
 CMD ["sh", "-c", "if [ -n \"$DATABASE_URL\" ] && (echo \"$DATABASE_URL\" | grep -qi \"postgres\"); then echo '[DB Init] Detected PostgreSQL. Updating schema provider...'; sed -i 's/provider = \"sqlite\"/provider = \"postgresql\"/g' prisma/schema.prisma; npx prisma generate; else echo '[DB Init] Using SQLite database...'; export DATABASE_URL=\"${DATABASE_URL:-file:./dev.db}\"; fi && (npx prisma db push --skip-generate || true) & npx tsx server/index.ts"]

@@ -83,7 +83,7 @@ function requireAdmin(req: AuthenticatedRequest, res: express.Response, next: ex
 // ----------------------------------------------------
 // Database Initializer & Seeder
 // ----------------------------------------------------
-async function initializeDatabase() {
+async function initializeDatabase(retries = 5) {
   try {
     // 1. Ensure Admin User
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@villamaria.com';
@@ -238,6 +238,11 @@ async function initializeDatabase() {
 
     console.log('[Init] Database initialization complete.');
   } catch (error) {
+    if (retries > 0) {
+      console.log(`[Init] Retrying database initialization in 2s... (${retries} attempts left)`);
+      await new Promise((r) => setTimeout(r, 2000));
+      return initializeDatabase(retries - 1);
+    }
     console.error('[Init] Error during database initialization:', error);
   }
 }
