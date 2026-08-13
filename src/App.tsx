@@ -15,7 +15,6 @@ import { MyBookingsModal } from './components/MyBookingsModal';
 import { AdminModal } from './components/AdminModal';
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
-import { StickyMobileBar } from './components/StickyMobileBar';
 import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
@@ -208,16 +207,6 @@ export default function App() {
         phone={propertySettings.contact_phone}
         email={propertySettings.contact_email}
         mapsLink={propertySettings.location_maps_link}
-      />
-
-      {/* Mobile Sticky Bar for Quick Booking */}
-      <StickyMobileBar
-        checkIn={checkIn}
-        checkOut={checkOut}
-        totalPrice={liveBreakdown.totalPrice}
-        nights={liveBreakdown.nights}
-        onOpenBooking={() => setIsBookingModalOpen(true)}
-        onScrollToCalendar={() => handleNavigate('booking')}
       />
 
       {/* Auth Modal */}

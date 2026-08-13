@@ -67,7 +67,7 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Centered Large Professional Title */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-none pt-1">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-none pt-2 pb-1">
             {title}
           </h1>
 
