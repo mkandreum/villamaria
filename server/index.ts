@@ -142,6 +142,29 @@ async function initializeDatabase() {
         ]),
         category: 'amenities',
       },
+      location_address: { value: 'Calle 15, Urbanización Privada, Chichiriviche, Estado Falcón, Venezuela', category: 'location' },
+      location_description: { value: 'Urbanización privada tranquila y segura a 5 minutos del embarcadero hacia los cayos.', category: 'location' },
+      location_maps_link: { value: 'https://maps.google.com/?q=10.9317,-68.2736', category: 'location' },
+      contact_phone: { value: '+58 (414) 123-4567', category: 'contact' },
+      contact_email: { value: 'reservas.villamaria@gmail.com', category: 'contact' },
+      whatsapp_number: { value: '+584141234567', category: 'contact' },
+      reviews: {
+        value: JSON.stringify([
+          { id: '1', author: 'Mariana Silva', location: 'Caracas, Venezuela', date: 'Julio 2026', comment: '¡Excelente estadía! La casa es impecable, super cómoda y los aires congelan. La piscina de la urbanización es limpia y tranquila.', rating: 5 },
+          { id: '2', author: 'José Luis Blanco', location: 'Valencia, Venezuela', date: 'Junio 2026', comment: 'Superó nuestras expectativas. La ubicación en la Calle 15 es ideal porque estás cerca de los embarcaderos y bodegones.', rating: 5 },
+          { id: '3', author: 'Gabriela Colmenares', location: 'Barquisimeto, Venezuela', date: 'Mayo 2026', comment: 'La casa cuenta con todo lo necesario para cocinar, descansar e ir a los cayos. La parrillera es perfecta para la tarde.', rating: 5 }
+        ]),
+        category: 'reviews'
+      },
+      attractions: {
+        value: JSON.stringify([
+          { id: '1', title: 'Cayo Sombrero', subtitle: 'Imperdible', time: '15 min en lancha', description: 'El cayo más famoso de Morrocoy. Bosque de cocoteros, arenas blancas y aguas cristalinas ideales para snorkel.' },
+          { id: '2', title: 'Cayo Sal & Cayo Muerto', subtitle: 'Familiar', time: '8 - 10 min en lancha', description: 'Cayos muy cercanos a la costa de Chichiriviche con suave oleaje, restaurantes playeros y alquiler de toldos.' },
+          { id: '3', title: 'Embarcadero Principal & Malecon', subtitle: 'Transporte', time: '5 min en auto', description: 'Punto de salida de lanchas peñeros y cooperativas de transporte marítimo en Chichiriviche.' },
+          { id: '4', title: 'Cueva del Indio & Manglares', subtitle: 'Ecoturismo', time: '20 min en lancha', description: 'Paseo místico en lancha entre manglares para ver petroglifos indígenas y fauna autóctona (flamencos y garzas).' }
+        ]),
+        category: 'attractions'
+      },
     };
 
     for (const [key, obj] of Object.entries(defaultSettings)) {

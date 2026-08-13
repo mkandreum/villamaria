@@ -409,22 +409,92 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Título de la Propiedad</label>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Subtítulo de la Propiedad</label>
                       <input
                         type="text"
-                        value={propertySettings.property_title || ''}
-                        onChange={(e) => setPropertySettings({ ...propertySettings, property_title: e.target.value })}
+                        value={propertySettings.property_subtitle || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, property_subtitle: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Dirección Completa</label>
+                      <input
+                        type="text"
+                        value={propertySettings.location_address || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_address: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Teléfono de Contacto</label>
+                      <input
+                        type="text"
+                        value={propertySettings.contact_phone || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, contact_phone: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Email de Contacto</label>
+                      <input
+                        type="email"
+                        value={propertySettings.contact_email || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, contact_email: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">WhatsApp Anfitrión</label>
+                      <input
+                        type="text"
+                        value={propertySettings.whatsapp_number || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, whatsapp_number: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS</label>
+                      <input
+                        type="text"
+                        value={propertySettings.location_maps_link || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_maps_link: e.target.value })}
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Descripción</label>
+                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Descripción de la Propiedad</label>
                     <textarea
                       rows={3}
                       value={propertySettings.property_description || ''}
                       onChange={(e) => setPropertySettings({ ...propertySettings, property_description: e.target.value })}
+                      className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Normas de la Casa (1 por línea)</label>
+                    <textarea
+                      rows={4}
+                      value={propertySettings.house_rules || ''}
+                      onChange={(e) => setPropertySettings({ ...propertySettings, house_rules: e.target.value })}
+                      className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-emerald-300 mb-1">Política de Cancelación</label>
+                    <input
+                      type="text"
+                      value={propertySettings.cancellation_policy || ''}
+                      onChange={(e) => setPropertySettings({ ...propertySettings, cancellation_policy: e.target.value })}
                       className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                     />
                   </div>

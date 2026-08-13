@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -58,7 +58,7 @@ model Reservation {
 model PropertySetting {
   id        String   @id @default(uuid())
   key       String   @unique
-  value     String   @db.Text
+  value     String
   category  String   @default("general")
   updatedAt DateTime @updatedAt
 
@@ -70,8 +70,8 @@ model EmailTemplate {
   code      String   @unique
   name      String
   subject   String
-  bodyHtml  String   @db.Text
-  variables String   // JSON array of variables e.g. ["guest_name", "start_date"]
+  bodyHtml  String
+  variables String
   updatedAt DateTime @updatedAt
 
   @@map("email_templates")
@@ -93,10 +93,10 @@ model SmtpSetting {
   host              String
   port              Int      @default(587)
   user              String
-  encryptedPassword String   @db.Text
+  encryptedPassword String
   fromEmail         String
   fromName          String
-  security          String   @default("STARTTLS") // TLS, STARTTLS, NONE
+  security          String   @default("STARTTLS")
   replyTo           String?
   isActive          Boolean  @default(true)
   updatedAt         DateTime @updatedAt
@@ -109,7 +109,7 @@ model AuditLog {
   id          String   @id @default(uuid())
   action      String
   performedBy String
-  details     String?  @db.Text
+  details     String?
   createdAt   DateTime @default(now())
 
   @@map("audit_logs")

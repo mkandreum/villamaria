@@ -172,17 +172,21 @@ export default function App() {
 
         {/* Location */}
         <section id="location">
-          <LocationSection />
+          <LocationSection
+            address={propertySettings.location_address}
+            description={propertySettings.location_description}
+            mapsLink={propertySettings.location_maps_link}
+          />
         </section>
 
         {/* Local Attractions */}
         <section id="attractions">
-          <AttractionsSection />
+          <AttractionsSection attractions={propertySettings.attractions} />
         </section>
 
         {/* Testimonials & Reviews */}
         <section id="reviews">
-          <ReviewsSection />
+          <ReviewsSection reviews={propertySettings.reviews} />
         </section>
 
         {/* House Rules & FAQ */}
@@ -192,7 +196,12 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer
+        address={propertySettings.location_address}
+        phone={propertySettings.contact_phone}
+        email={propertySettings.contact_email}
+        mapsLink={propertySettings.location_maps_link}
+      />
 
       {/* Mobile Sticky Bar for Quick Booking */}
       <StickyMobileBar

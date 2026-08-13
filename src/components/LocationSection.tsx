@@ -2,62 +2,72 @@ import React from 'react';
 import { MapPin, Navigation, Compass, ExternalLink, Anchor, ShieldCheck, Car, Clock } from 'lucide-react';
 import { PROPERTY_INFO } from '../data/mockData';
 
-export const LocationSection: React.FC = () => {
+interface LocationSectionProps {
+  address?: string;
+  description?: string;
+  mapsLink?: string;
+}
+
+export const LocationSection: React.FC<LocationSectionProps> = ({
+  address = PROPERTY_INFO.locationName,
+  description = 'Urbanización privada tranquila y segura a 5 minutos del embarcadero hacia los cayos.',
+  mapsLink = PROPERTY_INFO.googleMapsUrl,
+}) => {
   return (
-    <section id="ubicacion" className="py-10 sm:py-20 bg-[#EAE3D8] text-[#1B3B36] relative border-b border-[#1B3B36]/10">
+    <section id="location" className="py-10 sm:py-20 bg-emerald-950 text-emerald-100 relative border-b border-emerald-500/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1B3B36]/10 border border-[#1B3B36]/20 text-[#1B3B36] text-[10px] sm:text-xs font-sans uppercase tracking-[0.2em] font-bold mb-2">
-            <MapPin className="w-3.5 h-3.5 text-[#C17D5C]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-[10px] sm:text-xs font-sans uppercase tracking-[0.2em] font-bold mb-2">
+            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
             <span>Ubicación Exacta</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-serif text-[#1B3B36] tracking-tight">
-            Chichiriviche • Calle 15 (c15)
+          <h2 className="text-2xl sm:text-4xl font-serif text-white tracking-tight">
+            Ubicación & Entorno
           </h2>
-          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-1 font-sans">
-            Urbanización privada tranquila y segura a 5 minutos del embarcadero hacia los cayos.
+          <p className="text-emerald-300/70 text-xs sm:text-sm mt-1 font-sans">
+            {description}
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center font-sans">
-          {/* Info Details (5 Cols) */}
+          {/* Info Details */}
           <div className="lg:col-span-5 space-y-4 sm:space-y-6">
-            <div className="bg-[#F8F5F0] border border-[#1B3B36]/15 p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-3 sm:space-y-4 shadow-sm">
+            <div className="bg-emerald-900/40 border border-emerald-500/20 p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4 shadow-md">
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#EAE3D8] text-[#C17D5C] flex items-center justify-center shrink-0 border border-[#1B3B36]/10">
+                <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm sm:text-base font-serif italic text-[#1B3B36]">Dirección</h3>
-                  <p className="text-xs text-[#1B3B36]/80 mt-0.5 leading-snug">
-                    {PROPERTY_INFO.locationName}
+                  <h3 className="text-sm sm:text-base font-serif italic text-white">Dirección</h3>
+                  <p className="text-xs text-emerald-200/90 mt-0.5 leading-snug">
+                    {address}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-[#1B3B36]/10 space-y-2">
-                <div className="flex items-center gap-2.5 text-xs text-[#1B3B36]/80">
-                  <Anchor className="w-3.5 h-3.5 text-[#C17D5C] shrink-0" />
-                  <span><strong>5 min</strong> de embarcaderos a Cayo Sombrero</span>
+              <div className="pt-2 border-t border-emerald-500/10 space-y-2">
+                <div className="flex items-center gap-2.5 text-xs text-emerald-200/80">
+                  <Anchor className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span><strong>5 min</strong> de embarcaderos principales</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-xs text-[#1B3B36]/80">
-                  <Car className="w-3.5 h-3.5 text-[#1B3B36] shrink-0" />
+                <div className="flex items-center gap-2.5 text-xs text-emerald-200/80">
+                  <Car className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                   <span>Acceso pavimentado con portón de seguridad</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-xs text-[#1B3B36]/80">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#C17D5C] shrink-0" />
-                  <span>Conjunto residencial cerrado con vigilancia</span>
+                <div className="flex items-center gap-2.5 text-xs text-emerald-200/80">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Recinto cerrado con vigilancia</span>
                 </div>
               </div>
 
               {/* Direct Click Google Maps Link Button */}
               <div className="pt-1">
                 <a
-                  href={PROPERTY_INFO.googleMapsUrl}
+                  href={mapsLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full bg-[#1B3B36] hover:bg-[#C17D5C] text-[#F8F5F0] font-bold py-3 sm:py-4 px-4 rounded-xl text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-sm transition-all active:scale-98"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold py-3 sm:py-4 px-4 rounded-xl text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-md hover:from-emerald-400 hover:to-teal-400 transition-all min-h-[44px]"
                 >
                   <Navigation className="w-4 h-4" />
                   <span>Abrir en Google Maps GPS</span>
@@ -68,56 +78,54 @@ export const LocationSection: React.FC = () => {
 
             {/* Travel Time Cards */}
             <div className="grid grid-cols-2 gap-2.5">
-              <div className="p-3 sm:p-4 bg-[#F8F5F0] rounded-2xl border border-[#1B3B36]/15 text-left">
-                <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-[#C17D5C] font-bold mb-0.5">
+              <div className="p-3 sm:p-4 bg-emerald-900/40 rounded-2xl border border-emerald-500/20 text-left">
+                <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-emerald-400 font-bold mb-0.5">
                   <Clock className="w-3 h-3" />
                   <span>Embarcadero</span>
                 </div>
-                <p className="text-sm sm:text-base font-serif italic text-[#1B3B36]">5 minutos</p>
-                <p className="text-[10px] text-[#1B3B36]/60">En vehículo</p>
+                <p className="text-sm sm:text-base font-serif italic text-white">5 minutos</p>
+                <p className="text-[10px] text-emerald-300/60">En vehículo</p>
               </div>
 
-              <div className="p-3 sm:p-4 bg-[#F8F5F0] rounded-2xl border border-[#1B3B36]/15 text-left">
-                <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-[#1B3B36] font-bold mb-0.5">
+              <div className="p-3 sm:p-4 bg-emerald-900/40 rounded-2xl border border-emerald-500/20 text-left">
+                <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-emerald-300 font-bold mb-0.5">
                   <Compass className="w-3 h-3" />
                   <span>Comercios</span>
                 </div>
-                <p className="text-sm sm:text-base font-serif italic text-[#1B3B36]">3 minutos</p>
-                <p className="text-[10px] text-[#1B3B36]/60">Bodegones y hielo</p>
+                <p className="text-sm sm:text-base font-serif italic text-white">3 minutos</p>
+                <p className="text-[10px] text-emerald-300/60">Zonas de servicios</p>
               </div>
             </div>
           </div>
 
           {/* Map Preview Representation */}
           <div className="lg:col-span-7">
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#1B3B36]/15 bg-[#F8F5F0] shadow-sm">
-              <div className="relative h-64 sm:h-96 w-full bg-[#EAE3D8] overflow-hidden flex flex-col items-center justify-center">
-                <div className="absolute inset-0 opacity-15 bg-[linear-gradient(to_right,#1B3B36_1px,transparent_1px),linear-gradient(to_bottom,#1B3B36_1px,transparent_1px)] bg-[size:1.5rem_1.5rem]" />
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-emerald-500/20 bg-emerald-900/40 shadow-md">
+              <div className="relative h-64 sm:h-96 w-full bg-emerald-950 overflow-hidden flex flex-col items-center justify-center">
+                <div className="absolute inset-0 opacity-15 bg-[linear-gradient(to_right,#059669_1px,transparent_1px),linear-gradient(to_bottom,#059669_1px,transparent_1px)] bg-[size:1.5rem_1.5rem]" />
 
-                <div className="relative z-10 text-center space-y-2.5 p-4 sm:p-6 max-w-sm sm:max-w-md bg-[#F8F5F0] rounded-2xl sm:rounded-3xl border border-[#1B3B36]/15 shadow-md">
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 mx-auto rounded-full bg-[#1B3B36] p-1 shadow-md">
-                    <div className="w-full h-full bg-[#F8F5F0] rounded-full flex items-center justify-center">
-                      <MapPin className="w-5 h-5 sm:w-7 sm:h-7 text-[#C17D5C]" />
-                    </div>
+                <div className="relative z-10 text-center space-y-2.5 p-4 sm:p-6 max-w-sm sm:max-w-md bg-emerald-900/80 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-emerald-500/30 shadow-xl">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 mx-auto rounded-full bg-emerald-500/20 p-1 shadow-md border border-emerald-500/40 flex items-center justify-center">
+                    <MapPin className="w-5 h-5 sm:w-7 sm:h-7 text-emerald-400" />
                   </div>
 
                   <div>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-[#C17D5C] uppercase tracking-wider block">
-                      Pin de Ubicación
+                    <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                      Ubicación de la Propiedad
                     </span>
-                    <h4 className="text-sm sm:text-lg font-serif italic text-[#1B3B36] mt-0.5">
-                      Villa María - Calle 15 (c15)
+                    <h4 className="text-sm sm:text-lg font-serif italic text-white mt-0.5">
+                      Villa María
                     </h4>
-                    <p className="text-[11px] text-[#1B3B36]/70 mt-0.5">
-                      Chichiriviche, Estado Falcón, Venezuela.
+                    <p className="text-[11px] text-emerald-300/70 mt-0.5">
+                      {address}
                     </p>
                   </div>
 
                   <a
-                    href={PROPERTY_INFO.googleMapsUrl}
+                    href={mapsLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1B3B36] text-[#F8F5F0] font-bold text-xs uppercase tracking-wider hover:bg-[#C17D5C] transition-colors shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-500 text-emerald-950 font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors shadow-md min-h-[44px]"
                   >
                     <span>Ver mapa GPS</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -125,12 +133,11 @@ export const LocationSection: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-[#F8F5F0] px-4 py-2.5 border-t border-[#1B3B36]/15 flex items-center justify-between text-[11px] text-[#1B3B36]/80 font-sans">
+              <div className="bg-emerald-950 px-4 py-2.5 border-t border-emerald-500/20 flex items-center justify-between text-[11px] text-emerald-300/80 font-sans">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#C17D5C]" />
-                  Sector C15 - Zona privada
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  Zona Privada Residencial
                 </span>
-                <span className="text-[#1B3B36]/60">10.9317, -68.2736</span>
               </div>
             </div>
           </div>
