@@ -1,11 +1,18 @@
 import { Booking, PricingConfig } from '../types';
 
 export function parseISO(dateStr: string): Date {
-  const [year, month, day] = dateStr.split('-').map(Number);
+  if (!dateStr) return new Date();
+  const cleanStr = typeof dateStr === 'string' ? dateStr.split('T')[0] : '';
+  const [year, month, day] = cleanStr.split('-').map(Number);
+  if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) {
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? new Date() : d;
+  }
   return new Date(year, month - 1, day);
 }
 
 export function formatISO(date: Date): string {
+  if (!date || isNaN(date.getTime())) return '';
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -15,6 +22,7 @@ export function formatISO(date: Date): string {
 export function formatDateSpanish(dateStr: string): string {
   if (!dateStr) return '';
   const date = parseISO(dateStr);
+  if (isNaN(date.getTime())) return '';
   const months = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -27,6 +35,7 @@ export function calculateNights(checkIn: string, checkOut: string): number {
   if (!checkIn || !checkOut) return 0;
   const start = parseISO(checkIn);
   const end = parseISO(checkOut);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
   const diffTime = end.getTime() - start.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays > 0 ? diffDays : 0;
@@ -45,14 +54,17 @@ export function isRangeOccupied(
   const candStart = parseISO(checkIn).getTime();
   const candEnd = parseISO(checkOut).getTime();
 
-  return bookings.some((b) => {
+  return (bookings || []).some((b) => {
     if (b.status === 'cancelled') return false;
     if (excludeBookingId && b.id === excludeBookingId) return false;
 
-    const bStart = parseISO(b.checkIn).getTime();
-    const bEnd = parseISO(b.checkOut).getTime();
+    const bCheckIn = b.checkIn || b.startDate || '';
+    const bCheckOut = b.checkOut || b.endDate || '';
+    if (!bCheckIn || !bCheckOut) return false;
 
-    // Overlap condition: start < bEnd AND end > bStart
+    const bStart = parseISO(bCheckIn).getTime();
+    const bEnd = parseISO(bCheckOut).getTime();
+
     return candStart < bEnd && candEnd > bStart;
   });
 }
@@ -62,11 +74,14 @@ export function isRangeOccupied(
  */
 export function isDateBooked(dateStr: string, bookings: Booking[]): boolean {
   const checkTime = parseISO(dateStr).getTime();
-  return bookings.some((b) => {
+  return (bookings || []).some((b) => {
     if (b.status === 'cancelled') return false;
-    const bStart = parseISO(b.checkIn).getTime();
-    const bEnd = parseISO(b.checkOut).getTime();
-    // Night is occupied if checkTime is between bStart and bEnd - 1 day
+    const bCheckIn = b.checkIn || b.startDate || '';
+    const bCheckOut = b.checkOut || b.endDate || '';
+    if (!bCheckIn || !bCheckOut) return false;
+
+    const bStart = parseISO(bCheckIn).getTime();
+    const bEnd = parseISO(bCheckOut).getTime();
     return checkTime >= bStart && checkTime < bEnd;
   });
 }
@@ -91,9 +106,20 @@ export function calculatePriceBreakdown(
   checkOut: string,
   adults: number,
   children: number,
-  pricing: PricingConfig
+  pricing?: PricingConfig
 ): PriceBreakdown {
-  const totalGuests = adults + children;
+  const safePricing: PricingConfig = {
+    baseNightlyRate: pricing?.baseNightlyRate ? Number(pricing.baseNightlyRate) : 150,
+    weekendRate: pricing?.weekendRate ? Number(pricing.weekendRate) : (pricing?.baseNightlyRate ? Number(pricing.baseNightlyRate) : 150),
+    cleaningFee: pricing?.cleaningFee !== undefined ? Number(pricing.cleaningFee) : 50,
+    securityDeposit: pricing?.securityDeposit !== undefined ? Number(pricing.securityDeposit) : 0,
+    baseGuests: pricing?.baseGuests !== undefined ? Number(pricing.baseGuests) : 4,
+    extraGuestFee: pricing?.extraGuestFee !== undefined ? Number(pricing.extraGuestFee) : 0,
+    discountWeeklyPercent: pricing?.discountWeeklyPercent !== undefined ? Number(pricing.discountWeeklyPercent) : 0,
+    currency: pricing?.currency || '€',
+  };
+
+  const totalGuests = (adults || 1) + (children || 0);
   const nights = calculateNights(checkIn, checkOut);
 
   if (nights <= 0) {
@@ -104,12 +130,12 @@ export function calculatePriceBreakdown(
       baseNightsSubtotal: 0,
       extraGuests: 0,
       extraGuestsSubtotal: 0,
-      cleaningFee: pricing.cleaningFee,
+      cleaningFee: safePricing.cleaningFee,
       discountAmount: 0,
       discountPercent: 0,
       subtotal: 0,
       totalPrice: 0,
-      securityDeposit: pricing.securityDeposit,
+      securityDeposit: safePricing.securityDeposit,
     };
   }
 
@@ -124,26 +150,26 @@ export function calculatePriceBreakdown(
     const dayOfWeek = cur.getDay(); // 0 = Sun, 5 = Fri, 6 = Sat
     if (dayOfWeek === 5 || dayOfWeek === 6) {
       weekendNights++;
-      baseNightsSubtotal += pricing.weekendRate;
+      baseNightsSubtotal += safePricing.weekendRate;
     } else {
       weekdayNights++;
-      baseNightsSubtotal += pricing.baseNightlyRate;
+      baseNightsSubtotal += safePricing.baseNightlyRate;
     }
   }
 
   // Extra guest fee
-  const extraGuests = Math.max(0, totalGuests - pricing.baseGuests);
-  const extraGuestsSubtotal = extraGuests * pricing.extraGuestFee * nights;
+  const extraGuests = Math.max(0, totalGuests - safePricing.baseGuests);
+  const extraGuestsSubtotal = extraGuests * safePricing.extraGuestFee * nights;
 
   let discountPercent = 0;
   if (nights >= 7) {
-    discountPercent = pricing.discountWeeklyPercent;
+    discountPercent = safePricing.discountWeeklyPercent;
   }
 
   const subtotalBeforeDiscount = baseNightsSubtotal + extraGuestsSubtotal;
   const discountAmount = Math.round((subtotalBeforeDiscount * discountPercent) / 100);
   const subtotal = subtotalBeforeDiscount - discountAmount;
-  const totalPrice = subtotal + pricing.cleaningFee;
+  const totalPrice = subtotal + safePricing.cleaningFee;
 
   return {
     nights,
@@ -152,11 +178,11 @@ export function calculatePriceBreakdown(
     baseNightsSubtotal,
     extraGuests,
     extraGuestsSubtotal,
-    cleaningFee: pricing.cleaningFee,
+    cleaningFee: safePricing.cleaningFee,
     discountAmount,
     discountPercent,
     subtotal,
-    totalPrice,
-    securityDeposit: pricing.securityDeposit,
+    totalPrice: isNaN(totalPrice) ? 0 : totalPrice,
+    securityDeposit: safePricing.securityDeposit,
   };
 }

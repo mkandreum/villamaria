@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Booking, PricingConfig } from '../types';
 import { formatDateSpanish, calculatePriceBreakdown } from '../utils/dateUtils';
-import { X, CheckCircle2, CreditCard, DollarSign, Smartphone, Lock } from 'lucide-react';
+import { X, CheckCircle2, CreditCard, DollarSign, Smartphone, Lock, Info } from 'lucide-react';
 
 interface BookingFormModalProps {
   checkIn: string;
@@ -43,7 +43,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
       checkOut,
       adults,
       children: childrenCount,
-      totalPrice: breakdown.totalPrice,
+      totalPrice: breakdown.totalPrice || 0,
       status: 'confirmed',
       createdAt: new Date().toISOString().split('T')[0],
       specialRequests,
@@ -127,12 +127,22 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             </div>
           </div>
 
-          {/* Payment Method */}
+          {/* Payment Method Preferences */}
           <div className="space-y-2 pt-2 border-t border-[#1B3B36]/10">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
-              2. Método de Pago (Anticipo 50%) 💳
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
+                2. Preferencia de Pago (Anticipo 50%) 💳
+              </h3>
+            </div>
+            
+            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[10px] text-[#1B3B36] flex items-start gap-2">
+              <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <span>
+                <strong>Coordinación Directa:</strong> Las instrucciones exactas de pago se envían por WhatsApp al solicitar la reserva. Ninguna pasarela cobró automáticamente.
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
               {[
                 { id: 'zelle', label: 'Zelle (USD)', icon: DollarSign },
                 { id: 'pago_movil', label: 'Pago Móvil (Bs)', icon: Smartphone },
@@ -191,7 +201,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             className="w-full bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[44px]"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Confirmar Reserva y Comprobante</span>
+            <span>Confirmar Reserva y Comprobante 📅</span>
           </button>
         </form>
       </div>
