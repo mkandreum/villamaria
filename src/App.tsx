@@ -191,6 +191,7 @@ export default function App() {
             address={propertySettings.location_address}
             description={propertySettings.location_description}
             mapsLink={propertySettings.location_maps_link}
+            mapEmbedUrl={propertySettings.location_map_embed}
             title={propertySettings.location_title}
             subtitle={propertySettings.location_subtitle}
             feature1={propertySettings.location_feature_1}

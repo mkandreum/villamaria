@@ -6,6 +6,7 @@ interface LocationSectionProps {
   address?: string;
   description?: string;
   mapsLink?: string;
+  mapEmbedUrl?: string;
   title?: string;
   subtitle?: string;
   feature1?: string;
@@ -17,12 +18,19 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   address = PROPERTY_INFO.locationName,
   description = PROPERTY_INFO.locationDescription,
   mapsLink = PROPERTY_INFO.googleMapsUrl,
+  mapEmbedUrl,
   title = 'Chichiriviche • Calle 15 🌴',
   subtitle = 'Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.',
   feature1 = '5 minutos de los embarcaderos a Cayo Sombrero',
   feature2 = 'Condominio privado con vigilancia las 24 horas',
   feature3 = 'Supermercados y servicios a 3 minutos',
 }) => {
+  const dynamicIframeSrc = React.useMemo(() => {
+    if (mapEmbedUrl && mapEmbedUrl.trim()) return mapEmbedUrl.trim();
+    const query = encodeURIComponent(address || 'Calle 15, Chichiriviche, Falcon, Venezuela');
+    return `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  }, [mapEmbedUrl, address]);
+
   return (
     <section id="location" className="py-12 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,11 +89,12 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             </div>
           </div>
 
-          {/* Map Preview iframe / visual container */}
+          {/* DYNAMIC GOOGLE MAPS IFRAME FROM ADMIN */}
           <div className="lg:col-span-7 rounded-3xl overflow-hidden shadow-xl border-4 border-white h-[350px] sm:h-[420px] relative bg-[#EAE3D8]">
             <iframe
-              title="Ubicación Villa María"
-              src="https://maps.google.com/maps?q=Chichiriviche,Venezuela&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              key={dynamicIframeSrc}
+              title="Ubicación Dinámica Villa María"
+              src={dynamicIframeSrc}
               className="w-full h-full border-0"
               allowFullScreen
               loading="lazy"

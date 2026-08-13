@@ -571,11 +571,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS</label>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Enlace a Google Maps GPS (Botón)</label>
                       <input
                         type="text"
+                        placeholder="https://maps.google.com/..."
                         value={propertySettings.location_maps_link || ''}
                         onChange={(e) => setPropertySettings({ ...propertySettings, location_maps_link: e.target.value })}
+                        className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-emerald-300 mb-1">URL de Mapa Interactivo (Iframe Google Maps)</label>
+                      <input
+                        type="text"
+                        placeholder="https://maps.google.com/maps?q=Calle+15+Chichiriviche..."
+                        value={propertySettings.location_map_embed || ''}
+                        onChange={(e) => setPropertySettings({ ...propertySettings, location_map_embed: e.target.value })}
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
