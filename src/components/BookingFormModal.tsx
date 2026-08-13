@@ -41,7 +41,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
     { id: 'transferencia', label: 'Transferencia', icon: Lock, enabled: paymentTransferencia },
   ];
 
-  const availableMethods = allMethods.filter((m) => m.enabled !== false);
+  const availableMethods = allMethods.filter((m) => m.enabled !== false && (m.enabled as any) !== 'false');
   const [paymentMethod, setPaymentMethod] = useState<string>(
     availableMethods.length > 0 ? availableMethods[0].id : 'coordinacion_whatsapp'
   );

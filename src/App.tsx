@@ -259,10 +259,10 @@ export default function App() {
           adults={adults}
           childrenCount={childrenCount}
           pricing={mockPricing}
-          paymentZelle={propertySettings.payment_zelle_enabled !== 'false'}
-          paymentPagoMovil={propertySettings.payment_pago_movil_enabled !== 'false'}
-          paymentEfectivo={propertySettings.payment_efectivo_enabled !== 'false'}
-          paymentTransferencia={propertySettings.payment_transferencia_enabled !== 'false'}
+          paymentZelle={propertySettings.payment_zelle_enabled !== false && propertySettings.payment_zelle_enabled !== 'false'}
+          paymentPagoMovil={propertySettings.payment_pago_movil_enabled !== false && propertySettings.payment_pago_movil_enabled !== 'false'}
+          paymentEfectivo={propertySettings.payment_efectivo_enabled !== false && propertySettings.payment_efectivo_enabled !== 'false'}
+          paymentTransferencia={propertySettings.payment_transferencia_enabled !== false && propertySettings.payment_transferencia_enabled !== 'false'}
           onClose={() => setIsBookingModalOpen(false)}
           onSubmitBooking={async (formData: any) => {
             try {
