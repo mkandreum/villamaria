@@ -50,6 +50,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [manualEmail, setManualEmail] = useState({ to: '', subject: '', bodyHtml: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadCategory, setUploadCategory] = useState('fachada');
   const [statusAlert, setStatusAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Reschedule state: which reservation is open for rescheduling
@@ -224,7 +225,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
         ? JSON.parse(propertySettings.gallery_images)
         : [];
 
-      const updatedImages = [...currentImages, result.url];
+      const updatedImages = [...currentImages, { url: result.url, category: uploadCategory }];
       const newSettings = { ...propertySettings, gallery_images: updatedImages };
 
       setPropertySettings(newSettings);
@@ -232,9 +233,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       setStatusAlert({ type: 'success', text: 'Imagen subida e incorporada a la galería correctamente.' });
     } catch (err: any) {
       setStatusAlert({ type: 'error', text: err.message || 'Error al subir la imagen.' });
-    } fontally: {
+    } finally {
       setUploadingImage(false);
     }
+  };
+
+  const setGalleryImageCategory = (idx: number, category: string) => {
+    let list = Array.isArray(propertySettings.gallery_images)
+      ? propertySettings.gallery_images
+      : typeof propertySettings.gallery_images === 'string'
+      ? (() => { try { return JSON.parse(propertySettings.gallery_images); } catch { return []; } })()
+      : [];
+    const updated = list.map((item: any, i: number) => {
+      if (i !== idx) return item;
+      const url = typeof item === 'string' ? item : item.url || item.imageUrl;
+      return { url, category };
+    });
+    setPropertySettings({ ...propertySettings, gallery_images: updated });
   };
 
   const handleAddBlockedDate = async (e: React.FormEvent) => {
@@ -1005,9 +1020,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         : []
                       ).map((imgUrl: any, idx: number) => {
                         const src = typeof imgUrl === 'string' ? imgUrl : imgUrl.url || imgUrl.imageUrl;
+                        const cat = typeof imgUrl === 'object' && imgUrl ? imgUrl.category || 'exteriores' : 'exteriores';
                         return (
                           <div key={idx} className="relative rounded-xl overflow-hidden group border border-emerald-500/30 aspect-[4/3] bg-emerald-950">
                             <img src={src} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-x-0 bottom-0 bg-black/60 p-1.5">
+                              <select
+                                value={cat}
+                                onChange={(e) => setGalleryImageCategory(idx, e.target.value)}
+                                className="w-full text-[10px] rounded-lg px-1 py-1 bg-[#1B3B36] text-emerald-100 border border-emerald-500/40 font-semibold cursor-pointer"
+                                title="Asignar esta foto a una sección/pestaña"
+                              >
+                                <option value="fachada">{propertySettings.gallery_cat2 || 'Fachada & Porche 🏡'}</option>
+                                <option value="piscina">{propertySettings.gallery_cat3 || 'Piscina & Jardines 🏊‍♂️'}</option>
+                                <option value="interiores">{propertySettings.gallery_cat4 || 'Habitaciones & Salón 🛋️'}</option>
+                                <option value="exteriores">Solo en "Todas"</option>
+                              </select>
+                            </div>
                             <button
                               type="button"
                               onClick={() => {
@@ -1031,7 +1060,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
                     {/* Upload File Input */}
                     <div className="pt-2 border-t border-emerald-500/20 space-y-2">
-                      <label className="block text-xs font-semibold text-emerald-300">Subir Nueva Foto desde tu Dispositivo</label>
+                      <div className="flex items-center justify-between gap-2">
+                        <label className="block text-xs font-semibold text-emerald-300">Subir Nueva Foto desde tu Dispositivo</label>
+                        <select
+                          value={uploadCategory}
+                          onChange={(e) => setUploadCategory(e.target.value)}
+                          className="text-[10px] rounded-lg px-2 py-1.5 bg-emerald-900/40 text-emerald-100 border border-emerald-500/30 font-semibold cursor-pointer"
+                          title="Sección/pestaña donde aparecerá la foto"
+                        >
+                          <option value="fachada">{propertySettings.gallery_cat2 || 'Fachada & Porche 🏡'}</option>
+                          <option value="piscina">{propertySettings.gallery_cat3 || 'Piscina & Jardines 🏊‍♂️'}</option>
+                          <option value="interiores">{propertySettings.gallery_cat4 || 'Habitaciones & Salón 🛋️'}</option>
+                          <option value="exteriores">Solo en "Todas"</option>
+                        </select>
+                      </div>
                       <input
                         type="file"
                         accept="image/*"
