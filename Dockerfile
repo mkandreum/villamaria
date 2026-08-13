@@ -41,5 +41,5 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 3000
 
-# Run prisma db push to ensure schema is synced, then start server
-CMD ["sh", "-c", "npx prisma db push --skip-generate && npx tsx server/index.ts"]
+# Entrypoint script: Detects PostgreSQL vs SQLite automatically based on DATABASE_URL
+CMD ["sh", "-c", "if [ -n \"$DATABASE_URL\" ] && (echo \"$DATABASE_URL\" | grep -qi \"postgres\"); then echo '[DB Init] Detected PostgreSQL. Updating schema provider...'; sed -i 's/provider = \"sqlite\"/provider = \"postgresql\"/g' prisma/schema.prisma; else echo '[DB Init] Using SQLite database...'; export DATABASE_URL=\"${DATABASE_URL:-file:./dev.db}\"; fi && npx prisma generate && npx prisma db push && npx tsx server/index.ts"]
