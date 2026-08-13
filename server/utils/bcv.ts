@@ -36,12 +36,15 @@ export function extractDollarRate(html: string): number | null {
 
 /**
  * Fetches the current BCV USD rate, returning null on failure.
- * BCV's TLS chain is sometimes unreliable for non-browser clients, so we
- * disable certificate verification for this single public endpoint and
- * follow redirects manually (max MAX_REDIRECTS).
+ * - BCV's TLS chain is sometimes unreliable for non-browser clients, so we
+ *   disable certificate verification for this single public endpoint.
+ * - A hard global timeout guarantees the promise ALWAYS resolves (never hangs
+ *   the process), even if DNS or the connection stalls.
+ * - The agent is limited to a single socket so failed/stuck connections can
+ *   never exhaust the server's file descriptors.
  */
 export function fetchBcvRate(url: string = BCV_URL, redirects = 0): Promise<number | null> {
-  return new Promise((resolve) => {
+  const inner = new Promise<number | null>((resolve) => {
     let target: URL;
     try {
       target = new URL(url);
@@ -63,7 +66,7 @@ export function fetchBcvRate(url: string = BCV_URL, redirects = 0): Promise<numb
           'Accept-Language': 'es-VE,es-ES,es;q=0.9',
         },
         ...(protocol === https
-          ? { agent: new https.Agent({ rejectUnauthorized: false }) }
+          ? { agent: new https.Agent({ rejectUnauthorized: false, maxSockets: 1 }) }
           : {}),
       },
       (res) => {
@@ -97,6 +100,15 @@ export function fetchBcvRate(url: string = BCV_URL, redirects = 0): Promise<numb
     req.setTimeout(TIMEOUT_MS, () => req.destroy(new Error('timeout')));
     req.on('error', () => resolve(null));
   });
+
+  // Hard cap: resolve null after TIMEOUT_MS no matter what (DNS stalls, etc.)
+  let timer: NodeJS.Timeout | undefined;
+  return Promise.race([
+    inner,
+    new Promise<null>((resolve) => {
+      timer = setTimeout(() => resolve(null), TIMEOUT_MS);
+    }),
+  ]).finally(() => clearTimeout(timer));
 }
 
 /** Today's date as YYYY-MM-DD in the Venezuela (America/Caracas) timezone. */

@@ -534,14 +534,27 @@ async function getStoredBcvRate(): Promise<BcvRateInfo> {
 }
 
 /**
- * Ensures the BCV rate is up to date (once per day in Venezuela timezone).
- * If `force` is true, always hits the BCV website.
+ * BCV publishes its official daily rate in the afternoon (Venezuela time).
+ * We re-fetch up to every REFRESH_INTERVAL_HOURS within the same day so the
+ * value always converges to the latest official rate without human action.
+ * `force` always hits the BCV website immediately.
  */
+const REFRESH_INTERVAL_HOURS = 4;
+
+function isBcvRateStale(stored: BcvRateInfo): boolean {
+  if (stored.rate == null) return true;
+  if (stored.date !== venezuelaDateNow()) return true;
+  const updatedMs = stored.updatedAt ? new Date(stored.updatedAt).getTime() : 0;
+  if (!updatedMs) return true;
+  const ageHours = (Date.now() - updatedMs) / 3_600_000;
+  return ageHours >= REFRESH_INTERVAL_HOURS;
+}
+
 async function refreshBcvRate(force = false): Promise<BcvRateInfo> {
   const today = venezuelaDateNow();
   const stored = await getStoredBcvRate();
 
-  if (!force && stored.rate != null && stored.date === today) {
+  if (!force && !isBcvRateStale(stored)) {
     return { ...stored, fresh: 'cached' };
   }
 
@@ -719,14 +732,12 @@ app.put('/api/admin/property', authenticateToken, requireAdmin, async (req, res)
 // ---------------- Exchange Rate (BCV) Routes ----------------
 
 // PUBLIC: current USD -> Bs rate (BCV)
+// Passive read: always responds instantly from storage. The automatic update
+// is handled exclusively by the server-side scheduler (hourly tick), so a page
+// view never triggers an outbound call to the BCV site.
 app.get('/api/exchange-rate', async (_req, res) => {
   try {
-    const stored = await getStoredBcvRate();
-    if (stored.rate == null) {
-      const fetched = await refreshBcvRate(true);
-      return res.json(fetched);
-    }
-    res.json(stored);
+    res.json(await getStoredBcvRate());
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
