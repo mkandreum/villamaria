@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, ShieldCheck, MapPin, Sparkles, MessageCircle, Star, Award, Wifi, Sun, Car, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, MessageCircle, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroProps {
   checkIn: string;
@@ -16,6 +16,11 @@ interface HeroProps {
   whatsappNumber?: string;
   heroImage?: string;
   images?: any;
+  photoBadge?: string;
+  feat1?: string;
+  feat2?: string;
+  feat3?: string;
+  feat4?: string;
 }
 
 const DEFAULT_HERO_PHOTOS = [
@@ -40,6 +45,11 @@ export const Hero: React.FC<HeroProps> = ({
   whatsappNumber = '+34600000000',
   heroImage,
   images,
+  photoBadge = '🏊‍♂️ Piscina Climatizada',
+  feat1 = '🏊‍♂️ Piscina Privada',
+  feat2 = '📶 Fibra 600Mb',
+  feat3 = '⚡ Luz y Agua 24/7',
+  feat4 = '🚗 Parking Privado',
 }) => {
   const photos = React.useMemo(() => {
     let list = images;
@@ -82,7 +92,7 @@ export const Hero: React.FC<HeroProps> = ({
         
         {/* Headline & Title Section */}
         <div className="text-center lg:text-left max-w-4xl mx-auto lg:mx-0 space-y-2 mb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider">
             <span>✨</span>
             <span>{subtitle}</span>
           </div>
@@ -156,10 +166,9 @@ export const Hero: React.FC<HeroProps> = ({
                 ))}
               </div>
 
-              {/* Badge Overlay */}
-              <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                <span>🏊‍♂️</span>
-                <span>Piscina Climatizada</span>
+              {/* Editable Badge Overlay */}
+              <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
+                <span>{photoBadge}</span>
               </div>
             </div>
           </div>
@@ -211,20 +220,14 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-            {/* Features Emojis Grid */}
+            {/* Editable Features Emojis Grid */}
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { emoji: '🏊‍♂️', text: 'Piscina Privada' },
-                { emoji: '📶', text: 'Fibra 600Mb' },
-                { emoji: '⚡', text: 'Luz y Agua 24/7' },
-                { emoji: '🚗', text: 'Parking Privado' },
-              ].map((item, idx) => (
+              {[feat1, feat2, feat3, feat4].map((item, idx) => (
                 <div
                   key={idx}
                   className="flex items-center gap-2 p-2.5 px-3.5 rounded-2xl bg-white border border-[#1B3B36]/10 text-xs font-semibold text-[#1B3B36] shadow-sm"
                 >
-                  <span className="text-base">{item.emoji}</span>
-                  <span className="text-[11px] truncate">{item.text}</span>
+                  <span className="text-[11px] truncate">{item}</span>
                 </div>
               ))}
             </div>

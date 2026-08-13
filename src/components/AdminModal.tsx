@@ -416,6 +416,62 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
+
+                    <div className="pt-2 border-t border-emerald-500/20 space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Etiqueta Flotante sobre la Foto Principal (Badge Hero)</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: 🏊‍♂️ Piscina Climatizada"
+                          value={propertySettings.hero_photo_badge || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, hero_photo_badge: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Píldora Destacada 1</label>
+                          <input
+                            type="text"
+                            placeholder="🏊‍♂️ Piscina Privada"
+                            value={propertySettings.hero_feat1 || ''}
+                            onChange={(e) => setPropertySettings({ ...propertySettings, hero_feat1: e.target.value })}
+                            className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Píldora Destacada 2</label>
+                          <input
+                            type="text"
+                            placeholder="📶 Fibra 600Mb"
+                            value={propertySettings.hero_feat2 || ''}
+                            onChange={(e) => setPropertySettings({ ...propertySettings, hero_feat2: e.target.value })}
+                            className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Píldora Destacada 3</label>
+                          <input
+                            type="text"
+                            placeholder="⚡ Luz y Agua 24/7"
+                            value={propertySettings.hero_feat3 || ''}
+                            onChange={(e) => setPropertySettings({ ...propertySettings, hero_feat3: e.target.value })}
+                            className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-emerald-300 mb-1">Píldora Destacada 4</label>
+                          <input
+                            type="text"
+                            placeholder="🚗 Parking Privado"
+                            value={propertySettings.hero_feat4 || ''}
+                            onChange={(e) => setPropertySettings({ ...propertySettings, hero_feat4: e.target.value })}
+                            className="w-full bg-emerald-950 border border-emerald-500/30 rounded-lg p-2 text-xs text-emerald-100"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Tarifas y Reglas */}

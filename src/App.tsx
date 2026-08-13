@@ -151,6 +151,11 @@ export default function App() {
             pricePerNight={pricePerNight}
             whatsappNumber={propertySettings.whatsapp_number}
             images={propertySettings.gallery_images}
+            photoBadge={propertySettings.hero_photo_badge}
+            feat1={propertySettings.hero_feat1}
+            feat2={propertySettings.hero_feat2}
+            feat3={propertySettings.hero_feat3}
+            feat4={propertySettings.hero_feat4}
           />
         </section>
 
