@@ -92,6 +92,8 @@ export const api = {
   getAdminReservations: () => request('/admin/reservations'),
   updateReservationStatus: (id: string, payload: { status: string; internalNotes?: string }) =>
     request(`/admin/reservations/${id}/status`, { method: 'PUT', body: JSON.stringify(payload) }),
+  deleteReservation: (id: string) => request(`/admin/reservations/${id}`, { method: 'DELETE' }),
+  confirmPayment: (id: string) => request(`/admin/reservations/${id}/confirm-payment`, { method: 'POST' }),
   getAdminUsers: () => request('/admin/users'),
 
   // Blocked Dates

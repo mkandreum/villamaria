@@ -89,6 +89,30 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
     }
   };
 
+  const handleDeleteReservation = async (id: string, guestName: string) => {
+    if (!window.confirm(`¿Eliminar permanentemente la reserva de ${guestName}? Esta acción no se puede deshacer.`)) return;
+    try {
+      await api.deleteReservation(id);
+      setStatusAlert({ type: 'success', text: `Reserva de ${guestName} eliminada correctamente.` });
+      loadAllAdminData();
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al eliminar la reserva.' });
+    }
+  };
+
+  const handleConfirmPayment = async (id: string, guestName: string) => {
+    if (!window.confirm(`¿Confirmar el pago de ${guestName} y enviarle el correo de activación de reserva?`)) return;
+    try {
+      await api.confirmPayment(id);
+      setStatusAlert({ type: 'success', text: `✅ Pago confirmado. Email enviado a ${guestName}.` });
+      loadAllAdminData();
+      if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      setStatusAlert({ type: 'error', text: err.message || 'Error al confirmar el pago.' });
+    }
+  };
+
   const handleSavePropertySettings = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -357,17 +381,37 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                           {resItem.notes && <p className="text-xs text-emerald-300/60 italic">Notas: "{resItem.notes}"</p>}
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={resItem.status}
-                            onChange={(e) => handleUpdateStatus(resItem.id, e.target.value)}
-                            className="bg-emerald-950 border border-emerald-500/30 rounded-lg px-3 py-1.5 text-xs text-emerald-100 focus:outline-none focus:border-emerald-400"
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                          {/* Confirm Payment — only shown if not already CONFIRMED */}
+                          {resItem.status !== 'CONFIRMED' && resItem.status !== 'CANCELLED' && (
+                            <button
+                              onClick={() => handleConfirmPayment(resItem.id, resItem.guestName)}
+                              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95 shadow"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              Confirmar Pago
+                            </button>
+                          )}
+
+                          {/* Cancel — only shown if pending or confirmed */}
+                          {resItem.status !== 'CANCELLED' && resItem.status !== 'COMPLETED' && (
+                            <button
+                              onClick={() => handleUpdateStatus(resItem.id, 'CANCELLED')}
+                              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                              Cancelar
+                            </button>
+                          )}
+
+                          {/* Delete */}
+                          <button
+                            onClick={() => handleDeleteReservation(resItem.id, resItem.guestName)}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-300 border border-red-500/30 font-bold text-[11px] uppercase tracking-wide transition-all active:scale-95"
                           >
-                            <option value="PENDING">PENDING</option>
-                            <option value="CONFIRMED">CONFIRMED</option>
-                            <option value="CANCELLED">CANCELLED</option>
-                            <option value="COMPLETED">COMPLETED</option>
-                          </select>
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     ))

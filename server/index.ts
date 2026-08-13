@@ -320,6 +320,91 @@ async function initializeDatabase() {
           </div>
         `,
       },
+      {
+        code: 'PAYMENT_CONFIRMED',
+        name: 'Pago Confirmado y Reserva Activada (Huésped)',
+        subject: '🎉 ¡Pago Confirmado y Reserva Activada en Villa María!',
+        variables: JSON.stringify(['guest_name', 'start_date', 'end_date', 'total_price', 'reservation_id', 'location_address', 'location_maps_link']),
+        bodyHtml: `
+          <div style="background-color: #F8F5F0; padding: 30px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">
+              
+              <!-- Header Banner -->
+              <div style="background-color: #1B3B36; padding: 25px 20px; text-align: center; border-bottom: 3px solid #C17D5C;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-family: Georgia, serif; letter-spacing: 1px;">
+                  VILLA MARÍA 🌴
+                </h1>
+                <p style="color: #A3E635; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">
+                  ¡PAGO RECIBIDO Y RESERVA ACTIVADA!
+                </p>
+              </div>
+
+              <!-- Body Container -->
+              <div style="padding: 25px 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <span style="background-color: #DCFCE7; color: #166534; font-size: 12px; font-weight: bold; padding: 6px 16px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                    ✅ Pago Confirmado 100%
+                  </span>
+                  <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 12px 0 5px 0; font-size: 22px;">
+                    ¡Todo Listo para tu Viaje, {{guest_name}}!
+                  </h2>
+                  <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0; line-height: 1.5;">
+                    Hemos verificado correctamente el pago de tu reserva. Tu estadía en Villa María ha sido oficialmente <strong>CONFIRMADA Y ACTIVADA</strong>.
+                  </p>
+                </div>
+
+                <!-- Ticket Voucher Box -->
+                <div style="background-color: #EAE3D8; border: 1px solid rgba(27,59,54,0.15); border-radius: 18px; padding: 20px; margin-bottom: 20px;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <tr>
+                      <td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Código de Reserva:</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: bold; font-family: monospace; font-size: 14px; color: #1B3B36;">{{reservation_id}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Llegada (Check-in):</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{start_date}} (A partir de las 3:00 PM)</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; color: rgba(27,59,54,0.7);">Salida (Check-out):</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #1B3B36;">{{end_date}} (Hasta las 11:00 AM)</td>
+                    </tr>
+                    <tr style="border-top: 1px solid rgba(27,59,54,0.15);">
+                      <td style="padding: 10px 0 0 0; font-weight: bold; color: #1B3B36; font-size: 14px;">Monto Total Pagado:</td>
+                      <td style="padding: 10px 0 0 0; text-align: right; font-weight: bold; font-family: Georgia, serif; font-size: 18px; color: #166534;">{{total_price}}€ ✅</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <!-- Dynamic GPS Location Link Box -->
+                <div style="background-color: #ffffff; border: 1px solid rgba(27,59,54,0.15); border-radius: 14px; padding: 15px; text-align: center; margin-bottom: 20px;">
+                  <p style="margin: 0 0 8px 0; font-size: 12px; color: #1B3B36; font-weight: bold;">
+                    📍 Dirección de Llegada:
+                  </p>
+                  <p style="margin: 0 0 12px 0; font-size: 12px; color: rgba(27,59,54,0.8);">
+                    {{location_address}}
+                  </p>
+                  <a href="{{location_maps_link}}" target="_blank" style="display: inline-block; background-color: #1B3B36; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 10px 20px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                    🗺️ Abrir Navegación GPS Google Maps
+                  </a>
+                </div>
+
+                <!-- WhatsApp CTA -->
+                <div style="text-align: center;">
+                  <a href="{{whatsapp_url}}" target="_blank" style="display: block; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: bold; padding: 12px 20px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                    💬 Contactar al Anfitrión por WhatsApp
+                  </a>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <div style="background-color: #F8F5F0; padding: 15px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
+                © Villa María • Chichiriviche, Falcón, Venezuela
+              </div>
+
+            </div>
+          </div>
+        `,
+      },
     ];
 
     for (const tpl of defaultTemplates) {
@@ -730,6 +815,68 @@ app.put('/api/admin/reservations/:id/status', authenticateToken, requireAdmin, a
     // If cancelled, remove Google Event
     if (status === 'CANCELLED' && reservation.googleEventId) {
       await deleteCalendarEvent(reservation.googleEventId);
+    }
+
+    res.json({ success: true, reservation: updated });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE reservation
+app.delete('/api/admin/reservations/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reservation = await prisma.reservation.findUnique({ where: { id } });
+    if (!reservation) return res.status(404).json({ error: 'Reserva no encontrada.' });
+
+    if (reservation.googleEventId) {
+      await deleteCalendarEvent(reservation.googleEventId);
+    }
+
+    await prisma.reservation.delete({ where: { id } });
+    res.json({ success: true, message: 'Reserva eliminada correctamente.' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// CONFIRM PAYMENT — marks as CONFIRMED and sends PAYMENT_CONFIRMED email to client
+app.post('/api/admin/reservations/:id/confirm-payment', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reservation = await prisma.reservation.findUnique({ where: { id } });
+    if (!reservation) return res.status(404).json({ error: 'Reserva no encontrada.' });
+
+    const updated = await prisma.reservation.update({
+      where: { id },
+      data: { status: 'CONFIRMED' },
+    });
+
+    // Send PAYMENT_CONFIRMED email to client
+    if (reservation.guestEmail) {
+      const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'PAYMENT_CONFIRMED' } });
+      if (tpl) {
+        const locAddr = await prisma.propertySetting.findUnique({ where: { key: 'location_address' } });
+        const locMap = await prisma.propertySetting.findUnique({ where: { key: 'location_maps_link' } });
+        const waPhone = await prisma.propertySetting.findUnique({ where: { key: 'whatsapp_number' } });
+
+        const mapsLinkVal = locMap?.value || 'https://maps.google.com/?q=Chichiriviche,Venezuela';
+        const addressVal = locAddr?.value || 'Calle 15, Urbanización Privada, Chichiriviche, Estado Falcón, Venezuela';
+        const waVal = (waPhone?.value || '+584141234567').replace(/[^0-9]/g, '');
+
+        const html = tpl.bodyHtml
+          .replace(/{{guest_name}}/g, reservation.guestName)
+          .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
+          .replace(/{{start_date}}/g, new Date(reservation.startDate).toLocaleDateString('es-ES'))
+          .replace(/{{end_date}}/g, new Date(reservation.endDate).toLocaleDateString('es-ES'))
+          .replace(/{{total_price}}/g, reservation.totalPrice.toString())
+          .replace(/{{location_address}}/g, addressVal)
+          .replace(/{{location_maps_link}}/g, mapsLinkVal)
+          .replace(/{{whatsapp_url}}/g, `https://wa.me/${waVal}`);
+
+        sendEmail(reservation.guestEmail, tpl.subject, html);
+      }
     }
 
     res.json({ success: true, reservation: updated });
