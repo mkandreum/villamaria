@@ -849,28 +849,27 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                   </button>
                 )}
 
-                {/* Quick WhatsApp Templates */}
-                {selectedReservation.guestPhone && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setQuickWaReservation({
-                        id: selectedReservation.id,
-                        guestName: selectedReservation.guestName,
-                        guestPhone: selectedReservation.guestPhone,
-                        startDate: selectedReservation.startDate,
-                        endDate: selectedReservation.endDate,
-                        totalPrice: selectedReservation.totalPrice,
-                        status: selectedReservation.status,
-                      })
-                    }
-                    className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 font-bold text-xs uppercase tracking-wide transition-all text-center"
-                    title="Enviar mensajes automáticos por WhatsApp"
-                  >
-                    <MessageCircle className="w-4 h-4 shrink-0" />
-                    <span>WhatsApp 💬</span>
-                  </button>
-                )}
+                {/* Quick Email & WhatsApp Templates */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setQuickWaReservation({
+                      id: selectedReservation.id,
+                      guestName: selectedReservation.guestName,
+                      guestEmail: selectedReservation.guestEmail,
+                      guestPhone: selectedReservation.guestPhone,
+                      startDate: selectedReservation.startDate,
+                      endDate: selectedReservation.endDate,
+                      totalPrice: selectedReservation.totalPrice,
+                      status: selectedReservation.status,
+                    })
+                  }
+                  className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 font-bold text-xs uppercase tracking-wide transition-all text-center"
+                  title="Enviar plantillas oficiales por Correo Electrónico (Email) o WhatsApp"
+                >
+                  <Mail className="w-4 h-4 shrink-0" />
+                  <span>Mensajes &amp; Email ✉️</span>
+                </button>
 
                 {/* Pase Digital con QR */}
                 <button

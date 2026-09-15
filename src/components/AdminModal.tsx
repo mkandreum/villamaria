@@ -996,28 +996,27 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                 </button>
                               )}
 
-                              {/* Quick WhatsApp Templates Button */}
-                              {resItem.guestPhone && (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setQuickWaReservation({
-                                      id: resItem.id,
-                                      guestName: resItem.guestName,
-                                      guestPhone: resItem.guestPhone,
-                                      startDate: resItem.startDate,
-                                      endDate: resItem.endDate,
-                                      totalPrice: resItem.totalPrice,
-                                      status: resItem.status,
-                                    })
-                                  }
-                                  className="min-h-[44px] px-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 text-[11px] font-bold uppercase tracking-wide transition-colors"
-                                  title="Enviar mensajes rápidos (GPS, Wi-Fi, Check-out, etc.)"
-                                >
-                                  <MessageCircle className="w-4 h-4" />
-                                  <span>WhatsApp 💬</span>
-                                </button>
-                              )}
+                              {/* Quick Email & WhatsApp Communication Button */}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setQuickWaReservation({
+                                    id: resItem.id,
+                                    guestName: resItem.guestName,
+                                    guestEmail: resItem.guestEmail,
+                                    guestPhone: resItem.guestPhone,
+                                    startDate: resItem.startDate,
+                                    endDate: resItem.endDate,
+                                    totalPrice: resItem.totalPrice,
+                                    status: resItem.status,
+                                  })
+                                }
+                                className="min-h-[44px] px-3 flex items-center justify-center gap-1.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 text-[11px] font-bold uppercase tracking-wide transition-colors"
+                                title="Enviar plantillas por Correo Electrónico (Email) o WhatsApp (GPS, Wi-Fi, Check-out, etc.)"
+                              >
+                                <Mail className="w-4 h-4" />
+                                <span>Mensajes &amp; Email ✉️</span>
+                              </button>
 
                               {/* View / Download Guest Voucher */}
                               <button
