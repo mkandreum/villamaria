@@ -19,12 +19,20 @@ interface BookingConfirmationModalProps {
   booking: Booking;
   onClose: () => void;
   address?: string;
+  wifiSsid?: string;
+  wifiPass?: string;
+  mapsUrl?: string;
+  hostPhone?: string;
 }
 
 export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
   booking,
   onClose,
   address = PROPERTY_INFO.locationName,
+  wifiSsid,
+  wifiPass,
+  mapsUrl,
+  hostPhone,
 }) => {
   const [showVoucher, setShowVoucher] = useState(false);
   const nights = calculateNights(booking.checkIn, booking.checkOut);
@@ -186,6 +194,10 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             totalPrice: booking.totalPrice,
             status: booking.status,
             propertyAddress: address,
+            mapsUrl,
+            wifiSsid,
+            wifiPass,
+            hostPhone,
           }}
           onClose={() => setShowVoucher(false)}
         />

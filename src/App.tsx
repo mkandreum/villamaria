@@ -301,6 +301,10 @@ export default function App() {
             paymentMethod: 'transferencia',
           }}
           address={propertySettings.location_address}
+          mapsUrl={propertySettings.location_maps_link}
+          wifiSsid={propertySettings.wifi_ssid}
+          wifiPass={propertySettings.wifi_password}
+          hostPhone={propertySettings.whatsapp_number || propertySettings.contact_phone}
           onClose={() => setLastSubmittedBooking(null)}
         />
       )}
@@ -309,6 +313,11 @@ export default function App() {
       {isMyBookingsModalOpen && (
         <MyBookingsModal
           bookings={myBookings}
+          propertyAddress={propertySettings.location_address}
+          mapsUrl={propertySettings.location_maps_link}
+          wifiSsid={propertySettings.wifi_ssid}
+          wifiPass={propertySettings.wifi_password}
+          hostPhone={propertySettings.whatsapp_number || propertySettings.contact_phone}
           onClose={() => setIsMyBookingsModalOpen(false)}
           onCancelBooking={async (id: string) => {
             try {

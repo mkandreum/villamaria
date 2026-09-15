@@ -31,6 +31,7 @@ import {
   Copy,
   Sparkles,
   Ticket,
+  Wifi,
 } from 'lucide-react';
 import { api } from '../api';
 import { AMENITIES } from '../data/mockData';
@@ -1034,6 +1035,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                     status: resItem.status,
                                     propertyAddress: propertySettings.location_address,
                                     mapsUrl: propertySettings.location_maps_link,
+                                    wifiSsid: propertySettings.wifi_ssid,
+                                    wifiPass: propertySettings.wifi_password,
+                                    hostPhone: propertySettings.whatsapp_number || propertySettings.contact_phone,
                                   })
                                 }
                                 className="min-h-[44px] px-2.5 flex items-center justify-center gap-1 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold uppercase tracking-wide transition-colors"
@@ -1357,10 +1361,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     </div>
                   </div>
 
-                  {/* Ubicación y Contacto */}
+                  {/* Ubicación, Contacto & Wi-Fi */}
                   <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-4 sm:p-5 space-y-3.5 sm:space-y-4">
-                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">
-                      3. Ubicación y Contacto
+                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
+                      <Wifi className="w-4 h-4 text-emerald-400" />
+                      3. Ubicación, Contacto & Wi-Fi para Huéspedes
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                       <div>
@@ -1402,6 +1407,36 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                           onChange={(e) => setPropertySettings({ ...propertySettings, partner_emails: e.target.value })}
                           className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-emerald-100 min-h-[44px]"
                         />
+                      </div>
+                    </div>
+
+                    {/* Wi-Fi Huéspedes Configuration Sub-block */}
+                    <div className="pt-3 border-t border-emerald-500/20">
+                      <p className="text-[11px] text-emerald-300/80 mb-3">
+                        📶 Configuración de Red Wi-Fi para el <strong>Pase Digital QR</strong> y las <strong>Plantillas de WhatsApp</strong>:
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-emerald-300 mb-1">Nombre de Red Wi-Fi (SSID)</label>
+                          <input
+                            type="text"
+                            placeholder="Ej: VillaMaria_Privada_5G"
+                            value={propertySettings.wifi_ssid || ''}
+                            onChange={(e) => setPropertySettings({ ...propertySettings, wifi_ssid: e.target.value })}
+                            className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-emerald-100 min-h-[44px]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-emerald-300 mb-1">Contraseña del Wi-Fi</label>
+                          <input
+                            type="text"
+                            placeholder="Ej: MorrocoySol2026!"
+                            value={propertySettings.wifi_password || ''}
+                            onChange={(e) => setPropertySettings({ ...propertySettings, wifi_password: e.target.value })}
+                            className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-emerald-100 min-h-[44px]"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1795,6 +1830,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
             reservation={quickWaReservation}
             propertyAddress={propertySettings.location_address}
             mapsUrl={propertySettings.location_maps_link}
+            wifiSsid={propertySettings.wifi_ssid}
+            wifiPass={propertySettings.wifi_password}
             onClose={() => setQuickWaReservation(null)}
           />
         )}

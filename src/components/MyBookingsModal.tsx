@@ -9,12 +9,22 @@ interface MyBookingsModalProps {
   bookings: Booking[];
   onClose: () => void;
   onCancelBooking: (id: string) => void;
+  propertyAddress?: string;
+  mapsUrl?: string;
+  wifiSsid?: string;
+  wifiPass?: string;
+  hostPhone?: string;
 }
 
 export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   bookings,
   onClose,
   onCancelBooking,
+  propertyAddress,
+  mapsUrl,
+  wifiSsid,
+  wifiPass,
+  hostPhone,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVoucher, setSelectedVoucher] = useState<VoucherReservationData | null>(null);
@@ -134,6 +144,11 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                           guestsCount: b.adults || b.guestsCount || 1,
                           totalPrice: b.totalPrice,
                           status: b.status,
+                          propertyAddress,
+                          mapsUrl,
+                          wifiSsid,
+                          wifiPass,
+                          hostPhone,
                         })
                       }
                       className="text-xs text-emerald-950 font-bold bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all min-h-[36px] cursor-pointer"

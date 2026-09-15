@@ -888,6 +888,9 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                       status: selectedReservation.status,
                       propertyAddress: propertySettings?.location_address,
                       mapsUrl: propertySettings?.location_maps_link,
+                      wifiSsid: propertySettings?.wifi_ssid,
+                      wifiPass: propertySettings?.wifi_password,
+                      hostPhone: propertySettings?.whatsapp_number || propertySettings?.contact_phone,
                     })
                   }
                   className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/30 font-bold text-xs uppercase tracking-wide transition-all"
@@ -1093,6 +1096,8 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
           reservation={quickWaReservation}
           propertyAddress={propertySettings?.location_address}
           mapsUrl={propertySettings?.location_maps_link}
+          wifiSsid={propertySettings?.wifi_ssid}
+          wifiPass={propertySettings?.wifi_password}
           onClose={() => setQuickWaReservation(null)}
         />
       )}
