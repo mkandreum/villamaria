@@ -29,8 +29,10 @@ import {
   FileSpreadsheet,
   Check,
   Copy,
+  Sparkles,
 } from 'lucide-react';
 import { api } from '../api';
+import { AMENITIES } from '../data/mockData';
 import { SmtpSettingsSection } from './admin/SmtpSettingsSection';
 import { AdminCalendarView } from './admin/AdminCalendarView';
 import { AdminCreateReservationModal } from './admin/AdminCreateReservationModal';
@@ -398,6 +400,54 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       return { url, category };
     });
     setPropertySettings({ ...propertySettings, gallery_images: updated });
+  };
+
+  // ----------------------------------------------------
+  // Amenities / Services Management
+  // ----------------------------------------------------
+  const getAmenitiesList = (): Array<{ id: string; title: string; emoji: string; description: string }> => {
+    const am = propertySettings.amenities;
+    if (!am) return AMENITIES;
+    if (Array.isArray(am)) return am;
+    if (typeof am === 'string') {
+      try {
+        const parsed = JSON.parse(am);
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : AMENITIES;
+      } catch {
+        return AMENITIES;
+      }
+    }
+    return AMENITIES;
+  };
+
+  const handleUpdateAmenity = (index: number, field: string, value: string) => {
+    const current = [...getAmenitiesList()];
+    if (current[index]) {
+      current[index] = { ...current[index], [field]: value };
+      setPropertySettings({ ...propertySettings, amenities: current });
+    }
+  };
+
+  const handleAddAmenity = () => {
+    const current = [...getAmenitiesList()];
+    current.push({
+      id: `am-${Date.now()}`,
+      title: 'Nuevo Servicio',
+      emoji: '✨',
+      description: 'Detalles del servicio incluido para los huéspedes.',
+    });
+    setPropertySettings({ ...propertySettings, amenities: current });
+  };
+
+  const handleDeleteAmenity = (index: number) => {
+    const current = getAmenitiesList().filter((_, i) => i !== index);
+    setPropertySettings({ ...propertySettings, amenities: current });
+  };
+
+  const handleResetDefaultAmenities = () => {
+    if (window.confirm('¿Restablecer la lista a los servicios sugeridos por defecto de Villa María?')) {
+      setPropertySettings({ ...propertySettings, amenities: AMENITIES });
+    }
   };
 
   // Blocked Dates
@@ -1403,6 +1453,151 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         className="text-xs text-emerald-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-emerald-950 hover:file:bg-emerald-400 cursor-pointer min-h-[44px] w-full max-w-full"
                       />
                     </div>
+                  </div>
+
+                  {/* 5. Servicios y Comodidades */}
+                  <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-4 sm:p-5 space-y-3.5 sm:space-y-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                      <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-emerald-400" />
+                        5. Servicios y Comodidades Incluidas
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleResetDefaultAmenities}
+                          className="text-[11px] text-emerald-400/80 hover:text-emerald-300 underline font-medium"
+                        >
+                          Restaurar sugeridos
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Section Header Text Inputs */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-emerald-300 mb-1">Insignia / Badge Superior</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: ✨ Servicios de la Propiedad"
+                          value={propertySettings.amenities_badge || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, amenities_badge: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2 text-xs text-emerald-100 min-h-[40px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-emerald-300 mb-1">Título de la Sección</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Comodidades Incluidas 🏡"
+                          value={propertySettings.amenities_title || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, amenities_title: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2 text-xs text-emerald-100 min-h-[40px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-emerald-300 mb-1">Subtítulo Descriptivo</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Instalaciones preparadas para tu máximo confort..."
+                          value={propertySettings.amenities_subtitle || ''}
+                          onChange={(e) => setPropertySettings({ ...propertySettings, amenities_subtitle: e.target.value })}
+                          className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2 text-xs text-emerald-100 min-h-[40px]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Amenities List */}
+                    <div className="space-y-3 pt-2">
+                      {getAmenitiesList().map((item, idx) => {
+                        const commonEmojis = ['📶', '🏊‍♂️', '🚗', '❄️', '🍖', '🍳', '⚡', '📺', '🚿', '🌴', '☕', '🧺', '✨'];
+                        return (
+                          <div
+                            key={item.id || idx}
+                            className="bg-emerald-950/60 border border-emerald-500/25 rounded-xl p-3 sm:p-4 space-y-2.5 transition-all hover:border-emerald-500/40"
+                          >
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                              {/* Emoji Picker / Input */}
+                              <div className="flex items-center gap-2 w-full sm:w-auto">
+                                <div className="flex items-center gap-1.5 bg-emerald-900/60 border border-emerald-500/30 rounded-xl p-1 shrink-0">
+                                  <input
+                                    type="text"
+                                    value={item.emoji || '✨'}
+                                    onChange={(e) => handleUpdateAmenity(idx, 'emoji', e.target.value)}
+                                    className="w-9 h-9 text-center text-xl bg-transparent border-none text-white focus:outline-none"
+                                    title="Escribe cualquier emoji"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none max-w-full">
+                                  {commonEmojis.map((em) => (
+                                    <button
+                                      type="button"
+                                      key={em}
+                                      onClick={() => handleUpdateAmenity(idx, 'emoji', em)}
+                                      className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-all ${
+                                        item.emoji === em
+                                          ? 'bg-emerald-500 text-emerald-950 font-bold shadow'
+                                          : 'hover:bg-emerald-800/60 text-emerald-200'
+                                      }`}
+                                    >
+                                      {em}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Delete button */}
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteAmenity(idx)}
+                                className="self-end sm:self-center flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 border border-red-500/30 text-xs font-semibold transition-all min-h-[36px]"
+                                title="Eliminar servicio"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Eliminar</span>
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                              <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400/80 mb-0.5">
+                                  Nombre del Servicio *
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="Ej: Planta Eléctrica 24/7"
+                                  value={item.title || (item as any).name || ''}
+                                  onChange={(e) => handleUpdateAmenity(idx, 'title', e.target.value)}
+                                  className="w-full bg-emerald-900/50 border border-emerald-500/30 rounded-xl px-3 py-2 text-xs sm:text-sm text-white font-semibold focus:outline-none focus:border-emerald-400 min-h-[40px]"
+                                />
+                              </div>
+                              <div className="sm:col-span-2">
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400/80 mb-0.5">
+                                  Descripción para el Huésped *
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="Ej: Generador automático para respaldo de energía continuo..."
+                                  value={item.description || ''}
+                                  onChange={(e) => handleUpdateAmenity(idx, 'description', e.target.value)}
+                                  className="w-full bg-emerald-900/50 border border-emerald-500/30 rounded-xl px-3 py-2 text-xs sm:text-sm text-emerald-100 focus:outline-none focus:border-emerald-400 min-h-[40px]"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Add Amenity Button */}
+                    <button
+                      type="button"
+                      onClick={handleAddAmenity}
+                      className="w-full py-2.5 px-4 bg-emerald-900/50 hover:bg-emerald-800/80 border border-dashed border-emerald-500/40 rounded-xl text-xs font-bold text-emerald-300 uppercase tracking-wider transition-all flex items-center justify-center gap-2 min-h-[44px]"
+                    >
+                      <Plus className="w-4 h-4 text-emerald-400" />
+                      <span>Agregar Nuevo Servicio / Comodidad</span>
+                    </button>
                   </div>
 
                   <button
