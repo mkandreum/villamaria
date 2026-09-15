@@ -36,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <nav
       aria-label="Navegación flotante principal"
       className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-3 md:bottom-auto transition-all duration-300 w-[calc(100%-20px)] max-w-sm sm:max-w-md md:max-w-3xl lg:max-w-4xl ${
-        hasBanner ? 'md:top-14' : 'md:top-4'
+        hasBanner ? 'md:top-10' : 'md:top-4'
       }`}
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
