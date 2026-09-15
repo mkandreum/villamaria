@@ -84,21 +84,21 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
+      <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-white transition-colors z-10"
+          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-white transition-colors z-10 min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="mb-4 shrink-0 pr-8">
-          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest">
+        <div className="mb-3.5 sm:mb-4 shrink-0 pr-8">
+          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">
             Reserva Directa Villa María 🏡
           </span>
-          <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#1B3B36] mt-1.5 leading-tight">
+          <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1B3B36] mt-1 leading-tight">
             Datos de Reserva
           </h2>
           <p className="text-xs text-[#1B3B36]/70 mt-0.5 font-sans">
@@ -107,7 +107,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-none">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 scrollbar-none">
           {/* Personal Info */}
           <div className="space-y-2.5">
             <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
@@ -124,7 +124,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                   placeholder="Ej. Juan Pérez"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2 text-xs text-[#1B3B36] focus:outline-none"
+                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#1B3B36] focus:outline-none min-h-[44px]"
                 />
               </div>
               <div>
@@ -137,7 +137,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                   placeholder="+58 414 1234567"
                   value={guestPhone}
                   onChange={(e) => setGuestPhone(e.target.value)}
-                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2 text-xs text-[#1B3B36] focus:outline-none"
+                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#1B3B36] focus:outline-none min-h-[44px]"
                 />
               </div>
             </div>
@@ -151,7 +151,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                 placeholder="juan@gmail.com"
                 value={guestEmail}
                 onChange={(e) => setGuestEmail(e.target.value)}
-                className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2 text-xs text-[#1B3B36] focus:outline-none"
+                className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#1B3B36] focus:outline-none min-h-[44px]"
               />
             </div>
           </div>
@@ -170,7 +170,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             </div>
 
             {availableMethods.length > 0 ? (
-              <div className="grid grid-cols-2 gap-2 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                 {availableMethods.map((m) => {
                   const IconComp = m.icon;
                   return (
@@ -178,14 +178,14 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                       key={m.id}
                       type="button"
                       onClick={() => setPaymentMethod(m.id)}
-                      className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all ${
+                      className={`p-2.5 rounded-xl border text-left flex items-center gap-2 transition-all min-h-[44px] cursor-pointer ${
                         paymentMethod === m.id
                           ? 'bg-[#1B3B36] text-white border-[#1B3B36] font-bold shadow-sm'
-                          : 'bg-white border-[#1B3B36]/15 text-[#1B3B36]/80'
+                          : 'bg-white border-[#1B3B36]/15 text-[#1B3B36]/80 hover:bg-[#EAE3D8]'
                       }`}
                     >
                       <IconComp className="w-3.5 h-3.5 shrink-0" />
-                      <span className="text-[11px] font-sans">{m.label}</span>
+                      <span className="text-xs font-sans truncate">{m.label}</span>
                     </button>
                   );
                 })}
@@ -208,7 +208,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
               placeholder="Ej. Hora estimada de llegada 3:00 PM."
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
-              className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2 text-xs text-[#1B3B36] focus:outline-none"
+              className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none resize-none"
             />
           </div>
 
@@ -218,9 +218,9 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
               <span className="text-[10px] text-[#1B3B36]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
               <CurrencyToggle />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-serif font-bold text-[#1B3B36]">{formatPrice(breakdown.totalPrice)}</span>
-              <div className="text-right text-[11px] text-[#1B3B36]/80">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-base sm:text-lg font-serif font-bold text-[#1B3B36] truncate">{formatPrice(breakdown.totalPrice)}</span>
+              <div className="text-right text-[11px] text-[#1B3B36]/80 shrink-0">
                 <span>Anticipo 50%: </span>
                 <strong className="text-emerald-800 font-bold">{formatPrice(Math.round(breakdown.totalPrice / 2))}</strong>
               </div>
@@ -230,7 +230,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           {/* Submit CTA */}
           <button
             type="submit"
-            className="w-full bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[44px]"
+            className="w-full bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[48px] cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>Confirmar Reserva y Comprobante 📅</span>

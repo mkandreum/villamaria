@@ -89,28 +89,28 @@ export const Hero: React.FC<HeroProps> = ({
   )}`;
 
   return (
-    <section className="relative pt-3 md:pt-20 lg:pt-24 pb-8 md:pb-16 overflow-hidden bg-gradient-to-b from-[#F8F5F0] via-[#EAE3D8]/40 to-[#F8F5F0] text-[#1B3B36] font-sans border-b border-[#1B3B36]/10">
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <section className="relative pt-3 md:pt-20 lg:pt-24 pb-12 md:pb-16 overflow-hidden bg-gradient-to-b from-[#F8F5F0] via-[#EAE3D8]/40 to-[#F8F5F0] text-[#1B3B36] font-sans border-b border-[#1B3B36]/10">
+      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
         
         {/* Headline & Title Section */}
         <div className="text-center lg:text-left max-w-4xl mx-auto lg:mx-0 space-y-2 mb-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[10px] sm:text-xs font-bold font-sans uppercase tracking-wider">
             <span>✨</span>
-            <span>{subtitle}</span>
+            <span className="truncate max-w-[260px] sm:max-w-none">{subtitle}</span>
           </div>
 
           {/* Centered Large Professional Title */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-none pt-2 pb-1 break-words">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-tight sm:leading-none pt-1 sm:pt-2 pb-1 break-words">
             {title}
           </h1>
 
-          <p className="text-xs sm:text-base text-[#1B3B36]/80 max-w-2xl text-center lg:text-left pt-1 leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-base text-[#1B3B36]/80 max-w-2xl text-center lg:text-left pt-1 leading-relaxed">
             {description}
           </p>
         </div>
 
         {/* Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-10 items-center">
           
           {/* PHOTO CAROUSEL "AL AIRE" (Full-width, large, rounded corners, arrows on touch/hover) 📸 */}
           <div className="lg:col-span-7">
@@ -119,7 +119,7 @@ export const Hero: React.FC<HeroProps> = ({
               onTouchEnd={() => setTimeout(() => setShowArrows(false), 3000)}
               onMouseEnter={() => setShowArrows(true)}
               onMouseLeave={() => setShowArrows(false)}
-              className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[16/10] sm:aspect-[16/9] group bg-emerald-950"
+              className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl aspect-[16/10] sm:aspect-[16/9] group bg-emerald-950"
             >
               {photos.map((img: string, idx: number) => (
                 <img
@@ -140,14 +140,14 @@ export const Hero: React.FC<HeroProps> = ({
                 <>
                   <button
                     onClick={() => setActivePhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
                     title="Anterior foto"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => setActivePhotoIndex((prev) => (prev + 1) % photos.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
                     title="Siguiente foto"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -156,44 +156,45 @@ export const Hero: React.FC<HeroProps> = ({
               )}
 
               {/* Photo Dots */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 p-1">
                 {photos.map((_: any, idx: number) => (
                   <button
                     key={idx}
                     onClick={() => setActivePhotoIndex(idx)}
-                    className={`h-2 rounded-full transition-all ${
-                      idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2 bg-white/60'
+                    aria-label={`Ver foto ${idx + 1}`}
+                    className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                      idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2.5 bg-white/60 hover:bg-white'
                     }`}
                   />
                 ))}
               </div>
 
               {/* Editable Badge Overlay */}
-              <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
-                <span>{photoBadge}</span>
+              <div className="absolute top-3 left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1 shadow-md max-w-[80%] truncate">
+                <span className="truncate">{photoBadge}</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: Rating, WhatsApp CTA & Features */}
-          <div className="lg:col-span-5 space-y-4">
+          <div className="lg:col-span-5 space-y-3.5 sm:space-y-4">
             
             {/* Price & Rating Card */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#1B3B36]/10 shadow-lg space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-lg space-y-4">
+              <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider block">
                     Tarifa Estándar 🏷️
                   </span>
-                  <span className="text-2xl sm:text-3xl font-serif font-bold text-[#1B3B36]">
+                  <span className="text-xl sm:text-3xl font-serif font-bold text-[#1B3B36]">
                     {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
                   </span>
                 </div>
 
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <div className="flex text-amber-500 justify-end">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
                   <span className="text-xs font-bold text-[#1B3B36]">4.96/5.0 ⭐</span>
@@ -204,7 +205,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <button
                   onClick={onSearch}
-                  className="w-full py-3.5 rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <Calendar className="w-4 h-4 text-emerald-400" />
                   <span>Reservar 📅</span>
@@ -214,7 +215,7 @@ export const Hero: React.FC<HeroProps> = ({
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
                   <span>WhatsApp 💬</span>
@@ -227,7 +228,7 @@ export const Hero: React.FC<HeroProps> = ({
               {[feat1, feat2, feat3, feat4].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 p-2.5 px-3.5 rounded-2xl bg-white border border-[#1B3B36]/10 text-xs font-semibold text-[#1B3B36] shadow-sm"
+                  className="flex items-center gap-2 p-2.5 px-3 rounded-xl sm:rounded-2xl bg-white border border-[#1B3B36]/10 text-xs font-semibold text-[#1B3B36] shadow-sm min-h-[42px]"
                 >
                   <span className="text-[11px] truncate">{item}</span>
                 </div>

@@ -124,33 +124,33 @@ export const SmtpSettingsSection: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
             <Mail className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-emerald-100 flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-emerald-100 flex items-center gap-2 flex-wrap">
               Configuración de Servidor SMTP
               {isConfigured ? (
-                <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-normal">
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">
                   Activo
                 </span>
               ) : (
-                <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-normal">
+                <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">
                   No configurado
                 </span>
               )}
             </h3>
             <p className="text-xs text-emerald-300/70 mt-0.5">
-              Gestiona el servidor de envío de correos sin necesidad de reiniciar o redesplegar la aplicación.
+              Gestiona el servidor de envío de correos sin necesidad de reiniciar la aplicación.
             </p>
           </div>
         </div>
 
         {updatedAt && (
-          <span className="text-xs text-emerald-400/60 font-mono">
-            Última actualización: {new Date(updatedAt).toLocaleString('es-ES')}
+          <span className="text-[11px] text-emerald-400/60 font-mono">
+            Actualizado: {new Date(updatedAt).toLocaleString('es-ES')}
           </span>
         )}
       </div>
@@ -158,66 +158,66 @@ export const SmtpSettingsSection: React.FC = () => {
       {/* Status Alert */}
       {statusMessage && (
         <div
-          className={`p-4 rounded-xl border flex items-start gap-3 text-sm ${
+          className={`p-3.5 sm:p-4 rounded-xl border flex items-start gap-3 text-xs sm:text-sm ${
             statusMessage.type === 'success'
               ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200'
               : 'bg-red-950/80 border-red-500/40 text-red-200'
           }`}
         >
           {statusMessage.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
           )}
-          <span>{statusMessage.text}</span>
+          <span className="break-words">{statusMessage.text}</span>
         </div>
       )}
 
       {/* Form Grid */}
-      <form onSubmit={handleSave} className="bg-emerald-950/60 border border-emerald-500/20 rounded-xl p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <form onSubmit={handleSave} className="bg-emerald-950/60 border border-emerald-500/20 rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
           {/* Host */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Servidor SMTP (Host)</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Servidor SMTP (Host)</label>
             <input
               type="text"
               required
               placeholder="smtp.gmail.com"
               value={formData.host}
               onChange={(e) => setFormData({ ...formData, host: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
 
           {/* Port */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Puerto</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Puerto</label>
             <input
               type="number"
               required
               placeholder="587"
               value={formData.port}
               onChange={(e) => setFormData({ ...formData, port: parseInt(e.target.value, 10) || 587 })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
 
           {/* User */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Usuario SMTP / Correo de envío</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Usuario SMTP / Correo de envío</label>
             <input
               type="text"
               required
               placeholder="ejemplo@gmail.com"
               value={formData.user}
               onChange={(e) => setFormData({ ...formData, user: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5 flex items-center justify-between">
+            <label className="block text-xs font-semibold text-emerald-300 mb-1 flex items-center justify-between">
               <span>Contraseña SMTP</span>
               <span className="text-[10px] text-emerald-400/60 font-normal flex items-center gap-1">
                 <Key className="w-3 h-3" /> Cifrado AES-256 en BD
@@ -228,43 +228,43 @@ export const SmtpSettingsSection: React.FC = () => {
               placeholder="••••••••••••"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
 
           {/* From Name */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Nombre del Remitente</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Nombre del Remitente</label>
             <input
               type="text"
               required
               placeholder="Villa María Reservas"
               value={formData.fromName}
               onChange={(e) => setFormData({ ...formData, fromName: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
 
           {/* From Email */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Email Remitente (From)</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Email Remitente (From)</label>
             <input
               type="email"
               required
               placeholder="reservas@villamaria.com"
               value={formData.fromEmail}
               onChange={(e) => setFormData({ ...formData, fromEmail: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
 
           {/* Security */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Tipo de Seguridad</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Tipo de Seguridad</label>
             <select
               value={formData.security}
               onChange={(e) => setFormData({ ...formData, security: e.target.value as any })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             >
               <option value="STARTTLS" className="bg-emerald-950 text-emerald-100">
                 STARTTLS (Puerto 587 - Recomendado)
@@ -280,44 +280,42 @@ export const SmtpSettingsSection: React.FC = () => {
 
           {/* Reply To */}
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1.5">Dirección de Respuesta (Reply-To opcional)</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Dirección de Respuesta (Reply-To opcional)</label>
             <input
               type="email"
               placeholder="contacto@villamaria.com"
               value={formData.replyTo}
               onChange={(e) => setFormData({ ...formData, replyTo: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
             />
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="pt-4 border-t border-emerald-500/20 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleTestConnection}
-              disabled={testingConnection}
-              className="px-4 py-2 bg-emerald-900/60 hover:bg-emerald-800/80 border border-emerald-500/40 text-emerald-200 text-xs font-semibold rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
-            >
-              {testingConnection ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
-                  <span>Verificando...</span>
-                </>
-              ) : (
-                <>
-                  <ShieldAlert className="w-4 h-4 text-emerald-400" />
-                  <span>Probar Conexión SMTP</span>
-                </>
-              )}
-            </button>
-          </div>
+        <div className="pt-4 border-t border-emerald-500/20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={handleTestConnection}
+            disabled={testingConnection}
+            className="w-full sm:w-auto px-4 py-2.5 bg-emerald-900/60 hover:bg-emerald-800/80 border border-emerald-500/40 text-emerald-200 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 min-h-[44px]"
+          >
+            {testingConnection ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+                <span>Verificando...</span>
+              </>
+            ) : (
+              <>
+                <ShieldAlert className="w-4 h-4 text-emerald-400" />
+                <span>Probar Conexión SMTP</span>
+              </>
+            )}
+          </button>
 
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 text-xs font-bold rounded-lg hover:from-emerald-400 hover:to-teal-400 transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 text-xs font-bold rounded-xl hover:from-emerald-400 hover:to-teal-400 transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]"
           >
             {saving ? (
               <>
@@ -332,8 +330,8 @@ export const SmtpSettingsSection: React.FC = () => {
       </form>
 
       {/* Test Email Card */}
-      <div className="bg-emerald-950/60 border border-emerald-500/20 rounded-xl p-6 space-y-4">
-        <h4 className="text-sm font-bold text-emerald-100 flex items-center gap-2">
+      <div className="bg-emerald-950/60 border border-emerald-500/20 rounded-2xl p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+        <h4 className="text-xs sm:text-sm font-bold text-emerald-100 flex items-center gap-2">
           <Send className="w-4 h-4 text-emerald-400" />
           Enviar Email de Prueba
         </h4>
@@ -341,19 +339,19 @@ export const SmtpSettingsSection: React.FC = () => {
           Introduce una dirección de correo para verificar el envío de un mensaje de prueba en tiempo real.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <input
             type="email"
             placeholder="destinatario@ejemplo.com"
             value={testTargetEmail}
             onChange={(e) => setTestTargetEmail(e.target.value)}
-            className="w-full sm:flex-1 px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-lg text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+            className="w-full sm:flex-1 px-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
           />
           <button
             type="button"
             onClick={handleSendTestEmail}
             disabled={sendingTestEmail || !testTargetEmail}
-            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-md"
+            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-md min-h-[44px]"
           >
             {sendingTestEmail ? (
               <>

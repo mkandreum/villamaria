@@ -116,11 +116,11 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   const { formatPrice } = useCurrency();
 
   return (
-    <section id="disponibilidad" className="py-10 sm:py-16 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+    <section id="disponibilidad" className="py-8 sm:py-16 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6">
         
         {/* Main Card Container */}
-        <div className="bg-white border border-[#1B3B36]/15 rounded-3xl p-5 sm:p-8 shadow-xl space-y-6">
+        <div className="bg-white border border-[#1B3B36]/15 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-xl space-y-5 sm:space-y-6">
           
           {/* Header */}
           <div className="text-center border-b border-[#1B3B36]/10 pb-4">
@@ -128,27 +128,27 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
               <CalendarIcon className="w-3.5 h-3.5" />
               <span>Reserva Tu Estancia 🏡</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#1B3B36]">
+            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#1B3B36] tracking-tight">
               Calendario de Disponibilidad
             </h2>
-            <p className="text-xs text-[#1B3B36]/70 mt-1">
+            <p className="text-xs text-[#1B3B36]/70 mt-1 max-w-md mx-auto">
               Selecciona tus huéspedes y las fechas de llegada y salida.
             </p>
           </div>
 
           {/* STEP 1: SELECT GUESTS */}
-          <div className="bg-[#EAE3D8]/50 border border-[#1B3B36]/10 rounded-2xl p-4 space-y-2">
+          <div className="bg-[#EAE3D8]/50 border border-[#1B3B36]/10 rounded-2xl p-3.5 sm:p-4 space-y-2">
             <label className="text-xs font-bold uppercase tracking-wider text-[#1B3B36] flex items-center gap-1.5">
               <Users className="w-4 h-4 text-emerald-800" />
               <span>1. Número de Huéspedes</span>
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <div>
                 <span className="text-[10px] text-[#1B3B36]/70 block font-semibold mb-1">Adultos</span>
                 <select
                   value={adults}
                   onChange={(e) => onAdultsChange(Number(e.target.value))}
-                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs text-[#1B3B36] font-bold focus:outline-none"
+                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs text-[#1B3B36] font-bold focus:outline-none min-h-[44px]"
                 >
                   {[...Array(12)].map((_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -162,7 +162,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 <select
                   value={childrenCount}
                   onChange={(e) => onChildrenChange(Number(e.target.value))}
-                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs text-[#1B3B36] font-bold focus:outline-none"
+                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs text-[#1B3B36] font-bold focus:outline-none min-h-[44px]"
                 >
                   {[...Array(8)].map((_, i) => (
                     <option key={i} value={i}>
@@ -176,26 +176,28 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
           {/* STEP 2: CALENDAR DATE PICKER */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1B3B36] flex items-center gap-1.5">
                 <CalendarIcon className="w-4 h-4 text-emerald-800" />
                 <span>2. Elige Fechas en el Calendario</span>
               </label>
 
               {/* Month Navigation */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-end gap-2">
                 <button
                   onClick={prevMonth}
-                  className="p-1.5 rounded-full bg-[#F8F5F0] hover:bg-[#1B3B36] hover:text-white transition-colors border border-[#1B3B36]/10 text-[#1B3B36]"
+                  aria-label="Mes anterior"
+                  className="p-2 sm:p-1.5 rounded-full bg-[#F8F5F0] hover:bg-[#1B3B36] hover:text-white transition-colors border border-[#1B3B36]/10 text-[#1B3B36] min-w-[38px] min-h-[38px] flex items-center justify-center cursor-pointer active:scale-95"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="text-sm font-serif font-bold text-[#1B3B36] min-w-[110px] text-center">
+                <span className="text-sm font-serif font-bold text-[#1B3B36] min-w-[120px] text-center">
                   {monthNames[month]} {year}
                 </span>
                 <button
                   onClick={nextMonth}
-                  className="p-1.5 rounded-full bg-[#F8F5F0] hover:bg-[#1B3B36] hover:text-white transition-colors border border-[#1B3B36]/10 text-[#1B3B36]"
+                  aria-label="Mes siguiente"
+                  className="p-2 sm:p-1.5 rounded-full bg-[#F8F5F0] hover:bg-[#1B3B36] hover:text-white transition-colors border border-[#1B3B36]/10 text-[#1B3B36] min-w-[38px] min-h-[38px] flex items-center justify-center cursor-pointer active:scale-95"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -212,7 +214,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             {/* Days Grid */}
             <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
               {daysGrid.map((dateStr, idx) => {
-                if (!dateStr) return <div key={`empty-${idx}`} className="h-9 sm:h-11" />;
+                if (!dateStr) return <div key={`empty-${idx}`} className="h-10 sm:h-11" />;
 
                 const dayNum = parseInt(dateStr.split('-')[2], 10);
                 const isBooked = isDateBooked(dateStr, bookings);
@@ -220,7 +222,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 const isSelectedEnd = dateStr === checkOut;
                 const isInSelectedRange = checkIn && checkOut && dateStr > checkIn && dateStr < checkOut;
 
-                let btnClass = 'h-9 sm:h-11 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center ';
+                let btnClass = 'h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-bold transition-all flex flex-col items-center justify-center cursor-pointer min-h-[40px] ';
                 if (isBooked) {
                   btnClass += 'bg-red-50 text-red-300 cursor-not-allowed line-through ';
                 } else if (isSelectedStart || isSelectedEnd) {
@@ -228,7 +230,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 } else if (isInSelectedRange) {
                   btnClass += 'bg-emerald-100 text-emerald-950 font-bold ';
                 } else {
-                  btnClass += 'bg-[#F8F5F0] hover:bg-emerald-50 text-[#1B3B36] border border-[#1B3B36]/10 ';
+                  btnClass += 'bg-[#F8F5F0] hover:bg-emerald-50 text-[#1B3B36] border border-[#1B3B36]/10 active:scale-95 ';
                 }
 
                 return (
@@ -251,7 +253,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           </div>
 
             {/* STEP 3: PRICE SUMMARY & RESERVATION CTA */}
-          <div className="bg-[#F8F5F0] border border-[#1B3B36]/15 rounded-2xl p-4 sm:p-5 space-y-3">
+          <div className="bg-[#F8F5F0] border border-[#1B3B36]/15 rounded-2xl p-3.5 sm:p-5 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#1B3B36]/70">Llegada:</span>
               <div className="flex items-center gap-2">
@@ -262,7 +264,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                       onCheckInChange('');
                       onCheckOutChange('');
                     }}
-                    className="text-[10px] text-emerald-800 hover:text-emerald-950 font-bold underline"
+                    className="text-[10px] text-emerald-800 hover:text-emerald-950 font-bold underline py-1 px-1 cursor-pointer"
                   >
                     Limpiar
                   </button>
@@ -282,7 +284,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             )}
 
             {priceBreakdown.nights > 0 && !isOccupiedError && (
-              <div className="pt-3 border-t border-[#1B3B36]/15 space-y-2">
+              <div className="pt-3 border-t border-[#1B3B36]/15 space-y-2.5">
                 <div className="flex justify-between text-xs text-[#1B3B36]/80">
                   <span>{priceBreakdown.nights} noche(s) x {formatPrice(pricing.baseNightlyRate)}</span>
                   <span>{formatPrice(priceBreakdown.baseNightsSubtotal)}</span>
@@ -291,23 +293,23 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                   <span>Gastos de limpieza</span>
                   <span>{formatPrice(priceBreakdown.cleaningFee)}</span>
                 </div>
-                <div className="flex justify-between items-center text-base font-serif font-bold text-[#1B3B36] pt-2 border-t border-[#1B3B36]/15">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between text-base font-serif font-bold text-[#1B3B36] pt-2 border-t border-[#1B3B36]/15 gap-1.5">
                   <span className="flex items-center gap-2">
                     Total Estancia:
                     <CurrencyToggle />
                   </span>
-                  <span className="text-xl text-[#1B3B36]">{formatPrice(priceBreakdown.totalPrice)}</span>
+                  <span className="text-xl sm:text-2xl text-[#1B3B36]">{formatPrice(priceBreakdown.totalPrice)}</span>
                 </div>
 
                 <button
                   onClick={onInitiateBooking}
-                  className="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Reservar Ahora 📅</span>
                 </button>
 
-                <div className="flex items-center justify-center gap-4 text-[10px] text-[#1B3B36]/60 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-[#1B3B36]/60 pt-2">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" /> Reserva Directa Segura
                   </span>

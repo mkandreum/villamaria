@@ -75,7 +75,7 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               setVisible(false);
               if (onClose) onClose();
             }}
-            className="p-1 rounded-full text-emerald-400/70 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-2 rounded-full text-emerald-400/70 hover:text-white hover:bg-white/10 transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
             title="Cerrar aviso"
           >
             <X className="w-3.5 h-3.5" />

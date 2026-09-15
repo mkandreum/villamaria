@@ -48,34 +48,34 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
   };
 
   return (
-    <section id="amenities" className="py-12 sm:py-20 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="amenities" className="py-10 sm:py-20 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         {/* Title */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
             <span>{badge}</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
             {title}
           </h2>
-          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-2">
+          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
             {subtitle}
           </p>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
           {normalizedAmenities.map((item: any, idx: number) => (
             <div
               key={item.id || idx}
-              className="bg-white rounded-3xl p-6 border border-[#1B3B36]/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex items-start gap-4"
+              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex items-start gap-3.5 sm:gap-4"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[#EAE3D8] text-2xl flex items-center justify-center shrink-0 shadow-inner">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#EAE3D8] text-xl sm:text-2xl flex items-center justify-center shrink-0 shadow-inner">
                 {item.emoji || getEmojiForAmenity(item.title)}
               </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-serif font-bold text-[#1B3B36]">{item.title}</h3>
+              <div className="space-y-1 min-w-0">
+                <h3 className="text-sm sm:text-base font-serif font-bold text-[#1B3B36] truncate">{item.title}</h3>
                 <p className="text-xs text-[#1B3B36]/70 leading-relaxed font-sans">{item.description}</p>
               </div>
             </div>

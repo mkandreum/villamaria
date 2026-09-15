@@ -89,27 +89,28 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-emerald-950 border border-emerald-500/30 rounded-3xl max-w-xl w-full p-5 sm:p-7 shadow-2xl relative my-6 text-emerald-100 font-sans">
+    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn">
+      <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-xl w-full p-4 sm:p-6 md:p-7 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto text-emerald-100 font-sans">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition-colors"
+          aria-label="Cerrar modal"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
-        <div className="flex items-center gap-3 mb-5 border-b border-emerald-500/20 pb-4">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20">
+        <div className="flex items-center gap-3 mb-4 sm:mb-5 border-b border-emerald-500/20 pb-3 sm:pb-4 pr-10">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20 shrink-0">
             <Calendar className="w-5 h-5" />
           </div>
-          <div>
-            <h3 className="text-lg sm:text-xl font-bold text-white font-serif tracking-tight">
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white font-serif tracking-tight leading-snug truncate">
               Crear Nueva Reserva Manual
             </h3>
-            <p className="text-xs text-emerald-300/70">
-              Registra una reserva directa, telefónica o externa en el sistema
+            <p className="text-[11px] sm:text-xs text-emerald-300/70 truncate">
+              Registra una reserva directa o telefónica en el sistema
             </p>
           </div>
         </div>
@@ -120,9 +121,9 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4 text-xs">
           {/* Guest Details */}
-          <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-4 space-y-3">
+          <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-4 space-y-3">
             <h4 className="font-bold text-emerald-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
               <User className="w-3.5 h-3.5 text-emerald-400" />
               Datos del Huésped
@@ -136,14 +137,14 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                 placeholder="Ej. Carlos Mendoza"
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
-                className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
+                className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-emerald-300 font-semibold mb-1 flex items-center gap-1">
-                  <Mail className="w-3 h-3 text-emerald-400" />
+                  <Mail className="w-3.5 h-3.5 text-emerald-400" />
                   Correo Electrónico
                 </label>
                 <input
@@ -151,13 +152,13 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                   placeholder="cliente@ejemplo.com"
                   value={guestEmail}
                   onChange={(e) => setGuestEmail(e.target.value)}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
                 />
               </div>
 
               <div>
                 <label className="block text-emerald-300 font-semibold mb-1 flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-emerald-400" />
+                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
                   Teléfono / WhatsApp
                 </label>
                 <input
@@ -165,14 +166,14 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                   placeholder="+58 414 1234567"
                   value={guestPhone}
                   onChange={(e) => setGuestPhone(e.target.value)}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
                 />
               </div>
             </div>
           </div>
 
           {/* Dates and Occupancy */}
-          <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-4 space-y-3">
+          <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-4 space-y-3">
             <h4 className="font-bold text-emerald-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-emerald-400" />
               Fechas & Huéspedes
@@ -186,7 +187,7 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400"
                 />
               </div>
 
@@ -198,19 +199,19 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                   min={startDate}
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400"
                 />
               </div>
 
               <div>
                 <label className="block text-emerald-300 font-semibold mb-1 flex items-center gap-1">
-                  <Users className="w-3 h-3 text-emerald-400" />
+                  <Users className="w-3.5 h-3.5 text-emerald-400" />
                   Nº Huéspedes
                 </label>
                 <select
                   value={guestsCount}
                   onChange={(e) => setGuestsCount(Number(e.target.value))}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400"
                 >
                   {[...Array(16)].map((_, i) => (
                     <option key={i + 1} value={i + 1}>
@@ -229,7 +230,7 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
           </div>
 
           {/* Pricing and Status */}
-          <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-4 space-y-3">
+          <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-4 space-y-3">
             <h4 className="font-bold text-emerald-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
               Tarifa & Estado
@@ -241,7 +242,7 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400"
                 >
                   <option value="CONFIRMED">Confirmada (Pago Acreditado) ✅</option>
                   <option value="PENDING">Pendiente (Por Pagar) 🟡</option>
@@ -257,17 +258,17 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                   placeholder={autoPrice > 0 ? String(autoPrice) : '150'}
                   value={customPrice}
                   onChange={(e) => setCustomPrice(e.target.value)}
-                  className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-amber-300 font-bold focus:outline-none focus:border-emerald-400"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-amber-300 font-bold text-sm focus:outline-none focus:border-emerald-400"
                 />
               </div>
             </div>
           </div>
 
           {/* Notes & Notification options */}
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div>
               <label className="block text-emerald-300 font-semibold mb-1 flex items-center gap-1">
-                <FileText className="w-3 h-3 text-emerald-400" />
+                <FileText className="w-3.5 h-3.5 text-emerald-400" />
                 Notas del Huésped / Requerimientos
               </label>
               <input
@@ -275,19 +276,19 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
                 placeholder="Ej. Llegada tarde 8 PM, solicita cuna..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
+                className="w-full min-h-[44px] bg-emerald-900/40 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-400 placeholder-emerald-700"
               />
             </div>
 
             {guestEmail && guestEmail.includes('@') && (
-              <label className="flex items-center gap-2 cursor-pointer pt-1 select-none">
+              <label className="min-h-[44px] flex items-center gap-2.5 cursor-pointer pt-1 select-none">
                 <input
                   type="checkbox"
                   checked={sendNotificationEmail}
                   onChange={(e) => setSendNotificationEmail(e.target.checked)}
-                  className="rounded border-emerald-500 text-emerald-500 focus:ring-0"
+                  className="w-4 h-4 rounded border-emerald-500 text-emerald-500 focus:ring-0 shrink-0"
                 />
-                <span className="text-[11px] text-emerald-300">
+                <span className="text-[11px] sm:text-xs text-emerald-300 leading-snug">
                   Enviar correo de voucher/confirmación automáticamente al huésped ({guestEmail})
                 </span>
               </label>
@@ -295,18 +296,18 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-emerald-500/20">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-emerald-500/20">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl bg-emerald-900/40 hover:bg-emerald-800 text-emerald-300 font-bold transition-all"
+              className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/40 hover:bg-emerald-800 text-emerald-300 font-bold transition-all flex items-center justify-center"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center gap-2 disabled:opacity-60"
+              className="min-h-[44px] px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
               <span>{loading ? 'Guardando...' : 'Crear Reserva'}</span>

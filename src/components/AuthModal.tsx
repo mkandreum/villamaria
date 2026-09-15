@@ -42,21 +42,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-emerald-950/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-emerald-950 border border-emerald-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-emerald-100 font-sans">
+    <div className="fixed inset-0 z-50 bg-emerald-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-5 sm:p-8 shadow-2xl relative text-emerald-100 font-sans my-auto max-h-[94vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors min-w-[38px] min-h-[38px] flex items-center justify-center cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Title */}
-        <div className="mb-6 text-center">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 flex items-center justify-center font-bold text-lg mx-auto mb-3 shadow-lg shadow-emerald-500/20">
+        <div className="mb-5 sm:mb-6 text-center pr-6 pl-6 sm:px-0">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 flex items-center justify-center font-bold text-lg mx-auto mb-2.5 sm:mb-3 shadow-lg shadow-emerald-500/20">
             <Lock className="w-6 h-6" />
           </div>
-          <h3 className="text-xl font-bold font-serif text-white">
+          <h3 className="text-lg sm:text-xl font-bold font-serif text-white">
             {isRegister ? 'Crear Cuenta de Cliente' : 'Acceso a Villa María'}
           </h3>
           <p className="text-xs text-emerald-300/70 mt-1">
@@ -73,19 +73,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
           {isRegister && (
             <div>
               <label className="block text-xs font-semibold text-emerald-300 mb-1">Nombre Completo</label>
               <div className="relative">
-                <UserIcon className="w-4 h-4 absolute left-3 top-3 text-emerald-500/60" />
+                <UserIcon className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
                 <input
                   type="text"
                   required
                   placeholder="Juan Pérez"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
                 />
               </div>
             </div>
@@ -94,14 +94,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-xs font-semibold text-emerald-300 mb-1">Correo Electrónico</label>
             <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3 top-3 text-emerald-500/60" />
+              <Mail className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
               <input
                 type="email"
                 required
                 placeholder="tuemail@ejemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+                className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
               />
             </div>
           </div>
@@ -109,14 +109,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-xs font-semibold text-emerald-300 mb-1">Contraseña</label>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-3 text-emerald-500/60" />
+              <Lock className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
               <input
                 type="password"
                 required
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+                className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
               />
             </div>
           </div>
@@ -125,13 +125,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
             <div>
               <label className="block text-xs font-semibold text-emerald-300 mb-1">Teléfono (opcional)</label>
               <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3 top-3 text-emerald-500/60" />
+                <Phone className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
                 <input
                   type="tel"
                   placeholder="+34 600 000 000"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-emerald-900/40 border border-emerald-500/30 rounded-xl text-emerald-100 placeholder-emerald-600 focus:outline-none focus:border-emerald-400 text-xs sm:text-sm min-h-[44px]"
                 />
               </div>
             </div>
@@ -140,7 +140,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-md hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-md hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 min-h-[48px] cursor-pointer active:scale-95"
           >
             {loading ? (
               <>
@@ -160,7 +160,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               setIsRegister(!isRegister);
               setError(null);
             }}
-            className="text-xs text-emerald-400 hover:text-emerald-300 underline font-medium"
+            className="text-xs text-emerald-400 hover:text-emerald-300 underline font-medium py-2 inline-block min-h-[38px]"
           >
             {isRegister ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate gratis'}
           </button>

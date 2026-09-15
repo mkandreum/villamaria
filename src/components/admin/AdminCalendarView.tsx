@@ -74,6 +74,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
   ];
 
   const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const daysOfWeekShort = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -310,59 +311,61 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
   const todayStr = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="space-y-5 text-emerald-100 font-sans">
+    <div className="space-y-4 sm:space-y-5 text-emerald-100 font-sans max-w-full overflow-hidden">
       {/* Top Controls Bar & Monthly Summary */}
-      <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+      <div className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4">
         {/* Month Navigator */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
           <button
             onClick={goToToday}
-            className="px-3 py-1.5 rounded-xl bg-emerald-800/60 hover:bg-emerald-700 text-xs font-bold text-emerald-200 border border-emerald-500/30 transition-all"
+            className="min-h-[44px] px-3.5 py-2 rounded-xl bg-emerald-800/60 hover:bg-emerald-700 text-xs font-bold text-emerald-200 border border-emerald-500/30 transition-all flex items-center justify-center active:scale-95 shrink-0"
           >
             Hoy
           </button>
 
-          <div className="flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-500/30 rounded-xl px-2 py-1">
+          <div className="flex items-center gap-1 sm:gap-1.5 bg-emerald-950/80 border border-emerald-500/30 rounded-xl p-1">
             <button
               onClick={prevMonth}
-              className="p-1 rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition-colors"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition-colors active:scale-95"
               title="Mes Anterior"
+              aria-label="Mes Anterior"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-sm sm:text-base font-serif font-bold text-white px-2 min-w-[140px] text-center">
+            <span className="text-sm sm:text-base md:text-xl font-serif font-bold text-white px-1 sm:px-2 min-w-[120px] sm:min-w-[140px] text-center truncate select-none">
               {monthNames[month]} {year}
             </span>
             <button
               onClick={nextMonth}
-              className="p-1 rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition-colors"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition-colors active:scale-95"
               title="Mes Siguiente"
+              aria-label="Mes Siguiente"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Monthly Key Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-          <div className="bg-emerald-950/60 border border-emerald-500/20 rounded-xl px-3 py-2">
+          <div className="bg-emerald-950/60 border border-emerald-500/20 rounded-xl px-2.5 py-2 sm:px-3">
             <span className="text-[10px] text-emerald-400/70 uppercase font-semibold block">Confirmadas</span>
             <span className="text-sm font-bold text-emerald-300">{monthStats.confirmedCount}</span>
           </div>
 
-          <div className="bg-emerald-950/60 border border-amber-500/20 rounded-xl px-3 py-2">
+          <div className="bg-emerald-950/60 border border-amber-500/20 rounded-xl px-2.5 py-2 sm:px-3">
             <span className="text-[10px] text-amber-400/70 uppercase font-semibold block">Pendientes</span>
             <span className="text-sm font-bold text-amber-300">{monthStats.pendingCount}</span>
           </div>
 
-          <div className="bg-emerald-950/60 border border-teal-500/20 rounded-xl px-3 py-2">
+          <div className="bg-emerald-950/60 border border-teal-500/20 rounded-xl px-2.5 py-2 sm:px-3">
             <span className="text-[10px] text-teal-400/70 uppercase font-semibold block">Ocupación</span>
-            <span className="text-sm font-bold text-teal-300">{monthStats.occupancyRate}% ({monthStats.occupiedDays}d)</span>
+            <span className="text-xs sm:text-sm font-bold text-teal-300">{monthStats.occupancyRate}% ({monthStats.occupiedDays}d)</span>
           </div>
 
-          <div className="bg-emerald-950/60 border border-emerald-500/30 rounded-xl px-3 py-2">
+          <div className="bg-emerald-950/60 border border-emerald-500/30 rounded-xl px-2.5 py-2 sm:px-3">
             <span className="text-[10px] text-emerald-400/70 uppercase font-semibold block">Ingresos Mes</span>
-            <span className="text-sm font-bold text-emerald-400">${monthStats.monthRevenue.toLocaleString()}</span>
+            <span className="text-xs sm:text-sm font-bold text-emerald-400 truncate block">${monthStats.monthRevenue.toLocaleString()}</span>
           </div>
         </div>
 
@@ -373,9 +376,9 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               setCreateInitialDate(selectedDate || todayStr);
               setIsCreateModalOpen(true);
             }}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95"
+            className="flex-1 sm:flex-none min-h-[44px] flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4 shrink-0" />
             <span>Nueva Reserva</span>
           </button>
 
@@ -388,69 +391,74 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               });
               setIsQuickBlockOpen(true);
             }}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-300 font-bold text-xs transition-all active:scale-95"
+            className="min-h-[44px] flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-300 font-bold text-xs transition-all active:scale-95 shrink-0"
             title="Bloquear fechas"
+            aria-label="Bloquear fechas"
           >
-            <Lock className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Bloquear</span>
+            <Lock className="w-4 h-4 shrink-0" />
+            <span className="text-xs">Bloquear</span>
           </button>
         </div>
       </div>
 
       {/* Filter Tabs & Color Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full scrollbar-none">
           {[
-            { id: 'ALL', label: 'Todo' },
-            { id: 'CONFIRMED', label: '🟢 Confirmadas' },
-            { id: 'PENDING', label: '🟡 Pendientes' },
-            { id: 'CANCELLED', label: '🔴 Canceladas' },
-            { id: 'BLOCKED', label: '🟣 Bloqueadas' },
+            { id: 'ALL', label: 'Todo', shortLabel: 'Todo' },
+            { id: 'CONFIRMED', label: '🟢 Confirmadas', shortLabel: '🟢 Conf.' },
+            { id: 'PENDING', label: '🟡 Pendientes', shortLabel: '🟡 Pend.' },
+            { id: 'CANCELLED', label: '🔴 Canceladas', shortLabel: '🔴 Canc.' },
+            { id: 'BLOCKED', label: '🟣 Bloqueadas', shortLabel: '🟣 Bloq.' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setStatusFilter(tab.id as any)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all whitespace-nowrap ${
+              className={`min-h-[44px] px-3 py-2 rounded-xl font-semibold transition-all whitespace-nowrap text-xs flex items-center justify-center shrink-0 ${
                 statusFilter === tab.id
                   ? 'bg-emerald-500 text-emerald-950 font-bold shadow'
                   : 'bg-emerald-900/30 text-emerald-300/80 hover:bg-emerald-800/50'
               }`}
             >
-              {tab.label}
+              <span className="sm:hidden">{tab.shortLabel}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] text-emerald-400/80">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-emerald-400/80">
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Confirmada
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500" /> Conf.
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Pendiente
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400" /> Pend.
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-400" /> Bloqueada
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-purple-400" /> Bloq.
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-400" /> Google Cal
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-sky-400" /> Google
           </span>
         </div>
       </div>
 
-      {/* Main Calendar Grid */}
-      <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-3xl p-3 sm:p-5 shadow-inner">
+      {/* Main Calendar Grid (7 Days) */}
+      <div className="bg-emerald-900/30 border border-emerald-500/20 rounded-2xl sm:rounded-3xl p-2 sm:p-4 md:p-5 shadow-inner overflow-hidden">
         {/* Days of week header */}
-        <div className="grid grid-cols-7 text-center text-xs font-bold text-emerald-400/70 uppercase tracking-wider py-2 border-b border-emerald-500/20 mb-2">
-          {daysOfWeek.map((d) => (
-            <div key={d}>{d}</div>
+        <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-bold text-emerald-400/70 uppercase tracking-wider py-1.5 sm:py-2 border-b border-emerald-500/20 mb-1 sm:mb-2">
+          {daysOfWeek.map((d, i) => (
+            <div key={d}>
+              <span className="sm:hidden">{daysOfWeekShort[i]}</span>
+              <span className="hidden sm:inline">{d}</span>
+            </div>
           ))}
         </div>
 
         {/* Days cells */}
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+        <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2">
           {daysGrid.map((dateStr, idx) => {
             if (!dateStr) {
-              return <div key={`empty-${idx}`} className="min-h-[85px] sm:min-h-[110px] rounded-2xl bg-emerald-950/20" />;
+              return <div key={`empty-${idx}`} className="min-h-[48px] sm:min-h-[105px] rounded-lg sm:rounded-2xl bg-emerald-950/20" />;
             }
 
             const dayNum = parseInt(dateStr.split('-')[2], 10);
@@ -465,7 +473,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               <div
                 key={dateStr}
                 onClick={() => setSelectedDate(dateStr)}
-                className={`min-h-[85px] sm:min-h-[110px] rounded-2xl p-1.5 sm:p-2 flex flex-col justify-between transition-all cursor-pointer border ${
+                className={`min-h-[48px] sm:min-h-[105px] rounded-lg sm:rounded-2xl p-1 sm:p-2 flex flex-col justify-between transition-all cursor-pointer border select-none ${
                   isSelected
                     ? 'border-emerald-400 bg-emerald-800/40 ring-2 ring-emerald-400/30 shadow-lg'
                     : isToday
@@ -476,7 +484,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                 {/* Day Header */}
                 <div className="flex items-center justify-between">
                   <span
-                    className={`text-xs font-bold rounded-lg px-1.5 py-0.5 ${
+                    className={`text-[10px] sm:text-xs font-bold rounded-md sm:rounded-lg px-1 sm:px-1.5 py-0.5 ${
                       isToday
                         ? 'bg-emerald-500 text-emerald-950 font-black'
                         : isSelected
@@ -488,14 +496,36 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                   </span>
 
                   {totalItems > 0 && (
-                    <span className="text-[10px] font-mono font-bold text-emerald-400/80 bg-emerald-900/80 px-1 rounded">
+                    <span className="text-[9px] sm:text-[10px] font-mono font-bold text-emerald-400/80 bg-emerald-900/80 px-1 rounded">
                       {totalItems}
                     </span>
                   )}
                 </div>
 
-                {/* Day Events Pills */}
-                <div className="space-y-1 my-1 overflow-hidden">
+                {/* Mobile View: Event Dots Indicator (Compact on screens < sm) */}
+                <div className="flex sm:hidden items-center justify-center gap-1 my-0.5 min-h-[8px]">
+                  {dayEvents.reservations.slice(0, 2).map((res) => (
+                    <span
+                      key={res.id}
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        res.status === 'CONFIRMED'
+                          ? 'bg-emerald-400'
+                          : res.status === 'PENDING'
+                          ? 'bg-amber-400'
+                          : 'bg-red-400'
+                      }`}
+                    />
+                  ))}
+                  {dayEvents.blocked.length > 0 && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                  )}
+                  {dayEvents.googleEvents.length > 0 && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+                  )}
+                </div>
+
+                {/* Desktop View: Day Events Detailed Pills (Visible on sm+) */}
+                <div className="hidden sm:block space-y-1 my-1 overflow-hidden">
                   {/* Reservations */}
                   {dayEvents.reservations.slice(0, 2).map((res) => {
                     const isConfirmed = res.status === 'CONFIRMED';
@@ -570,36 +600,38 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Selected Day Details Section (when a day is clicked) */}
+      {/* Selected Day Details Section / Drawer (when a day is clicked) */}
       {selectedDate && (
-        <div className="bg-emerald-900/40 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 space-y-4 animate-fadeIn">
-          <div className="flex items-center justify-between border-b border-emerald-500/20 pb-3">
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-emerald-400" />
+        <div className="bg-emerald-900/40 border border-emerald-500/30 rounded-2xl p-3.5 sm:p-5 space-y-4 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-3">
+            <div className="flex items-start gap-2.5">
+              <CalendarIcon className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm sm:text-base font-bold text-white font-serif">
+                <h4 className="text-sm sm:text-base font-bold text-white font-serif leading-snug">
                   Actividades para el {new Date(selectedDate + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                 </h4>
-                <p className="text-[11px] text-emerald-300/70">
+                <p className="text-[11px] text-emerald-300/70 mt-0.5">
                   {dateEventsMap[selectedDate]?.reservations.length || 0} reserva(s) • {dateEventsMap[selectedDate]?.blocked.length || 0} bloqueo(s)
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end sm:self-auto">
               <button
                 onClick={() => {
                   setCreateInitialDate(selectedDate);
                   setIsCreateModalOpen(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 text-emerald-950 hover:bg-emerald-400 font-bold text-xs transition-all"
+                className="min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 text-emerald-950 hover:bg-emerald-400 font-bold text-xs transition-all active:scale-95 shadow"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 <span>Crear Reserva</span>
               </button>
               <button
                 onClick={() => setSelectedDate(null)}
-                className="p-1.5 rounded-lg bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 transition-colors"
+                title="Cerrar detalles del día"
+                aria-label="Cerrar detalles del día"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -612,7 +644,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               (dateEventsMap[selectedDate].reservations.length === 0 &&
                 dateEventsMap[selectedDate].blocked.length === 0 &&
                 dateEventsMap[selectedDate].googleEvents.length === 0)) && (
-              <p className="col-span-full text-xs text-emerald-400/60 py-3 text-center">
+              <p className="col-span-full text-xs text-emerald-400/60 py-4 text-center">
                 ✨ No hay reservas ni bloqueos para este día. Fecha disponible para huéspedes.
               </p>
             )}
@@ -621,12 +653,12 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               <div
                 key={res.id}
                 onClick={() => setSelectedReservation(res)}
-                className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/25 hover:border-emerald-400 transition-all cursor-pointer flex flex-col justify-between gap-2 group"
+                className="p-3.5 sm:p-4 rounded-xl bg-emerald-950/60 border border-emerald-500/25 hover:border-emerald-400 transition-all cursor-pointer flex flex-col justify-between gap-2.5 group active:scale-[0.99] min-h-[44px]"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full uppercase mb-1 ${
                         res.status === 'CONFIRMED'
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                           : res.status === 'PENDING'
@@ -636,16 +668,16 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                     >
                       {res.status}
                     </span>
-                    <h5 className="font-bold text-white text-sm mt-1 group-hover:text-emerald-300 transition-colors">
+                    <h5 className="font-bold text-white text-sm group-hover:text-emerald-300 transition-colors truncate">
                       {res.guestName}
                     </h5>
-                    <p className="text-xs text-emerald-300/80">
-                      {res.guestEmail} • {res.guestPhone}
+                    <p className="text-xs text-emerald-300/80 truncate">
+                      {res.guestEmail || 'Sin email'} • {res.guestPhone || 'Sin tel'}
                     </p>
                   </div>
 
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-emerald-400 block font-serif">
+                  <div className="text-right shrink-0">
+                    <span className="text-xs sm:text-sm font-bold text-emerald-400 block font-serif">
                       US$ {res.totalPrice}
                     </span>
                     <span className="text-[10px] text-emerald-400/60 font-mono">
@@ -658,7 +690,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                   <span>
                     {new Date(res.startDate).toLocaleDateString('es-ES')} ➔ {new Date(res.endDate).toLocaleDateString('es-ES')}
                   </span>
-                  <span className="text-emerald-300 font-bold group-hover:underline">
+                  <span className="text-emerald-300 font-bold group-hover:underline flex items-center gap-1">
                     Ver ficha ➔
                   </span>
                 </div>
@@ -668,13 +700,13 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
             {dateEventsMap[selectedDate]?.blocked.map((b) => (
               <div
                 key={b.id}
-                className="p-3.5 rounded-xl bg-purple-950/40 border border-purple-500/30 flex items-center justify-between"
+                className="p-3.5 sm:p-4 rounded-xl bg-purple-950/40 border border-purple-500/30 flex items-center justify-between gap-2 min-h-[44px]"
               >
-                <div className="flex items-center gap-2.5">
-                  <Lock className="w-4 h-4 text-purple-400" />
-                  <div>
-                    <span className="text-xs font-bold text-purple-200 block">Bloqueo de Calendario</span>
-                    <span className="text-[11px] text-purple-300/70">{b.reason || 'Sin motivo especificado'}</span>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Lock className="w-4 h-4 text-purple-400 shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-purple-200 block truncate">Bloqueo de Calendario</span>
+                    <span className="text-[11px] text-purple-300/70 truncate block">{b.reason || 'Sin motivo especificado'}</span>
                   </div>
                 </div>
                 <button
@@ -688,10 +720,11 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                       onShowAlert({ type: 'error', text: err.message });
                     }
                   }}
-                  className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs shrink-0 transition-colors"
                   title="Eliminar bloqueo"
+                  aria-label="Eliminar bloqueo"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -701,27 +734,28 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
 
       {/* Reservation Detail Modal / Drawer */}
       {selectedReservation && (
-        <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
-          <div className="bg-emerald-950 border border-emerald-500/30 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative my-6 text-emerald-100 font-sans">
+        <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn">
+          <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-2xl w-full p-4 sm:p-6 md:p-7 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto text-emerald-100 font-sans">
             {/* Close button */}
             <button
               onClick={() => {
                 setSelectedReservation(null);
                 setIsRescheduling(false);
               }}
-              className="absolute top-4 right-4 p-2 rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition-colors"
+              aria-label="Cerrar modal de reserva"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
 
             {/* Modal Header */}
-            <div className="flex items-center gap-3 mb-5 border-b border-emerald-500/20 pb-4">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20">
-                <CalendarRange className="w-6 h-6" />
+            <div className="flex items-center gap-3 mb-4 sm:mb-5 border-b border-emerald-500/20 pb-3.5 sm:pb-4 pr-10">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20 shrink-0">
+                <CalendarRange className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-bold text-white font-serif tracking-tight">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-white font-serif tracking-tight truncate">
                     Reserva: {selectedReservation.guestName}
                   </h3>
                   <span
@@ -736,7 +770,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                     {selectedReservation.status}
                   </span>
                 </div>
-                <p className="text-xs text-emerald-300/70 font-mono">
+                <p className="text-[11px] sm:text-xs text-emerald-300/70 font-mono truncate">
                   ID: {selectedReservation.id}
                 </p>
               </div>
@@ -744,12 +778,12 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
 
             {/* Reservation Details Grid */}
             <div className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-900/30 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-4">
                 <div>
                   <span className="text-[10px] font-bold uppercase text-emerald-400/70 block mb-0.5">Huésped Principal</span>
                   <p className="font-bold text-white text-sm">{selectedReservation.guestName}</p>
-                  <p className="text-emerald-300/80">{selectedReservation.guestEmail}</p>
-                  <p className="text-emerald-300/80">{selectedReservation.guestPhone}</p>
+                  <p className="text-emerald-300/80 break-all">{selectedReservation.guestEmail || 'Sin email registrado'}</p>
+                  <p className="text-emerald-300/80">{selectedReservation.guestPhone || 'Sin teléfono'}</p>
                 </div>
 
                 <div>
@@ -779,14 +813,14 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               </div>
 
               {/* Action Buttons Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
                 {/* Confirm Payment */}
                 {selectedReservation.status !== 'CONFIRMED' && selectedReservation.status !== 'CANCELLED' && (
                   <button
                     onClick={() => handleConfirmPayment(selectedReservation.id, selectedReservation.guestName)}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold uppercase tracking-wide transition-all shadow active:scale-95"
+                    className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wide transition-all shadow active:scale-95"
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>Confirmar Pago</span>
                   </button>
                 )}
@@ -803,9 +837,9 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                         additionalCostAmount: 0,
                       });
                     }}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 font-bold uppercase tracking-wide transition-all active:scale-95"
+                    className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 font-bold text-xs uppercase tracking-wide transition-all active:scale-95"
                   >
-                    <CalendarRange className="w-3.5 h-3.5" />
+                    <CalendarRange className="w-4 h-4 shrink-0" />
                     <span>Reprogramar</span>
                   </button>
                 )}
@@ -818,9 +852,9 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 font-bold uppercase tracking-wide transition-all text-center"
+                    className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 font-bold text-xs uppercase tracking-wide transition-all text-center"
                   >
-                    <MessageCircle className="w-3.5 h-3.5" />
+                    <MessageCircle className="w-4 h-4 shrink-0" />
                     <span>WhatsApp</span>
                   </a>
                 )}
@@ -829,9 +863,9 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                 {selectedReservation.status !== 'CANCELLED' && selectedReservation.status !== 'COMPLETED' && (
                   <button
                     onClick={() => handleUpdateStatus(selectedReservation.id, 'CANCELLED')}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-wide transition-all"
+                    className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-bold text-xs uppercase tracking-wide transition-all active:scale-95"
                   >
-                    <AlertCircle className="w-3.5 h-3.5" />
+                    <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>Cancelar</span>
                   </button>
                 )}
@@ -839,21 +873,21 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                 {/* Delete Reservation */}
                 <button
                   onClick={() => handleDeleteReservation(selectedReservation.id, selectedReservation.guestName)}
-                  className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 font-bold uppercase tracking-wide transition-all"
+                  className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 font-bold text-xs uppercase tracking-wide transition-all active:scale-95"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4 shrink-0" />
                   <span>Eliminar</span>
                 </button>
               </div>
 
               {/* Reschedule Form inline */}
               {isRescheduling && (
-                <form onSubmit={handleRescheduleSubmit} className="bg-violet-950/40 border border-violet-500/30 rounded-2xl p-4 space-y-3 mt-3">
+                <form onSubmit={handleRescheduleSubmit} className="bg-violet-950/40 border border-violet-500/30 rounded-2xl p-3.5 sm:p-4 space-y-3 mt-3">
                   <h5 className="font-bold text-violet-300 uppercase tracking-wider text-[11px]">
                     📅 Nueva Selección de Fechas
                   </h5>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-violet-300/70 font-bold text-[10px] mb-1 uppercase">Nueva Llegada</label>
                       <input
@@ -861,7 +895,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                         required
                         value={rescheduleData.newStartDate}
                         onChange={(e) => setRescheduleData({ ...rescheduleData, newStartDate: e.target.value })}
-                        className="w-full bg-emerald-950 border border-violet-500/40 rounded-lg px-3 py-2 text-white text-xs focus:outline-none"
+                        className="w-full min-h-[44px] bg-emerald-950 border border-violet-500/40 rounded-xl px-3 py-2 text-white text-sm sm:text-xs focus:outline-none focus:border-violet-400"
                       />
                     </div>
 
@@ -873,17 +907,17 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                         min={rescheduleData.newStartDate}
                         value={rescheduleData.newEndDate}
                         onChange={(e) => setRescheduleData({ ...rescheduleData, newEndDate: e.target.value })}
-                        className="w-full bg-emerald-950 border border-violet-500/40 rounded-lg px-3 py-2 text-white text-xs focus:outline-none"
+                        className="w-full min-h-[44px] bg-emerald-950 border border-violet-500/40 rounded-xl px-3 py-2 text-white text-sm sm:text-xs focus:outline-none focus:border-violet-400"
                       />
                     </div>
                   </div>
 
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <label className="min-h-[44px] flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={rescheduleData.additionalCost}
                       onChange={(e) => setRescheduleData({ ...rescheduleData, additionalCost: e.target.checked })}
-                      className="rounded border-violet-500 text-violet-500 focus:ring-0"
+                      className="w-4 h-4 rounded border-violet-500 text-violet-500 focus:ring-0"
                     />
                     <span className="text-xs text-violet-200">Cobrar importe adicional por reprogramación</span>
                   </label>
@@ -898,23 +932,23 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                         placeholder="Ej. 50"
                         value={rescheduleData.additionalCostAmount}
                         onChange={(e) => setRescheduleData({ ...rescheduleData, additionalCostAmount: parseFloat(e.target.value) || 0 })}
-                        className="w-full bg-emerald-950 border border-amber-500/40 rounded-lg px-3 py-2 text-amber-200 text-xs focus:outline-none"
+                        className="w-full min-h-[44px] bg-emerald-950 border border-amber-500/40 rounded-xl px-3 py-2 text-amber-200 text-sm sm:text-xs focus:outline-none focus:border-amber-400"
                       />
                     </div>
                   )}
 
-                  <div className="flex justify-end gap-2 pt-2">
+                  <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
                     <button
                       type="button"
                       onClick={() => setIsRescheduling(false)}
-                      className="px-3 py-2 rounded-lg bg-emerald-900/60 text-emerald-300 text-xs font-bold"
+                      className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 text-xs font-bold transition-colors"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={submittingReschedule}
-                      className="px-4 py-2 rounded-lg bg-violet-500 hover:bg-violet-400 text-white text-xs font-bold uppercase transition-all disabled:opacity-60"
+                      className="min-h-[44px] px-5 py-2.5 rounded-xl bg-violet-500 hover:bg-violet-400 text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-60 shadow"
                     >
                       {submittingReschedule ? 'Procesando...' : 'Confirmar Reprogramación'}
                     </button>
@@ -928,41 +962,42 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
 
       {/* Quick Block Dates Modal */}
       {isQuickBlockOpen && (
-        <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn">
-          <div className="bg-emerald-950 border border-purple-500/30 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative text-emerald-100 font-sans">
+        <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn">
+          <div className="bg-emerald-950 border border-purple-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto text-emerald-100 font-sans">
             <button
               onClick={() => setIsQuickBlockOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 transition-colors"
+              aria-label="Cerrar modal de bloqueo"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2.5 mb-4 border-b border-purple-500/20 pb-3">
-              <Lock className="w-5 h-5 text-purple-400" />
-              <h4 className="text-lg font-bold text-white font-serif">Bloquear Rango de Fechas</h4>
+            <div className="flex items-center gap-2.5 mb-4 border-b border-purple-500/20 pb-3 pr-10">
+              <Lock className="w-5 h-5 text-purple-400 shrink-0" />
+              <h4 className="text-base sm:text-lg font-bold text-white font-serif">Bloquear Rango de Fechas</h4>
             </div>
 
-            <form onSubmit={handleQuickBlockSubmit} className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleQuickBlockSubmit} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-purple-300 font-semibold mb-1">Fecha Inicio</label>
+                  <label className="block text-purple-300 font-semibold mb-1">Fecha Inicio *</label>
                   <input
                     type="date"
                     required
                     value={quickBlockData.startDate}
                     onChange={(e) => setQuickBlockData({ ...quickBlockData, startDate: e.target.value })}
-                    className="w-full bg-emerald-950 border border-purple-500/30 rounded-xl px-3 py-2 text-white focus:outline-none"
+                    className="w-full min-h-[44px] bg-emerald-950 border border-purple-500/30 rounded-xl px-3 py-2 text-white text-sm sm:text-xs focus:outline-none focus:border-purple-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-purple-300 font-semibold mb-1">Fecha Fin</label>
+                  <label className="block text-purple-300 font-semibold mb-1">Fecha Fin *</label>
                   <input
                     type="date"
                     required
                     min={quickBlockData.startDate}
                     value={quickBlockData.endDate}
                     onChange={(e) => setQuickBlockData({ ...quickBlockData, endDate: e.target.value })}
-                    className="w-full bg-emerald-950 border border-purple-500/30 rounded-xl px-3 py-2 text-white focus:outline-none"
+                    className="w-full min-h-[44px] bg-emerald-950 border border-purple-500/30 rounded-xl px-3 py-2 text-white text-sm sm:text-xs focus:outline-none focus:border-purple-400"
                   />
                 </div>
               </div>
@@ -974,21 +1009,21 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                   placeholder="Ej. Mantenimiento general / Reservado por propietario"
                   value={quickBlockData.reason}
                   onChange={(e) => setQuickBlockData({ ...quickBlockData, reason: e.target.value })}
-                  className="w-full bg-emerald-950 border border-purple-500/30 rounded-xl px-3 py-2 text-white focus:outline-none placeholder-purple-900"
+                  className="w-full min-h-[44px] bg-emerald-950 border border-purple-500/30 rounded-xl px-3 py-2 text-white text-sm sm:text-xs focus:outline-none placeholder-purple-800/80 focus:border-purple-400"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3">
+              <div className="flex flex-col sm:flex-row justify-end gap-2 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsQuickBlockOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-emerald-900/50 text-emerald-300 font-bold"
+                  className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/50 hover:bg-emerald-900 text-emerald-300 font-bold transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-purple-950 font-bold uppercase transition-all shadow"
+                  className="min-h-[44px] px-5 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-400 text-purple-950 font-bold uppercase tracking-wider transition-all shadow active:scale-95"
                 >
                   Guardar Bloqueo
                 </button>
