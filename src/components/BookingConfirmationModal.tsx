@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Booking } from '../types';
 import { PROPERTY_INFO } from '../data/mockData';
 import { formatDateSpanish, calculateNights } from '../utils/dateUtils';
 import { useCurrency } from '../context/CurrencyContext';
+import { CheckInVoucherModal } from './CheckInVoucherModal';
 import {
   CheckCircle2,
   X,
@@ -10,7 +11,8 @@ import {
   MessageCircle,
   Copy,
   ExternalLink,
-  QrCode
+  QrCode,
+  Ticket
 } from 'lucide-react';
 
 interface BookingConfirmationModalProps {
@@ -24,6 +26,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
   onClose,
   address = PROPERTY_INFO.locationName,
 }) => {
+  const [showVoucher, setShowVoucher] = useState(false);
   const nights = calculateNights(booking.checkIn, booking.checkOut);
   const { formatPrice } = useCurrency();
 
@@ -137,8 +140,17 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             </a>
           </div>
 
-          {/* WhatsApp Direct Confirmation Button */}
-          <div className="space-y-2 font-sans pt-1">
+          {/* Action Buttons */}
+          <div className="space-y-2.5 font-sans pt-1">
+            {/* Digital Pass with QR Button */}
+            <button
+              onClick={() => setShowVoucher(true)}
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all min-h-[48px] active:scale-95 cursor-pointer"
+            >
+              <Ticket className="w-4.5 h-4.5" />
+              <span>🎟️ Ver / Descargar Pase con Código QR</span>
+            </button>
+
             <a
               href={waUrl}
               target="_blank"
@@ -158,6 +170,26 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
           </div>
         </div>
       </div>
+
+      {/* Check-In Voucher Modal */}
+      {showVoucher && (
+        <CheckInVoucherModal
+          reservation={{
+            id: booking.id,
+            guestName: booking.guestName,
+            guestEmail: booking.guestEmail,
+            guestPhone: booking.guestPhone,
+            checkIn: booking.checkIn,
+            checkOut: booking.checkOut,
+            adults: booking.adults,
+            children: booking.children,
+            totalPrice: booking.totalPrice,
+            status: booking.status,
+            propertyAddress: address,
+          }}
+          onClose={() => setShowVoucher(false)}
+        />
+      )}
     </div>
   );
 };

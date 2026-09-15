@@ -19,9 +19,12 @@ import {
   ExternalLink,
   ShieldCheck,
   TrendingUp,
+  Ticket,
 } from 'lucide-react';
 import { api } from '../../api';
 import { AdminCreateReservationModal } from './AdminCreateReservationModal';
+import { AdminWhatsAppQuickModal, QuickMessageReservation } from './AdminWhatsAppQuickModal';
+import { CheckInVoucherModal, VoucherReservationData } from '../CheckInVoucherModal';
 
 interface AdminCalendarViewProps {
   reservations: any[];
@@ -46,6 +49,8 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createInitialDate, setCreateInitialDate] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'CONFIRMED' | 'PENDING' | 'CANCELLED' | 'BLOCKED'>('ALL');
+  const [quickWaReservation, setQuickWaReservation] = useState<QuickMessageReservation | null>(null);
+  const [adminVoucherReservation, setAdminVoucherReservation] = useState<VoucherReservationData | null>(null);
 
   // Quick Reschedule state
   const [isRescheduling, setIsRescheduling] = useState(false);
@@ -844,20 +849,53 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                   </button>
                 )}
 
-                {/* WhatsApp button */}
+                {/* Quick WhatsApp Templates */}
                 {selectedReservation.guestPhone && (
-                  <a
-                    href={`https://wa.me/${selectedReservation.guestPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                      `¡Hola ${selectedReservation.guestName}! Te contactamos de Villa María respecto a tu reserva (Código ${selectedReservation.id.slice(0, 8)}).`
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setQuickWaReservation({
+                        id: selectedReservation.id,
+                        guestName: selectedReservation.guestName,
+                        guestPhone: selectedReservation.guestPhone,
+                        startDate: selectedReservation.startDate,
+                        endDate: selectedReservation.endDate,
+                        totalPrice: selectedReservation.totalPrice,
+                        status: selectedReservation.status,
+                      })
+                    }
                     className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 font-bold text-xs uppercase tracking-wide transition-all text-center"
+                    title="Enviar mensajes automáticos por WhatsApp"
                   >
                     <MessageCircle className="w-4 h-4 shrink-0" />
-                    <span>WhatsApp</span>
-                  </a>
+                    <span>WhatsApp 💬</span>
+                  </button>
                 )}
+
+                {/* Pase Digital con QR */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setAdminVoucherReservation({
+                      id: selectedReservation.id,
+                      guestName: selectedReservation.guestName,
+                      guestEmail: selectedReservation.guestEmail,
+                      guestPhone: selectedReservation.guestPhone,
+                      checkIn: selectedReservation.startDate,
+                      checkOut: selectedReservation.endDate,
+                      guestsCount: selectedReservation.guestsCount,
+                      totalPrice: selectedReservation.totalPrice,
+                      status: selectedReservation.status,
+                      propertyAddress: propertySettings?.location_address,
+                      mapsUrl: propertySettings?.location_maps_link,
+                    })
+                  }
+                  className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/30 font-bold text-xs uppercase tracking-wide transition-all"
+                  title="Ver Pase Digital con QR"
+                >
+                  <Ticket className="w-4 h-4 shrink-0" />
+                  <span>Pase QR 🎟️</span>
+                </button>
 
                 {/* Cancel Reservation */}
                 {selectedReservation.status !== 'CANCELLED' && selectedReservation.status !== 'COMPLETED' && (
@@ -1046,6 +1084,24 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
             onShowAlert({ type: 'success', text: `✅ Reserva creada con éxito para ${newRes.guestName}.` });
             onRefresh();
           }}
+        />
+      )}
+
+      {/* Quick Predefined WhatsApp Modal */}
+      {quickWaReservation && (
+        <AdminWhatsAppQuickModal
+          reservation={quickWaReservation}
+          propertyAddress={propertySettings?.location_address}
+          mapsUrl={propertySettings?.location_maps_link}
+          onClose={() => setQuickWaReservation(null)}
+        />
+      )}
+
+      {/* Guest Check-in Pass / Voucher Modal */}
+      {adminVoucherReservation && (
+        <CheckInVoucherModal
+          reservation={adminVoucherReservation}
+          onClose={() => setAdminVoucherReservation(null)}
         />
       )}
     </div>

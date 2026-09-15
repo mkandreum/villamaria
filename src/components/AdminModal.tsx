@@ -30,12 +30,15 @@ import {
   Check,
   Copy,
   Sparkles,
+  Ticket,
 } from 'lucide-react';
 import { api } from '../api';
 import { AMENITIES } from '../data/mockData';
 import { SmtpSettingsSection } from './admin/SmtpSettingsSection';
 import { AdminCalendarView } from './admin/AdminCalendarView';
 import { AdminCreateReservationModal } from './admin/AdminCreateReservationModal';
+import { AdminWhatsAppQuickModal, QuickMessageReservation } from './admin/AdminWhatsAppQuickModal';
+import { CheckInVoucherModal, VoucherReservationData } from './CheckInVoucherModal';
 
 interface AdminModalProps {
   onClose: () => void;
@@ -62,6 +65,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   // Notifications & Modals
   const [statusAlert, setStatusAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [quickWaReservation, setQuickWaReservation] = useState<QuickMessageReservation | null>(null);
+  const [adminVoucherReservation, setAdminVoucherReservation] = useState<VoucherReservationData | null>(null);
 
   // Multi-reservations management states
   const [selectedResIds, setSelectedResIds] = useState<string[]>([]);
@@ -991,21 +996,53 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                 </button>
                               )}
 
-                              {/* WhatsApp button */}
+                              {/* Quick WhatsApp Templates Button */}
                               {resItem.guestPhone && (
-                                <a
-                                  href={`https://wa.me/${resItem.guestPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                                    `¡Hola ${resItem.guestName}! Te contactamos de Villa María respecto a tu reserva (Código ${resItem.id.slice(0, 8)}).`
-                                  )}`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 transition-colors"
-                                  title="Contactar por WhatsApp"
-                                  aria-label="Contactar por WhatsApp"
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setQuickWaReservation({
+                                      id: resItem.id,
+                                      guestName: resItem.guestName,
+                                      guestPhone: resItem.guestPhone,
+                                      startDate: resItem.startDate,
+                                      endDate: resItem.endDate,
+                                      totalPrice: resItem.totalPrice,
+                                      status: resItem.status,
+                                    })
+                                  }
+                                  className="min-h-[44px] px-3 flex items-center justify-center gap-1.5 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 text-[11px] font-bold uppercase tracking-wide transition-colors"
+                                  title="Enviar mensajes rápidos (GPS, Wi-Fi, Check-out, etc.)"
                                 >
                                   <MessageCircle className="w-4 h-4" />
-                                </a>
+                                  <span>WhatsApp 💬</span>
+                                </button>
                               )}
+
+                              {/* View / Download Guest Voucher */}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setAdminVoucherReservation({
+                                    id: resItem.id,
+                                    guestName: resItem.guestName,
+                                    guestEmail: resItem.guestEmail,
+                                    guestPhone: resItem.guestPhone,
+                                    checkIn: resItem.startDate,
+                                    checkOut: resItem.endDate,
+                                    guestsCount: resItem.guestsCount,
+                                    totalPrice: resItem.totalPrice,
+                                    status: resItem.status,
+                                    propertyAddress: propertySettings.location_address,
+                                    mapsUrl: propertySettings.location_maps_link,
+                                  })
+                                }
+                                className="min-h-[44px] px-2.5 flex items-center justify-center gap-1 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold uppercase tracking-wide transition-colors"
+                                title="Ver Pase Digital con QR"
+                              >
+                                <Ticket className="w-3.5 h-3.5" />
+                                <span>Pase QR</span>
+                              </button>
 
                               {/* Reprogramar */}
                               {resItem.status !== 'CANCELLED' && (
@@ -1826,6 +1863,24 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
               loadAllAdminData();
               if (onRefreshData) onRefreshData();
             }}
+          />
+        )}
+
+        {/* Quick Predefined WhatsApp Modal */}
+        {quickWaReservation && (
+          <AdminWhatsAppQuickModal
+            reservation={quickWaReservation}
+            propertyAddress={propertySettings.location_address}
+            mapsUrl={propertySettings.location_maps_link}
+            onClose={() => setQuickWaReservation(null)}
+          />
+        )}
+
+        {/* Guest Check-in Pass / Voucher Modal */}
+        {adminVoucherReservation && (
+          <CheckInVoucherModal
+            reservation={adminVoucherReservation}
+            onClose={() => setAdminVoucherReservation(null)}
           />
         )}
       </div>

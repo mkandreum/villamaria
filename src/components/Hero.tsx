@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, MessageCircle, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { WeatherSeaWidget } from './WeatherSeaWidget';
 
 interface HeroProps {
   checkIn: string;
@@ -179,6 +180,9 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Right Column: Rating, WhatsApp CTA & Features */}
           <div className="lg:col-span-5 space-y-3.5 sm:space-y-4">
             
+            {/* Live Weather & Sea Condition Widget */}
+            <WeatherSeaWidget />
+
             {/* Price & Rating Card */}
             <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-lg space-y-4">
               <div className="flex items-center justify-between gap-2">

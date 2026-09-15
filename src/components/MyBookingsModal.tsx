@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Booking } from '../types';
 import { formatDateSpanish } from '../utils/dateUtils';
-import { X, BookmarkCheck, Calendar, Users, DollarSign, Search, Trash2 } from 'lucide-react';
+import { X, BookmarkCheck, Calendar, Users, DollarSign, Search, Trash2, Ticket } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { CheckInVoucherModal, VoucherReservationData } from './CheckInVoucherModal';
 
 interface MyBookingsModalProps {
   bookings: Booking[];
@@ -16,6 +17,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   onCancelBooking,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedVoucher, setSelectedVoucher] = useState<VoucherReservationData | null>(null);
   const { formatPrice } = useCurrency();
 
   const userBookings = bookings.filter((b) => b.status !== 'blocked_by_owner');
@@ -119,7 +121,27 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                 </div>
 
                 {b.status !== 'cancelled' && (
-                  <div className="pt-2 border-t border-[#1B3B36]/10 flex justify-end">
+                  <div className="pt-2.5 border-t border-[#1B3B36]/10 flex flex-wrap items-center justify-between gap-2">
+                    <button
+                      onClick={() =>
+                        setSelectedVoucher({
+                          id: b.id,
+                          guestName: b.guestName,
+                          guestEmail: b.guestEmail,
+                          guestPhone: b.guestPhone,
+                          checkIn: (b.checkIn || b.startDate || '') as string,
+                          checkOut: (b.checkOut || b.endDate || '') as string,
+                          guestsCount: b.adults || b.guestsCount || 1,
+                          totalPrice: b.totalPrice,
+                          status: b.status,
+                        })
+                      }
+                      className="text-xs text-emerald-950 font-bold bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all min-h-[36px] cursor-pointer"
+                    >
+                      <Ticket className="w-3.5 h-3.5" />
+                      <span>🎟️ Pase de Entrada & QR</span>
+                    </button>
+
                     <button
                       onClick={() => {
                         if (confirm('¿Estás seguro de cancelar esta reserva?')) {
@@ -129,7 +151,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                       className="text-xs text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg flex items-center gap-1 font-semibold transition-colors min-h-[36px] cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      <span>Cancelar Reserva</span>
+                      <span>Cancelar</span>
                     </button>
                   </div>
                 )}
@@ -138,6 +160,14 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
           </div>
         )}
       </div>
+
+      {/* Check-In Voucher Modal */}
+      {selectedVoucher && (
+        <CheckInVoucherModal
+          reservation={selectedVoucher}
+          onClose={() => setSelectedVoucher(null)}
+        />
+      )}
     </div>
   );
 };
