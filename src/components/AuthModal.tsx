@@ -62,7 +62,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           <p className="text-xs text-emerald-300/70 mt-1">
             {isRegister
               ? 'Regístrate para gestionar tus reservas y consultar tu historial'
-              : 'Accede con tu cuenta (el sistema detectará si eres Cliente o Administrador)'}
+              : 'Introduce tus credenciales para acceder'}
           </p>
         </div>
 
