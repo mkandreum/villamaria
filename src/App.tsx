@@ -8,7 +8,6 @@ import { AmenitiesSection } from './components/AmenitiesSection';
 import { LocationSection } from './components/LocationSection';
 import { AttractionsSection } from './components/AttractionsSection';
 import { ReviewsSection } from './components/ReviewsSection';
-import { HouseRulesAndFAQ } from './components/HouseRulesAndFAQ';
 import { BookingFormModal } from './components/BookingFormModal';
 import { BookingConfirmationModal } from './components/BookingConfirmationModal';
 import { MyBookingsModal } from './components/MyBookingsModal';
@@ -226,11 +225,6 @@ export default function App() {
         {/* Testimonials & Reviews */}
         <section id="reviews">
           <ReviewsSection reviews={propertySettings.reviews} />
-        </section>
-
-        {/* House Rules & FAQ */}
-        <section id="faq">
-          <HouseRulesAndFAQ rules={propertySettings.house_rules} cancellationPolicy={propertySettings.cancellation_policy} />
         </section>
       </main>
 

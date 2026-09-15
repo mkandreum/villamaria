@@ -47,7 +47,7 @@ interface AdminModalProps {
 
 export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }) => {
   const [activeTab, setActiveTab] = useState<
-    'dashboard' | 'calendar' | 'reservations' | 'property' | 'blocked' | 'templates' | 'smtp' | 'reviews'
+    'dashboard' | 'calendar' | 'reservations' | 'property' | 'templates' | 'smtp' | 'reviews'
   >('dashboard');
 
   // Data states
@@ -601,7 +601,6 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
               shortLabel: '',
             },
             { id: 'property', label: 'Propiedad', icon: Settings, shortLabel: '' },
-            { id: 'blocked', label: `Bloqueos (${blockedDates.length})`, icon: Lock, shortLabel: '' },
             { id: 'templates', label: 'Email', icon: Mail, shortLabel: '' },
             { id: 'smtp', label: 'SMTP', icon: Shield, shortLabel: '' },
           ].map((tab) => {
@@ -1646,83 +1645,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                 </form>
               )}
 
-              {/* 6. BLOCKED DATES TAB */}
-              {activeTab === 'blocked' && (
-                <div className="space-y-4 sm:space-y-6">
-                  <form onSubmit={handleAddBlockedDate} className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-4 sm:p-5 space-y-3.5 sm:space-y-4">
-                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Bloquear Nuevo Rango de Fechas</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Fecha Inicio</label>
-                        <input
-                          type="date"
-                          required
-                          value={newBlock.startDate}
-                          onChange={(e) => setNewBlock({ ...newBlock, startDate: e.target.value })}
-                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-emerald-100 min-h-[44px] focus:outline-none focus:border-emerald-400"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-emerald-300 mb-1">Fecha Fin</label>
-                        <input
-                          type="date"
-                          required
-                          value={newBlock.endDate}
-                          onChange={(e) => setNewBlock({ ...newBlock, endDate: e.target.value })}
-                          className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-emerald-100 min-h-[44px] focus:outline-none focus:border-emerald-400"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-emerald-300 mb-1">Motivo del Bloqueo</label>
-                      <input
-                        type="text"
-                        placeholder="Ej. Mantenimiento de piscina / Uso del propietario"
-                        value={newBlock.reason}
-                        onChange={(e) => setNewBlock({ ...newBlock, reason: e.target.value })}
-                        className="w-full bg-emerald-950 border border-emerald-500/30 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-emerald-100 min-h-[44px] focus:outline-none focus:border-emerald-400"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full sm:w-auto px-5 py-2.5 bg-emerald-500 text-emerald-950 font-bold rounded-xl text-xs hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 min-h-[44px]"
-                    >
-                      <Plus className="w-4 h-4 shrink-0" />
-                      <span>Añadir Bloqueo</span>
-                    </button>
-                  </form>
-
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Rangos Bloqueados Actualmente</h4>
-                    {blockedDates.length === 0 ? (
-                      <p className="text-xs text-emerald-400/60 py-4">No hay fechas bloqueadas manualmente.</p>
-                    ) : (
-                      blockedDates.map((item) => (
-                        <div
-                          key={item.id}
-                          className="bg-emerald-900/30 border border-emerald-500/20 rounded-xl p-3 sm:p-3.5 flex items-center justify-between gap-3 text-xs min-w-0"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-emerald-100 break-words">
-                              {new Date(item.startDate).toLocaleDateString('es-ES')} ➔ {new Date(item.endDate).toLocaleDateString('es-ES')}
-                            </p>
-                            {item.reason && <p className="text-emerald-400/70 text-[11px] break-words">{item.reason}</p>}
-                          </div>
-                          <button
-                            onClick={() => handleDeleteBlockedDate(item.id)}
-                            className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors shrink-0"
-                            aria-label="Eliminar bloqueo"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* 7. EMAIL TEMPLATES & DIRECT SEND TAB */}
+              {/* 6. EMAIL TEMPLATES & DIRECT SEND TAB */}
               {activeTab === 'templates' && (
                 <div className="space-y-4 sm:space-y-6">
                   {/* Select Template */}
