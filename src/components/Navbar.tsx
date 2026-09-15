@@ -23,20 +23,51 @@ export const Navbar: React.FC<NavbarProps> = ({
   hasBanner = true,
 }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    let lastY = window.scrollY;
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const currentY = window.scrollY;
+
+      // Always visible near the top
+      if (currentY < 60) {
+        setVisible(true);
+        setScrolled(false);
+        lastY = currentY;
+        return;
+      }
+
+      setScrolled(true);
+
+      const diff = currentY - lastY;
+      // Threshold to avoid micro-scroll jitter
+      if (Math.abs(diff) > 6) {
+        if (diff > 0) {
+          // Scrolling down -> hide
+          setVisible(false);
+        } else {
+          // Scrolling up -> show
+          setVisible(true);
+        }
+        lastY = currentY;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-3 md:bottom-auto transition-all duration-300 w-[calc(100%-20px)] max-w-sm sm:max-w-md md:max-w-3xl lg:max-w-4xl ${
+      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-3 md:bottom-auto transition-all duration-300 ease-in-out w-[calc(100%-20px)] max-w-sm sm:max-w-md md:max-w-3xl lg:max-w-4xl ${
         hasBanner ? 'md:top-10' : 'md:top-4'
+      } ${
+        visible
+          ? 'translate-y-0 opacity-100 pointer-events-auto'
+          : 'translate-y-24 opacity-0 pointer-events-none md:-translate-y-24'
       }`}
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
