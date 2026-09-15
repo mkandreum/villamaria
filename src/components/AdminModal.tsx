@@ -12,7 +12,6 @@ import {
   Upload,
   CheckCircle2,
   AlertCircle,
-  RefreshCw,
   Trash2,
   Edit3,
   Send,
@@ -471,29 +470,15 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
         </button>
 
         {/* Header */}
-        <div className="mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0 pr-10">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-300 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20 shrink-0">
-              <Shield className="w-6 h-6" />
+        <div className="mb-3 sm:mb-4 flex items-center justify-between gap-3 shrink-0 pr-10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-300 text-emerald-950 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/20 shrink-0">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white font-serif tracking-tight flex items-center gap-2">
-                Panel de Administración Villa María
-              </h2>
-              <p className="text-xs text-emerald-300/70">
-                Gestión integral en tiempo real: calendario visual, reservas múltiples, tarifas, galería y SMTP
-              </p>
-            </div>
+            <h2 className="text-lg sm:text-2xl font-bold text-white font-serif tracking-tight">
+              Panel de Administración
+            </h2>
           </div>
-
-          <button
-            onClick={loadAllAdminData}
-            disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/50 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/25 text-xs font-semibold transition-all active:scale-95 shrink-0"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Actualizar Datos</span>
-          </button>
         </div>
 
         {/* Alert notification banner */}
