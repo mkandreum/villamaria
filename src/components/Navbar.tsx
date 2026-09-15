@@ -41,8 +41,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
-        className={`w-full px-2 sm:px-3 py-2 rounded-full bg-emerald-950/85 backdrop-blur-xl border border-emerald-500/30 shadow-[0_12px_35px_rgba(0,0,0,0.35)] text-emerald-100 flex items-center justify-between transition-all duration-300 ${
-          scrolled ? 'bg-emerald-950/85 backdrop-blur-2xl border-emerald-400/40 shadow-emerald-950/60 shadow-xl' : ''
+        className={`w-full px-2 sm:px-3 py-2 rounded-full bg-emerald-950/15 backdrop-blur-xl border border-emerald-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-emerald-100 flex items-center justify-between transition-all duration-300 ${
+          scrolled ? 'bg-emerald-950/20 backdrop-blur-2xl border-emerald-400/30 shadow-lg' : ''
         }`}
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens) */}
