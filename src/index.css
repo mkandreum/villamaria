@@ -3,28 +3,58 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background-color: #F8F5F0;
     color: #1B3B36;
     overflow-x: hidden;
+    touch-action: manipulation;
   }
 
   h1, h2, h3, h4, .font-serif {
     font-family: 'Playfair Display', Georgia, serif;
   }
+
+  /* Optimize tap and click buttons */
+  button, a {
+    touch-action: manipulation;
+    user-select: none;
+  }
 }
 
-/* Custom keyframes & micro-animations */
+/* Animations & Micro-interactions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes floatSlow {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.3)); }
-  50% { opacity: 1; filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.6)); }
+  0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.35)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 18px rgba(16, 185, 129, 0.65)); }
 }
 
 @keyframes shimmer {
@@ -37,10 +67,18 @@
   100% { transform: translateX(-50%); }
 }
 
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marqueeInfinite 50s linear infinite;
+  animation: marqueeInfinite 45s linear infinite;
 }
 
 .animate-marquee:hover {
@@ -55,18 +93,18 @@
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8F5F0;
+  background: rgba(27, 59, 54, 0.05);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1B3B36;
-  border-radius: 4px;
+  background: rgba(27, 59, 54, 0.3);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #059669;
+  background: rgba(5, 150, 105, 0.7);
 }
 
 /* Hide scrollbar for carousel sliders */
@@ -76,4 +114,9 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Safe area bottom padding for iPhone with home bar */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }

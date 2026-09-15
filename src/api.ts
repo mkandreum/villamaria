@@ -94,6 +94,12 @@ export const api = {
   // Admin
   getDashboardMetrics: () => request('/admin/dashboard'),
   getAdminReservations: () => request('/admin/reservations'),
+  createAdminReservation: (bookingData: any) =>
+    request('/admin/reservations', { method: 'POST', body: JSON.stringify(bookingData) }),
+  bulkUpdateReservationStatus: (ids: string[], status: string) =>
+    request('/admin/reservations/bulk-status', { method: 'POST', body: JSON.stringify({ ids, status }) }),
+  bulkDeleteReservations: (ids: string[]) =>
+    request('/admin/reservations/bulk-delete', { method: 'POST', body: JSON.stringify({ ids }) }),
   updateReservationStatus: (id: string, payload: { status: string; internalNotes?: string }) =>
     request(`/admin/reservations/${id}/status`, { method: 'PUT', body: JSON.stringify(payload) }),
   deleteReservation: (id: string) => request(`/admin/reservations/${id}`, { method: 'DELETE' }),

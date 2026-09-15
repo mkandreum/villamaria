@@ -3,15 +3,20 @@ export interface Booking {
   guestName: string;
   guestEmail: string;
   guestPhone: string;
-  checkIn: string; // YYYY-MM-DD
-  checkOut: string; // YYYY-MM-DD
-  adults: number;
-  children: number;
+  checkIn?: string; // YYYY-MM-DD
+  checkOut?: string; // YYYY-MM-DD
+  startDate?: string | Date;
+  endDate?: string | Date;
+  adults?: number;
+  children?: number;
+  guestsCount?: number;
   totalPrice: number;
-  status: 'confirmed' | 'pending' | 'blocked_by_owner' | 'cancelled';
-  createdAt: string;
+  status: 'confirmed' | 'pending' | 'blocked_by_owner' | 'cancelled' | 'CONFIRMED' | 'PENDING' | 'CANCELLED' | 'COMPLETED' | string;
+  createdAt?: string | Date;
   specialRequests?: string;
-  paymentMethod: 'zelle' | 'pago_movil' | 'efectivo' | 'transferencia';
+  notes?: string;
+  internalNotes?: string;
+  paymentMethod?: 'zelle' | 'pago_movil' | 'efectivo' | 'transferencia' | string;
 }
 
 export interface Amenity {
@@ -53,11 +58,12 @@ export interface Attraction {
 
 export interface PricingConfig {
   baseNightlyRate: number; // USD per night
-  weekendRate: number; // USD for Fri/Sat nights
-  cleaningFee: number; // USD fixed
-  securityDeposit: number; // USD refundable
-  maxGuests: number;
-  extraGuestFee: number; // USD per person per night above baseGuests
-  baseGuests: number;
-  discountWeeklyPercent: number; // 7+ nights discount %
+  weekendRate?: number; // USD for Fri/Sat nights
+  cleaningFee?: number; // USD fixed
+  securityDeposit?: number; // USD refundable
+  maxGuests?: number;
+  extraGuestFee?: number; // USD per person per night above baseGuests
+  baseGuests?: number;
+  discountWeeklyPercent?: number; // 7+ nights discount %
+  currency?: string;
 }

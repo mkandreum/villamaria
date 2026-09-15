@@ -74,7 +74,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   title = 'Chichiriviche • Calle 15 🌴',
   subtitle = 'Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.',
   address = PROPERTY_INFO.locationName,
-  description = PROPERTY_INFO.locationDescription,
+  description = (PROPERTY_INFO as any).locationDescription || (PROPERTY_INFO as any).shortLocation || 'Urbanización privada tranquila y segura en Chichiriviche.',
   mapsLink = PROPERTY_INFO.googleMapsUrl,
   embedUrl,
   bullet1 = '5 minutos de los embarcaderos a Cayo Sombrero',

@@ -1,11 +1,14 @@
 import { Booking, PricingConfig } from '../types';
 
-export function parseISO(dateStr: string): Date {
-  if (!dateStr) return new Date();
-  const cleanStr = typeof dateStr === 'string' ? dateStr.split('T')[0] : '';
+export function parseISO(dateInput: string | Date | undefined | null): Date {
+  if (!dateInput) return new Date();
+  if (dateInput instanceof Date) {
+    return isNaN(dateInput.getTime()) ? new Date() : dateInput;
+  }
+  const cleanStr = typeof dateInput === 'string' ? dateInput.split('T')[0] : '';
   const [year, month, day] = cleanStr.split('-').map(Number);
   if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) {
-    const d = new Date(dateStr);
+    const d = new Date(dateInput);
     return isNaN(d.getTime()) ? new Date() : d;
   }
   return new Date(year, month - 1, day);

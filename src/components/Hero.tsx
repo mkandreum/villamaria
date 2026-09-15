@@ -100,7 +100,7 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Centered Large Professional Title */}
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-none pt-2 pb-1">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-none pt-2 pb-1 break-words">
             {title}
           </h1>
 
@@ -140,14 +140,14 @@ export const Hero: React.FC<HeroProps> = ({
                 <>
                   <button
                     onClick={() => setActivePhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
                     title="Anterior foto"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => setActivePhotoIndex((prev) => (prev + 1) % photos.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
                     title="Siguiente foto"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -179,13 +179,13 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-5 space-y-4">
             
             {/* Price & Rating Card */}
-            <div className="bg-white rounded-3xl p-5 border border-[#1B3B36]/10 shadow-lg space-y-4">
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#1B3B36]/10 shadow-lg space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider block">
                     Tarifa Estándar 🏷️
                   </span>
-                  <span className="text-3xl font-serif font-bold text-[#1B3B36]">
+                  <span className="text-2xl sm:text-3xl font-serif font-bold text-[#1B3B36]">
                     {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
                   </span>
                 </div>
@@ -201,10 +201,10 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <button
                   onClick={onSearch}
-                  className="w-full py-3 rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+                  className="w-full py-3.5 rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
                 >
                   <Calendar className="w-4 h-4 text-emerald-400" />
                   <span>Reservar 📅</span>
@@ -214,7 +214,7 @@ export const Hero: React.FC<HeroProps> = ({
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+                  className="w-full py-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
                   <span>WhatsApp 💬</span>

@@ -35,23 +35,23 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-4 md:bottom-auto transition-all duration-300 w-[90%] max-w-xs md:max-w-2xl ${
+      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-3 md:bottom-auto transition-all duration-300 w-[calc(100%-20px)] max-w-sm sm:max-w-md md:max-w-3xl lg:max-w-4xl ${
         hasBanner ? 'md:top-14' : 'md:top-4'
       }`}
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
-        className={`w-full px-3 py-2 rounded-full bg-emerald-950/85 backdrop-blur-xl border border-emerald-500/30 shadow-[0_10px_30px_rgba(0,0,0,0.5)] text-emerald-100 flex items-center justify-between transition-all duration-300 ${
-          scrolled ? 'bg-emerald-950/95 border-emerald-400/40 shadow-emerald-950/80' : ''
+        className={`w-full px-2 sm:px-3 py-2 rounded-full bg-emerald-950/90 backdrop-blur-xl border border-emerald-500/30 shadow-[0_12px_35px_rgba(0,0,0,0.45)] text-emerald-100 flex items-center justify-between transition-all duration-300 ${
+          scrolled ? 'bg-emerald-950/95 border-emerald-400/40 shadow-emerald-950/80 shadow-2xl' : ''
         }`}
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens) */}
-        <div className="flex md:hidden items-center justify-between w-full px-1">
+        <div className="flex md:hidden items-center justify-around w-full gap-1">
           {/* 1. Fotos */}
           <button
             onClick={() => onNavigate('gallery')}
             title="Fotos"
-            className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${
+            className={`relative min-w-[44px] min-h-[44px] rounded-full flex flex-col items-center justify-center transition-all duration-200 active:scale-90 ${
               activeSection === 'gallery'
                 ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 font-bold scale-105'
                 : 'text-emerald-300/80 hover:text-white hover:bg-white/10'
@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => onNavigate('amenities')}
             title="Servicios"
-            className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${
+            className={`relative min-w-[44px] min-h-[44px] rounded-full flex flex-col items-center justify-center transition-all duration-200 active:scale-90 ${
               activeSection === 'amenities'
                 ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 font-bold scale-105'
                 : 'text-emerald-300/80 hover:text-white hover:bg-white/10'
@@ -77,20 +77,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => onNavigate('hero')}
             title="Inicio - Villa María"
-            className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 shadow-md ${
+            className={`relative min-w-[46px] min-h-[46px] rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-md ${
               activeSection === 'hero'
                 ? 'bg-gradient-to-tr from-emerald-400 via-teal-300 to-emerald-500 text-emerald-950 font-black shadow-emerald-400/50 scale-105 ring-2 ring-emerald-300'
                 : 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-emerald-950 font-bold shadow-emerald-600/30'
             }`}
           >
-            <span className="font-serif text-xs font-black tracking-tighter">VM</span>
+            <span className="font-serif text-sm font-black tracking-tighter">VM</span>
           </button>
 
           {/* 4. Reservar */}
           <button
             onClick={() => onNavigate('booking')}
             title="Reservar"
-            className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${
+            className={`relative min-w-[44px] min-h-[44px] rounded-full flex flex-col items-center justify-center transition-all duration-200 active:scale-90 ${
               activeSection === 'booking'
                 ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/30 font-bold scale-105'
                 : 'text-emerald-300/80 hover:text-white hover:bg-white/10'
@@ -105,7 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onOpenAdminModal}
                 title="Panel de Administración"
-                className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 flex items-center justify-center transition-all active:scale-90 shadow-sm"
+                className="min-w-[44px] min-h-[44px] rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 flex items-center justify-center transition-all active:scale-90 shadow-sm"
               >
                 <ShieldCheck className="w-5 h-5 text-amber-400" />
               </button>
@@ -113,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onOpenMyBookingsModal}
                 title="Mis Reservas"
-                className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 flex items-center justify-center transition-all active:scale-90 shadow-sm"
+                className="min-w-[44px] min-h-[44px] rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 flex items-center justify-center transition-all active:scale-90 shadow-sm"
               >
                 <User className="w-5 h-5" />
               </button>
@@ -122,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenLoginModal}
               title="Iniciar Sesión"
-              className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 flex items-center justify-center transition-all active:scale-90 shadow-md shadow-emerald-500/30"
+              className="min-w-[44px] min-h-[44px] rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-emerald-950 flex items-center justify-center transition-all active:scale-90 shadow-md shadow-emerald-500/30"
             >
               <User className="w-5 h-5" />
             </button>
@@ -134,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Brand Logo & Name */}
           <button
             onClick={() => onNavigate('hero')}
-            className="flex items-center gap-2.5 pl-1 group focus:outline-none"
+            className="flex items-center gap-2.5 pl-1 group focus:outline-none cursor-pointer"
           >
             <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-300 flex items-center justify-center text-emerald-950 font-serif font-black text-sm shadow-md group-hover:scale-105 transition-transform">
               VM
@@ -145,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Nav Items */}
-          <div className="flex items-center space-x-1.5">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             {[
               { id: 'hero', label: 'Inicio', icon: Home },
               { id: 'gallery', label: 'Fotos', icon: ImageIcon },
@@ -158,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 ${
+                  className={`px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 shadow-md shadow-emerald-500/20 font-bold'
                       : 'text-emerald-200/80 hover:text-white hover:bg-white/10'
@@ -178,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {currentUser.role === 'ADMIN' ? (
                   <button
                     onClick={onOpenAdminModal}
-                    className="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm"
+                    className="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95"
                   >
                     <ShieldCheck className="w-4 h-4 text-amber-400" />
                     <span>Admin Panel</span>
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ) : (
                   <button
                     onClick={onOpenMyBookingsModal}
-                    className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-200 hover:bg-emerald-500/30 flex items-center gap-1.5 text-xs font-bold transition-all"
+                    className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-200 hover:bg-emerald-500/30 flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95"
                   >
                     <User className="w-4 h-4" />
                     <span>{currentUser.name.split(' ')[0]}</span>
@@ -195,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   onClick={onLogout}
                   title="Cerrar sesión"
-                  className="p-2 rounded-full text-emerald-300/70 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="p-2 rounded-full text-emerald-300/70 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -203,7 +203,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 onClick={onOpenLoginModal}
-                className="px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold text-xs hover:from-emerald-400 hover:to-teal-300 transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5"
+                className="px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-emerald-950 font-bold text-xs hover:from-emerald-400 hover:to-teal-300 transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <User className="w-4 h-4" />
                 <span>Acceder</span>

@@ -625,7 +625,7 @@ app.post('/api/auth/register', async (req, res) => {
     });
 
     const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+    const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY as any });
 
     await prisma.user.update({
       where: { id: user.id },
@@ -660,7 +660,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
-    const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+    const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY as any });
 
     await prisma.user.update({
       where: { id: user.id },
@@ -982,6 +982,165 @@ app.get('/api/admin/reservations', authenticateToken, requireAdmin, async (_req,
   }
 });
 
+// Admin manual reservation creation (for phone / direct bookings)
+app.post('/api/admin/reservations', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res) => {
+  try {
+    const {
+      guestName,
+      guestEmail,
+      guestPhone,
+      startDate,
+      endDate,
+      guestsCount,
+      totalPrice,
+      status,
+      notes,
+      internalNotes,
+      sendNotificationEmail,
+    } = req.body;
+
+    if (!guestName || !startDate || !endDate) {
+      return res.status(400).json({ error: 'Nombre de huésped, fecha de llegada y salida son obligatorios.' });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start >= end) {
+      return res.status(400).json({ error: 'La fecha de salida debe ser posterior a la fecha de entrada.' });
+    }
+
+    // Determine total price if not provided
+    let calculatedTotal = Number(totalPrice);
+    if (isNaN(calculatedTotal) || calculatedTotal <= 0) {
+      const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      const priceSetting = await prisma.propertySetting.findUnique({ where: { key: 'price_per_night' } });
+      const cleaningSetting = await prisma.propertySetting.findUnique({ where: { key: 'cleaning_fee' } });
+      const pricePerNight = priceSetting ? parseFloat(priceSetting.value) : 150;
+      const cleaningFee = cleaningSetting ? parseFloat(cleaningSetting.value) : 50;
+      calculatedTotal = nights * pricePerNight + cleaningFee;
+    }
+
+    const reservationStatus = status && ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)
+      ? status
+      : 'CONFIRMED';
+
+    const reservation = await prisma.reservation.create({
+      data: {
+        guestName,
+        guestEmail: guestEmail || 'cliente.directo@villamaria.com',
+        guestPhone: guestPhone || 'N/A',
+        startDate: start,
+        endDate: end,
+        guestsCount: Number(guestsCount) || 1,
+        totalPrice: calculatedTotal,
+        status: reservationStatus,
+        notes: notes || null,
+        internalNotes: internalNotes ? `[Admin: ${internalNotes}]` : '[Creada manualmente por el administrador]',
+      },
+    });
+
+    // Optional Google Calendar event
+    const googleEventId = await createCalendarEvent({
+      guestName,
+      guestEmail: guestEmail || '',
+      guestPhone: guestPhone || '',
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+      guestsCount: Number(guestsCount) || 1,
+      totalPrice: calculatedTotal,
+      notes: notes || '',
+    }).catch(() => null);
+
+    if (googleEventId) {
+      await prisma.reservation.update({
+        where: { id: reservation.id },
+        data: { googleEventId },
+      });
+    }
+
+    // Optional email confirmation to client if valid email provided and requested
+    if (sendNotificationEmail && guestEmail && guestEmail.includes('@') && !guestEmail.includes('cliente.directo')) {
+      const tplCode = reservationStatus === 'CONFIRMED' ? 'PAYMENT_CONFIRMED' : 'BOOKING_CONFIRMATION';
+      const tpl = await prisma.emailTemplate.findUnique({ where: { code: tplCode } });
+      if (tpl) {
+        const locAddr = await prisma.propertySetting.findUnique({ where: { key: 'location_address' } });
+        const locMap = await prisma.propertySetting.findUnique({ where: { key: 'location_maps_link' } });
+        const waPhone = await prisma.propertySetting.findUnique({ where: { key: 'whatsapp_number' } });
+
+        const mapsLinkVal = locMap?.value || 'https://maps.google.com/?q=Chichiriviche,Venezuela';
+        const addressVal = locAddr?.value || 'Calle 15, Urbanización Privada, Chichiriviche, Estado Falcón, Venezuela';
+        const waVal = (waPhone?.value || '+584141234567').replace(/[^0-9]/g, '');
+
+        const html = tpl.bodyHtml
+          .replace(/{{guest_name}}/g, guestName)
+          .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
+          .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
+          .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
+          .replace(/{{total_price}}/g, calculatedTotal.toString())
+          .replace(/{{location_address}}/g, addressVal)
+          .replace(/{{location_maps_link}}/g, mapsLinkVal)
+          .replace(/{{whatsapp_url}}/g, `https://wa.me/${waVal}`);
+
+        sendEmail(guestEmail, tpl.subject, html);
+      }
+    }
+
+    res.json({ success: true, reservation });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bulk status update for multiple reservations
+app.post('/api/admin/reservations/bulk-status', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { ids, status } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0 || !status) {
+      return res.status(400).json({ error: 'Se requiere una lista de IDs y un estado válido.' });
+    }
+
+    await prisma.reservation.updateMany({
+      where: { id: { in: ids } },
+      data: { status },
+    });
+
+    res.json({ success: true, count: ids.length, message: `${ids.length} reservas actualizadas a estado ${status}.` });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bulk delete for multiple reservations
+app.post('/api/admin/reservations/bulk-delete', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'Se requiere una lista de IDs para eliminar.' });
+    }
+
+    // Delete associated google events if any
+    const reservations = await prisma.reservation.findMany({
+      where: { id: { in: ids } },
+      select: { googleEventId: true },
+    });
+
+    for (const r of reservations) {
+      if (r.googleEventId) {
+        await deleteCalendarEvent(r.googleEventId).catch(() => null);
+      }
+    }
+
+    const deleteResult = await prisma.reservation.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    res.json({ success: true, count: deleteResult.count, message: `${deleteResult.count} reservas eliminadas correctamente.` });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.put('/api/admin/reservations/:id/status', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
@@ -1056,12 +1215,23 @@ app.post('/api/admin/reservations/:id/reschedule', authenticateToken, requireAdm
     if (reservation.googleEventId) {
       await deleteCalendarEvent(reservation.googleEventId);
       // Re-create event with new dates
-      await createCalendarEvent({
-        title: `Villa María – ${reservation.guestName}`,
-        description: `Huésped: ${reservation.guestName} | Email: ${reservation.guestEmail} | Teléfono: ${reservation.guestPhone}`,
-        startDate: newStart,
-        endDate: newEnd,
+      const newEventId = await createCalendarEvent({
+        guestName: reservation.guestName,
+        guestEmail: reservation.guestEmail,
+        guestPhone: reservation.guestPhone,
+        startDate: newStart.toISOString(),
+        endDate: newEnd.toISOString(),
+        guestsCount: reservation.guestsCount,
+        totalPrice: reservation.totalPrice,
+        notes: reservation.notes || undefined,
       }).catch(() => null);
+
+      if (newEventId) {
+        await prisma.reservation.update({
+          where: { id: reservation.id },
+          data: { googleEventId: newEventId },
+        });
+      }
     }
 
     // Send email to client

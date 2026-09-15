@@ -99,23 +99,23 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs text-[#1B3B36]/80 pt-2 border-t border-[#1B3B36]/10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#1B3B36]/80 pt-2 border-t border-[#1B3B36]/10">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#C17D5C]" />
-                    <span>{formatDateSpanish(b.checkIn)}</span>
+                    <Calendar className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Llegada: {formatDateSpanish((b.checkIn || b.startDate || '') as string)}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#C17D5C]" />
-                    <span>{formatDateSpanish(b.checkOut)}</span>
+                    <Calendar className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Salida: {formatDateSpanish((b.checkOut || b.endDate || '') as string)}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-[#1B3B36]" />
-                    <span>{b.adults} adultos, {b.children} niños</span>
+                    <span>{b.adults || b.guestsCount || 1} huésped(es)</span>
                   </div>
                   <div className="flex items-center gap-1.5 font-bold text-[#1B3B36]">
-                  <DollarSign className="w-3.5 h-3.5 text-[#C17D5C]" />
-                  <span>{formatPrice(b.totalPrice)}</span>
-                </div>
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Total: {formatPrice(b.totalPrice)}</span>
+                  </div>
                 </div>
 
                 {b.status !== 'cancelled' && (

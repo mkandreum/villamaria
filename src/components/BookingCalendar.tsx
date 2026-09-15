@@ -250,16 +250,36 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             </div>
           </div>
 
-          {/* STEP 3: PRICE SUMMARY & RESERVATION CTA */}
+            {/* STEP 3: PRICE SUMMARY & RESERVATION CTA */}
           <div className="bg-[#F8F5F0] border border-[#1B3B36]/15 rounded-2xl p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#1B3B36]/70">Llegada:</span>
-              <span className="font-bold text-[#1B3B36]">{checkIn ? formatDateSpanish(checkIn) : 'No seleccionada'}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#1B3B36]">{checkIn ? formatDateSpanish(checkIn) : 'No seleccionada'}</span>
+                {(checkIn || checkOut) && (
+                  <button
+                    onClick={() => {
+                      onCheckInChange('');
+                      onCheckOutChange('');
+                    }}
+                    className="text-[10px] text-emerald-800 hover:text-emerald-950 font-bold underline"
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
             </div>
             <div className="flex items-center justify-between text-xs pt-1 border-t border-[#1B3B36]/10">
               <span className="text-[#1B3B36]/70">Salida:</span>
               <span className="font-bold text-[#1B3B36]">{checkOut ? formatDateSpanish(checkOut) : 'No seleccionada'}</span>
             </div>
+
+            {isOccupiedError && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>Algunas de las fechas seleccionadas ya están ocupadas o bloqueadas. Por favor elige otro rango.</span>
+              </div>
+            )}
 
             {priceBreakdown.nights > 0 && !isOccupiedError && (
               <div className="pt-3 border-t border-[#1B3B36]/15 space-y-2">
@@ -281,11 +301,21 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
                 <button
                   onClick={onInitiateBooking}
-                  className="w-full mt-2 py-3 rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Reservar Ahora 📅</span>
                 </button>
+
+                <div className="flex items-center justify-center gap-4 text-[10px] text-[#1B3B36]/60 pt-2">
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" /> Reserva Directa Segura
+                  </span>
+                  <span>•</span>
+                  <span>⚡ Confirmación Inmediata</span>
+                  <span>•</span>
+                  <span>🌊 Falcón, Chichiriviche</span>
+                </div>
               </div>
             )}
           </div>

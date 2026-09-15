@@ -10,7 +10,7 @@ interface HouseRulesAndFAQProps {
 
 export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
   rules,
-  cancellationPolicy = PROPERTY_INFO?.cancellationPolicy || 'Cancelación gratuita hasta 7 días antes de la llegada. Reembolso completo del depósito.',
+  cancellationPolicy = (PROPERTY_INFO as any)?.cancellationPolicy || 'Cancelación gratuita hasta 7 días antes de la llegada. Reembolso completo del depósito.',
   faqs,
 }) => {
   const rulesList = React.useMemo(() => {
