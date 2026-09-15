@@ -99,8 +99,8 @@ export const Hero: React.FC<HeroProps> = ({
             <span className="truncate max-w-[260px] sm:max-w-none">{subtitle}</span>
           </div>
 
-          {/* Centered Large Professional Title */}
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#1B3B36] font-black tracking-tight text-center lg:text-left leading-tight sm:leading-none pt-1 sm:pt-2 pb-1 break-words">
+          {/* Centered Large Professional Title - Super Big on Mobile */}
+          <h1 className="text-5xl xs:text-6xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tighter text-center lg:text-left leading-[1.05] sm:leading-none pt-1 sm:pt-2 pb-1 break-words">
             {title}
           </h1>
 
