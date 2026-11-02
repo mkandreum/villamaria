@@ -42,7 +42,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-emerald-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-emerald-950/80 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-4 overflow-y-auto">
       <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-5 sm:p-8 shadow-2xl relative text-emerald-100 font-sans my-auto max-h-[94vh] overflow-y-auto">
         <button
           onClick={onClose}

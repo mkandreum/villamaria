@@ -89,7 +89,7 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-start justify-center modal-backdrop p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn">
       <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-xl w-full p-4 sm:p-6 md:p-7 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto text-emerald-100 font-sans">
         {/* Close Button */}
         <button

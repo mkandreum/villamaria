@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, CheckCircle2 } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
 
@@ -51,6 +51,8 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
 
   return (
     <div
+      aria-hidden={!visible}
+      inert={!visible}
       className={`fixed bottom-[74px] sm:bottom-[78px] left-1/2 -translate-x-1/2 z-40 md:hidden w-[90%] max-w-sm bg-emerald-950/95 text-emerald-100 border border-emerald-400/40 shadow-2xl rounded-2xl p-2 px-3.5 font-sans backdrop-blur-xl transition-all duration-300 ease-in-out ${
         visible
           ? 'translate-y-0 opacity-100 pointer-events-auto'

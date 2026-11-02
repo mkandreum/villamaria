@@ -11,17 +11,21 @@ import { ReviewsSection } from './components/ReviewsSection';
 import { BookingFormModal } from './components/BookingFormModal';
 import { BookingConfirmationModal } from './components/BookingConfirmationModal';
 import { MyBookingsModal } from './components/MyBookingsModal';
-import { AdminModal } from './components/AdminModal';
+const AdminModal = React.lazy(() => import('./components/AdminModal').then((m) => ({ default: m.AdminModal })));
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
 import { CurrencyProvider } from './context/CurrencyContext';
+import { Reveal } from './components/Reveal';
+import { Toast, ToastState } from './components/Toast';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(() => getAuthUser());
   const [activeSection, setActiveSection] = useState('hero');
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const dismissToast = React.useCallback(() => setToast(null), []);
 
   // Dynamic Property Settings & Availability from Database
   const [propertySettings, setPropertySettings] = useState<any>({});
@@ -161,7 +165,7 @@ export default function App() {
         </section>
 
         {/* Live Reservation Calendar */}
-        <section id="disponibilidad">
+        <section id="disponibilidad"><Reveal>
           <BookingCalendar
             checkIn={checkIn}
             checkOut={checkOut}
@@ -175,10 +179,10 @@ export default function App() {
             onChildrenChange={setChildrenCount}
             onInitiateBooking={() => setIsBookingModalOpen(true)}
           />
-        </section>
+        </Reveal></section>
 
         {/* Photo Gallery */}
-        <section id="gallery">
+        <section id="gallery"><Reveal>
           <GallerySection
             images={propertySettings.gallery_images}
             badge={propertySettings.gallery_badge}
@@ -189,20 +193,20 @@ export default function App() {
             cat3Label={propertySettings.gallery_cat3}
             cat4Label={propertySettings.gallery_cat4}
           />
-        </section>
+        </Reveal></section>
 
         {/* Amenities */}
-        <section id="amenities">
+        <section id="amenities"><Reveal>
           <AmenitiesSection
             amenities={propertySettings.amenities}
             badge={propertySettings.amenities_badge}
             title={propertySettings.amenities_title}
             subtitle={propertySettings.amenities_subtitle}
           />
-        </section>
+        </Reveal></section>
 
         {/* Location */}
-        <section id="location">
+        <section id="location"><Reveal>
           <LocationSection
             badge={propertySettings.location_badge}
             title={propertySettings.location_title}
@@ -215,18 +219,20 @@ export default function App() {
             bullet2={propertySettings.location_bullet_2}
             bullet3={propertySettings.location_bullet_3}
           />
-        </section>
+        </Reveal></section>
 
         {/* Local Attractions */}
-        <section id="attractions">
+        <section id="attractions"><Reveal>
           <AttractionsSection attractions={propertySettings.attractions} />
-        </section>
+        </Reveal></section>
 
         {/* Testimonials & Reviews */}
-        <section id="reviews">
+        <section id="reviews"><Reveal>
           <ReviewsSection reviews={propertySettings.reviews} />
-        </section>
+        </Reveal></section>
       </main>
+
+      <Toast toast={toast} onDismiss={dismissToast} />
 
       {/* Footer */}
       <Footer
@@ -277,7 +283,7 @@ export default function App() {
               loadPublicData();
               if (currentUser) loadUserBookings();
             } catch (err: any) {
-              alert(err.message || 'Error al crear la reserva.');
+              setToast({ type: 'error', message: err.message || 'Error al crear la reserva.' });
             }
           }}
         />
@@ -325,7 +331,7 @@ export default function App() {
               loadUserBookings();
               loadPublicData();
             } catch (err: any) {
-              alert(err.message || 'Error al cancelar la reserva.');
+              setToast({ type: 'error', message: err.message || 'Error al cancelar la reserva.' });
             }
           }}
         />
@@ -333,6 +339,7 @@ export default function App() {
 
       {/* Admin Management Hub Modal */}
       {isAdminModalOpen && (
+        <React.Suspense fallback={null}>
         <AdminModal
           onClose={() => setIsAdminModalOpen(false)}
           onRefreshData={() => {
@@ -340,6 +347,7 @@ export default function App() {
             if (currentUser) loadUserBookings();
           }}
         />
+        </React.Suspense>
       )}
       </div>
     </CurrencyProvider>

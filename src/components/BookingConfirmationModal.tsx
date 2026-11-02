@@ -10,6 +10,7 @@ import {
   MapPin,
   MessageCircle,
   Copy,
+  Check,
   ExternalLink,
   QrCode,
   Ticket
@@ -35,6 +36,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
   hostPhone,
 }) => {
   const [showVoucher, setShowVoucher] = useState(false);
+  const [copied, setCopied] = useState(false);
   const nights = calculateNights(booking.checkIn, booking.checkOut);
   const { formatPrice } = useCurrency();
 
@@ -52,12 +54,13 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
   const waUrl = `https://wa.me/${PROPERTY_INFO.phoneWhatsApp.replace('+', '')}?text=${waText}`;
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(booking.id);
-    alert('¡Código de reserva copiado!');
+    navigator.clipboard?.writeText(booking.id).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-6 overflow-y-auto">
       <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
         {/* Close Button */}
         <button
@@ -97,8 +100,9 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
                     onClick={handleCopyCode}
                     className="p-2 rounded bg-[#F8F5F0] hover:bg-[#1B3B36] hover:text-white text-[#1B3B36] transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer active:scale-95"
                     title="Copiar Código"
+                    aria-label="Copiar código de reserva"
                   >
-                    <Copy className="w-3.5 h-3.5" />
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </div>

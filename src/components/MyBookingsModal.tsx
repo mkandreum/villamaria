@@ -40,7 +40,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1B3B36]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#1B3B36]/80 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-4 overflow-y-auto">
       <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-xl w-full p-4 sm:p-8 shadow-2xl relative my-auto max-h-[94vh] flex flex-col font-sans overflow-hidden">
         <button
           onClick={onClose}

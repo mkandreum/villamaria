@@ -14,6 +14,8 @@ import { getActiveTransporter, sendEmail, testSmtpConnection, sendTestEmailDirec
 import { createCalendarEvent, deleteCalendarEvent, fetchExternalBlockedEvents } from './utils/googleCalendar.js';
 import { fetchBcvRate, venezuelaDateNow } from './utils/bcv.js';
 
+import crypto from 'crypto';
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +23,14 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'villamaria-jwt-secret-key-2026-production';
+const IS_PROD = process.env.NODE_ENV === 'production';
+// Never fall back to a publicly known secret in production: use a random one (sessions reset on restart).
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  (IS_PROD ? crypto.randomBytes(48).toString('hex') : 'villamaria-dev-only-secret');
+if (IS_PROD && !process.env.JWT_SECRET) {
+  console.warn('[Security] JWT_SECRET no definido: se generó una clave aleatoria temporal. Defínelo en el entorno.');
+}
 const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
 
 // Ensure uploads directory exists
@@ -41,11 +50,65 @@ const storage = multer.diskStorage({
     cb(null, 'img-' + uniqueSuffix + ext);
   },
 });
-const upload = multer({ storage });
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (ALLOWED_IMAGE_TYPES.has(file.mimetype)) return cb(null, true);
+    cb(new Error('Solo se permiten imágenes (JPG, PNG, WebP, GIF, AVIF).'));
+  },
+});
 
+// ----------------------------------------------------
+// Helpers: HTML escaping, validation, rate limiting
+// ----------------------------------------------------
+const escapeHtml = (value: unknown): string =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function rateLimit(windowMs: number, max: number) {
+  const hits = new Map<string, { count: number; reset: number }>();
+  setInterval(() => {
+    const now = Date.now();
+    for (const [k, v] of hits) if (v.reset <= now) hits.delete(k);
+  }, windowMs).unref();
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const key = req.ip || 'unknown';
+    const now = Date.now();
+    const entry = hits.get(key);
+    if (!entry || entry.reset <= now) {
+      hits.set(key, { count: 1, reset: now + windowMs });
+      return next();
+    }
+    entry.count += 1;
+    if (entry.count > max) {
+      res.setHeader('Retry-After', Math.ceil((entry.reset - now) / 1000).toString());
+      return res.status(429).json({ error: 'Demasiados intentos. Inténtalo de nuevo en unos minutos.' });
+    }
+    next();
+  };
+}
+const authLimiter = rateLimit(15 * 60 * 1000, 20);
+const bookingLimiter = rateLimit(60 * 60 * 1000, 15);
+
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
-app.use('/uploads', express.static(UPLOADS_DIR));
+app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '7d', setHeaders: (res) => res.setHeader('Content-Security-Policy', "default-src 'none'") }));
 
 // ----------------------------------------------------
 // Middleware Authentication & Authorization
@@ -601,11 +664,18 @@ app.get('/api/health', async (_req, res) => {
 
 // ---------------- Authentication Routes ----------------
 
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', authLimiter, async (req, res) => {
   try {
-    const { email, password, name, phone } = req.body;
+    const { password, name, phone } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'Email, contraseña y nombre son obligatorios.' });
+    }
+    if (!EMAIL_RE.test(email)) {
+      return res.status(400).json({ error: 'El correo electrónico no es válido.' });
+    }
+    if (String(password).length < 8) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -624,7 +694,7 @@ app.post('/api/auth/register', async (req, res) => {
       },
     });
 
-    const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
+    const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     const refreshToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRY as any });
 
     await prisma.user.update({
@@ -642,9 +712,10 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', authLimiter, async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
     if (!email || !password) {
       return res.status(400).json({ error: 'Email y contraseña requeridos.' });
     }
@@ -788,7 +859,7 @@ app.get('/api/reservations/availability', async (_req, res) => {
   }
 });
 
-app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
+app.post('/api/reservations', bookingLimiter, async (req: AuthenticatedRequest, res) => {
   try {
     const { guestName, guestEmail, guestPhone, startDate, endDate, guestsCount, notes } = req.body;
     if (!guestName || !guestEmail || !guestPhone || !startDate || !endDate) {
@@ -797,6 +868,18 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
 
     const start = new Date(startDate);
     const end = new Date(endDate);
+
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      return res.status(400).json({ error: 'Las fechas indicadas no son válidas.' });
+    }
+    if (!EMAIL_RE.test(String(guestEmail).trim())) {
+      return res.status(400).json({ error: 'El correo electrónico no es válido.' });
+    }
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    if (start.getTime() < startOfToday.getTime() - 24 * 60 * 60 * 1000) {
+      return res.status(400).json({ error: 'La fecha de entrada no puede estar en el pasado.' });
+    }
 
     if (start >= end) {
       return res.status(400).json({ error: 'La fecha de salida debe ser posterior a la fecha de entrada.' });
@@ -830,9 +913,9 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
         guestPhone,
         startDate: start,
         endDate: end,
-        guestsCount: Number(guestsCount) || 1,
+        guestsCount: Math.max(1, Math.min(50, Math.floor(Number(guestsCount)) || 1)),
         totalPrice,
-        notes,
+        notes: typeof notes === 'string' ? notes.slice(0, 2000) : null,
         status: 'PENDING',
       },
     });
@@ -868,7 +951,7 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
       const waVal = (waPhone?.value || '+584141234567').replace(/[^0-9]/g, '');
 
       let html = tpl.bodyHtml
-        .replace(/{{guest_name}}/g, guestName)
+        .replace(/{{guest_name}}/g, escapeHtml(guestName))
         .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
         .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
         .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
@@ -902,19 +985,19 @@ app.post('/api/reservations', async (req: AuthenticatedRequest, res) => {
       const cleanPhone = (guestPhone || '').replace(/[^0-9]/g, '');
 
       let adminHtml = adminTpl.bodyHtml
-        .replace(/{{guest_name}}/g, guestName)
-        .replace(/{{guest_email}}/g, guestEmail || 'No provisto')
-        .replace(/{{guest_phone}}/g, guestPhone)
+        .replace(/{{guest_name}}/g, escapeHtml(guestName))
+        .replace(/{{guest_email}}/g, escapeHtml(guestEmail || 'No provisto'))
+        .replace(/{{guest_phone}}/g, escapeHtml(guestPhone))
         .replace(/{{guest_phone_clean}}/g, cleanPhone)
         .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
         .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
         .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
         .replace(/{{guests_count}}/g, (guestsCount || 1).toString())
         .replace(/{{total_price}}/g, totalPrice.toString())
-        .replace(/{{notes}}/g, notes || 'Sin solicitudes especiales');
+        .replace(/{{notes}}/g, escapeHtml(notes || 'Sin solicitudes especiales'));
 
       for (const targetEmail of recipients) {
-        sendEmail(targetEmail, adminTpl.subject.replace(/{{guest_name}}/g, guestName), adminHtml);
+        sendEmail(targetEmail, adminTpl.subject.replace(/{{guest_name}}/g, escapeHtml(guestName)), adminHtml);
       }
     }
 
@@ -1073,7 +1156,7 @@ app.post('/api/admin/reservations', authenticateToken, requireAdmin, async (req:
         const waVal = (waPhone?.value || '+584141234567').replace(/[^0-9]/g, '');
 
         const html = tpl.bodyHtml
-          .replace(/{{guest_name}}/g, guestName)
+          .replace(/{{guest_name}}/g, escapeHtml(guestName))
           .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8))
           .replace(/{{start_date}}/g, start.toLocaleDateString('es-ES'))
           .replace(/{{end_date}}/g, end.toLocaleDateString('es-ES'))
@@ -1662,6 +1745,12 @@ app.post('/api/admin/smtp/test-email', authenticateToken, requireAdmin, async (r
 // ----------------------------------------------------
 // Serve Production Static Files
 // ----------------------------------------------------
+app.use((err: any, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!err) return next();
+  const status = err instanceof multer.MulterError || err.message?.startsWith('Solo se permiten') ? 400 : err.status || 500;
+  res.status(status).json({ error: status === 500 ? 'Error interno del servidor.' : err.message });
+});
+
 const distPath = path.join(process.cwd(), 'dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));

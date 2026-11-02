@@ -411,7 +411,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   // ----------------------------------------------------
   // Amenities / Services Management
   // ----------------------------------------------------
-  const getAmenitiesList = (): Array<{ id: string; title: string; emoji: string; description: string }> => {
+  const getAmenitiesList = (): Array<any> => {
     const am = propertySettings.amenities;
     if (!am) return AMENITIES;
     if (Array.isArray(am)) return am;
@@ -524,7 +524,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-emerald-950/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-emerald-950/85 backdrop-blur-md flex items-end sm:items-start justify-center modal-backdrop p-0 sm:p-4 lg:p-6 overflow-y-auto">
       <div className="bg-emerald-950 sm:border sm:border-emerald-500/30 sm:rounded-3xl max-w-6xl w-full p-3.5 sm:p-5 lg:p-7 shadow-2xl relative text-emerald-100 font-sans h-[100dvh] sm:h-auto sm:max-h-[92vh] flex flex-col overflow-hidden max-w-full">
         {/* Close Button */}
         <button

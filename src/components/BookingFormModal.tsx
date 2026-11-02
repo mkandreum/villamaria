@@ -83,7 +83,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
   const [specialRequests, setSpecialRequests] = useState('');
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-6 overflow-y-auto">
       <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
         {/* Close Button */}
         <button
