@@ -24,6 +24,7 @@ import { StickyMobileBar } from './components/StickyMobileBar';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { ThemeToggle } from './components/ThemeToggle';
 import { ScrollProgress, Splash } from './components/Motion';
+import { stripEmoji } from './utils/icons';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(() => getAuthUser());
@@ -101,7 +102,12 @@ export default function App() {
         api.getAvailability().catch(() => ({ reservations: [], blockedDates: [], googleCalendarEvents: [] })),
       ]);
 
-      setPropertySettings(propRes.settings || {});
+      // Public copy is edited in the admin with emoji; the site draws icons instead
+      const cleaned: Record<string, any> = {};
+      for (const [k, v] of Object.entries(propRes.settings || {})) {
+        cleaned[k] = typeof v === 'string' && !/^(https?:|\+?[\d\s()-]+$)/.test(v) && !/^[\[{]/.test(v) ? stripEmoji(v) : v;
+      }
+      setPropertySettings(cleaned);
       setAvailability(availRes);
     } catch (err) {
       console.error('Error cargando datos públicos:', err);

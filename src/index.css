@@ -8,7 +8,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
     background-color: #F8F5F0;
     color: #1B3B36;
     overflow-x: hidden;
@@ -221,3 +221,14 @@ html[data-theme='dark'] .bg-emerald-50,
 html[data-theme='dark'] .hover\:bg-emerald-50:hover { background-color: #123d2c; }
 html[data-theme='dark'] .bg-red-50 { background-color: rgba(127, 29, 29, 0.35); }
 html[data-theme='dark'] .text-emerald-800 { color: #6ee7b7; }
+
+/* ---------- Browser surfaces themed from the palette ---------- */
+::selection { background: #C17D5C; color: #fff; }
+input, textarea, select { caret-color: #059669; accent-color: #1B3B36; }
+::placeholder { color: rgb(27 59 54 / 0.45); }
+a { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+p, li { text-wrap: pretty; }
+.tabular-nums, [class*='price'] { font-variant-numeric: tabular-nums; }
+html { scrollbar-color: rgb(27 59 54 / 0.35) transparent; }
+html[data-theme='dark'] ::selection { background: #34d399; color: #04130f; }
+html[data-theme='dark'] input, html[data-theme='dark'] textarea, html[data-theme='dark'] select { color-scheme: dark; }

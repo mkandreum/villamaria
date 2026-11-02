@@ -20,9 +20,9 @@ export const WeatherSeaWidget: React.FC = () => {
     humidity: 74,
     windSpeed: 12,
     condition: 'Soleado & Tropical',
-    seaStatus: 'Mar Calmo 🌊',
+    seaStatus: 'Mar Calmo',
     seaDescription: 'Excelente para navegar a Cayo Sombrero',
-    icon: '☀️',
+    icon: '',
     updatedAt: 'En vivo',
   });
   const [loading, setLoading] = useState(false);
@@ -45,33 +45,33 @@ export const WeatherSeaWidget: React.FC = () => {
       const code = current.weather_code;
 
       let cond = 'Soleado & Despejado';
-      let icon = '☀️';
+      let icon = '';
 
       if (code === 0) {
         cond = 'Cielo Despejado';
-        icon = '☀️';
+        icon = '';
       } else if (code <= 3) {
         cond = 'Parcialmente Nublado';
-        icon = '⛅';
+        icon = '';
       } else if (code >= 51 && code <= 67) {
         cond = 'Llovizna Pasajera';
-        icon = '🌦️';
+        icon = '';
       } else if (code >= 80) {
         cond = 'Lluvia Tropical Breve';
-        icon = '🌧️';
+        icon = '';
       }
 
-      let sea = 'Mar Calmo 🌊';
-      let seaDesc = 'Condiciones óptimas para navegar a Cayo Sombrero y Cayo Sal 🚤';
+      let sea = 'Mar Calmo';
+      let seaDesc = 'Condiciones óptimas para navegar a Cayo Sombrero y Cayo Sal';
 
       if (wind <= 14) {
-        sea = 'Mar Calmo 🚤';
+        sea = 'Mar Calmo';
         seaDesc = 'Excelente para peñeros y snorkel en los cayos';
       } else if (wind <= 24) {
-        sea = 'Brisa Suave ⛵';
+        sea = 'Brisa Suave';
         seaDesc = 'Navegación normal y agradable en Morrocoy';
       } else {
-        sea = 'Oleaje Moderado ⚓';
+        sea = 'Oleaje Moderado';
         seaDesc = 'Precaución en aguas abiertas';
       }
 
@@ -146,7 +146,7 @@ export const WeatherSeaWidget: React.FC = () => {
       {isExpanded && (
         <div className="mt-2 p-3 bg-white/95 backdrop-blur-md rounded-2xl border border-emerald-800/15 shadow-lg space-y-2 text-xs text-[#1B3B36] animate-fadeIn">
           <div className="flex items-center justify-between border-b border-[#1B3B36]/10 pb-1.5 text-[11px] font-bold text-emerald-900">
-            <span>🌊 Estado del Mar & Pronóstico Náutico</span>
+            <span> Estado del Mar & Pronóstico Náutico</span>
             <span className="text-[11px] text-[#1B3B36]/60 font-mono">Hora: {weather.updatedAt}</span>
           </div>
 

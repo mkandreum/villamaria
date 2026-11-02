@@ -1,3 +1,5 @@
+import { SectionHeader } from './SectionHeader';
+import { iconForText, stripEmoji } from '../utils/icons';
 import React from 'react';
 import { MapPin, Navigation, ExternalLink } from 'lucide-react';
 import { PROPERTY_INFO } from '../data/mockData';
@@ -19,9 +21,9 @@ interface LocationSectionProps {
  * Resolves the embed URL to use in the iframe.
  *
  * Priority:
- *  1. If user pasted a full <iframe> tag → extract the src and use it directly.
- *  2. If the URL already is a proper google.com/maps/embed?pb=... → use it directly.
- *  3. Otherwise → fall back to OpenStreetMap (no API key required, no errors).
+ *  1. If user pasted a full <iframe> tag  extract the src and use it directly.
+ *  2. If the URL already is a proper google.com/maps/embed?pb=...  use it directly.
+ *  3. Otherwise  fall back to OpenStreetMap (no API key required, no errors).
  *
  * NOTE: The old maps.google.com/maps?q=...&output=embed format now requires
  * a Google Maps Embed API key and shows "couldn't load custom map content"
@@ -40,7 +42,7 @@ function resolveEmbedUrl(raw: string | undefined): string {
     if (match && match[1]) return match[1]; // trust what Google generated
   }
 
-  // If it's already a proper Google Maps Embed API URL (share → embed map)
+  // If it's already a proper Google Maps Embed API URL (share  embed map)
   if (raw.includes('google.com/maps/embed')) return raw;
 
   // If it looks like a Google Maps URL (but NOT a proper embed URL),
@@ -65,13 +67,13 @@ function resolveEmbedUrl(raw: string | undefined): string {
     );
   }
 
-  // Anything else → OSM default
+  // Anything else  OSM default
   return OSM_DEFAULT;
 }
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
-  badge = '📍 Ubicación Privilegiada',
-  title = 'Chichiriviche • Calle 15 🌴',
+  badge = ' Ubicación Privilegiada',
+  title = 'Chichiriviche • Calle 15',
   subtitle = 'Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.',
   address = PROPERTY_INFO.locationName,
   description = (PROPERTY_INFO as any).locationDescription || (PROPERTY_INFO as any).shortLocation || 'Urbanización privada tranquila y segura en Chichiriviche.',
@@ -84,21 +86,10 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   const resolvedEmbed = React.useMemo(() => resolveEmbedUrl(embedUrl), [embedUrl]);
 
   return (
-    <section id="location" className="py-10 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section id="location" className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
 
-        {/* Title */}
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
-            <span>{badge}</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            {title}
-          </h2>
-          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
-            {subtitle}
-          </p>
-        </div>
+        <SectionHeader title={title} subtitle={subtitle} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Details Card */}
@@ -106,7 +97,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             <div className="space-y-2.5 sm:space-y-3">
               <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs uppercase tracking-wider">
                 <MapPin className="w-4 h-4" />
-                <span>Dirección Exacta 🗺️</span>
+                <span>Dirección Exacta</span>
               </div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1B3B36]">{address}</h3>
               <p className="text-xs text-[#1B3B36]/80 leading-relaxed font-sans">{description}</p>
@@ -114,16 +105,16 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
 
             <div className="space-y-2.5 sm:space-y-3 pt-3 sm:pt-4 border-t border-[#1B3B36]/10">
               <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
-                <span className="w-8 h-8 rounded-xl bg-[#EAE3D8] flex items-center justify-center text-sm shrink-0">⛵</span>
-                <span>{bullet1}</span>
+                <span className="w-9 h-9 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet1)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+                <span>{stripEmoji(String(bullet1))}</span>
               </div>
               <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
-                <span className="w-8 h-8 rounded-xl bg-[#EAE3D8] flex items-center justify-center text-sm shrink-0">🔒</span>
-                <span>{bullet2}</span>
+                <span className="w-9 h-9 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet2)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+                <span>{stripEmoji(String(bullet2))}</span>
               </div>
               <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
-                <span className="w-8 h-8 rounded-xl bg-[#EAE3D8] flex items-center justify-center text-sm shrink-0">🛒</span>
-                <span>{bullet3}</span>
+                <span className="w-9 h-9 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet3)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+                <span>{stripEmoji(String(bullet3))}</span>
               </div>
             </div>
 
@@ -135,7 +126,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
                 className="w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold uppercase tracking-wider transition-all shadow-md min-h-[48px] active:scale-95 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-emerald-400" />
-                <span className="truncate">Abrir en Google Maps GPS 🗺️</span>
+                <span className="truncate">Abrir en Google Maps GPS</span>
                 <ExternalLink className="w-3.5 h-3.5 ml-1 shrink-0" />
               </a>
             </div>

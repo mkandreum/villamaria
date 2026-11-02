@@ -135,7 +135,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   const { formatPrice } = useCurrency();
 
   return (
-    <section id="disponibilidad" className="py-8 sm:py-16 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
+    <section id="disponibilidad" className="py-14 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
       <div className="max-w-4xl mx-auto px-3 sm:px-6">
         
         {/* Main Card Container */}
@@ -143,12 +143,8 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           
           {/* Header */}
           <div className="text-center border-b border-[#1B3B36]/10 pb-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold uppercase tracking-wider mb-2">
-              <CalendarIcon className="w-3.5 h-3.5" />
-              <span>Reserva Tu Estancia 🏡</span>
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#1B3B36] tracking-tight">
-              Calendario de Disponibilidad
+            <h2 className="text-[clamp(1.75rem,5vw,2.75rem)] leading-[1.05] font-serif font-bold text-[#1B3B36] tracking-tight text-balance">
+              Reserva tu estancia
             </h2>
             <p className="text-xs text-[#1B3B36]/70 mt-1 max-w-md mx-auto">
               Selecciona tus huéspedes y las fechas de llegada y salida.
@@ -364,7 +360,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                   className="shine w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Reservar Ahora 📅</span>
+                  <span>Reservar Ahora</span>
                 </button>
 
                 <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[#1B3B36]/60 pt-2">
@@ -372,9 +368,9 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" /> Reserva Directa Segura
                   </span>
                   <span>•</span>
-                  <span>⚡ Confirmación Inmediata</span>
+                  <span> Confirmación Inmediata</span>
                   <span>•</span>
-                  <span>🌊 Falcón, Chichiriviche</span>
+                  <span> Falcón, Chichiriviche</span>
                 </div>
               </motion.div>
             )}

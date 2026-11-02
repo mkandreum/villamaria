@@ -154,7 +154,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                       className="text-xs text-emerald-950 font-bold bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all min-h-[36px] cursor-pointer"
                     >
                       <Ticket className="w-3.5 h-3.5" />
-                      <span>🎟️ Pase de Entrada & QR</span>
+                      <span> Pase de Entrada & QR</span>
                     </button>
 
                     <button

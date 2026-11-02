@@ -42,12 +42,12 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
 
   const waText = encodeURIComponent(
     `¡Hola Villa María! Acabo de solicitar una reserva:\n\n` +
-      `📌 *Código:* ${booking.id}\n` +
-      `👤 *Nombre:* ${booking.guestName}\n` +
-      `📅 *Llegada:* ${formatDateSpanish(booking.checkIn)}\n` +
-      `📅 *Salida:* ${formatDateSpanish(booking.checkOut)} (${nights} noches)\n` +
-      `👥 *Huéspedes:* ${booking.adults} adultos, ${booking.children} niños\n` +
-      `💵 *Monto Total:* ${formatPrice(booking.totalPrice)}\n\n` +
+      ` *Código:* ${booking.id}\n` +
+      ` *Nombre:* ${booking.guestName}\n` +
+      ` *Llegada:* ${formatDateSpanish(booking.checkIn)}\n` +
+      ` *Salida:* ${formatDateSpanish(booking.checkOut)} (${nights} noches)\n` +
+      ` *Huéspedes:* ${booking.adults} adultos, ${booking.children} niños\n` +
+      ` *Monto Total:* ${formatPrice(booking.totalPrice)}\n\n` +
       `Agradezco me envíen las indicaciones para concretar el anticipo. ¡Gracias!`
   );
 
@@ -160,7 +160,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all min-h-[48px] active:scale-95 cursor-pointer"
             >
               <Ticket className="w-4.5 h-4.5" />
-              <span>🎟️ Ver / Descargar Pase con Código QR</span>
+              <span> Ver / Descargar Pase con Código QR</span>
             </button>
 
             <a

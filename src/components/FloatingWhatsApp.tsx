@@ -11,7 +11,7 @@ interface FloatingWhatsAppProps {
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ phone, availableToday, raised }) => {
   const digits = (phone || '').replace(/[^0-9]/g, '');
   if (!digits) return null;
-  const url = `https://wa.me/${digits}?text=${encodeURIComponent('Hola Villa María 🌴, quisiera consultar disponibilidad.')}`;
+  const url = `https://wa.me/${digits}?text=${encodeURIComponent('Hola Villa María , quisiera consultar disponibilidad.')}`;
 
   return (
     <motion.a

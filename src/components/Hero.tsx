@@ -4,6 +4,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { WeatherSeaWidget } from './WeatherSeaWidget';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 import { WordReveal } from './Motion';
+import { iconForText, stripEmoji } from '../utils/icons';
 
 interface HeroProps {
   checkIn: string;
@@ -43,17 +44,17 @@ export const Hero: React.FC<HeroProps> = ({
   onGuestsChange,
   onSearch,
   title = 'Villa María',
-  subtitle = 'Tu refugio exclusivo en Chichiriviche 🌴',
+  subtitle = 'Tu refugio exclusivo en Chichiriviche',
   description = 'Villa María es una elegante finca vacacional totalmente equipada. Disfruta de piscina privada climatizada, servicio de agua constante 24/7, planta eléctrica y cercanía a los cayos de Morrocoy.',
   pricePerNight = 150,
   whatsappNumber = '+34600000000',
   heroImage,
   images,
-  photoBadge = '🏊‍♂️ Piscina Climatizada',
-  feat1 = '🏊‍♂️ Piscina Privada',
-  feat2 = '📶 Fibra 600Mb',
-  feat3 = '⚡ Luz y Agua 24/7',
-  feat4 = '🚗 Parking Privado',
+  photoBadge = ' Piscina Climatizada',
+  feat1 = ' Piscina Privada',
+  feat2 = ' Fibra 600Mb',
+  feat3 = ' Luz y Agua 24/7',
+  feat4 = ' Parking Privado',
 }) => {
   const photos = React.useMemo(() => {
     let list = images;
@@ -99,7 +100,7 @@ export const Hero: React.FC<HeroProps> = ({
   }, [photos.length]);
 
   const waUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodeURIComponent(
-    'Hola Villa María 🌴, me gustaría consultar disponibilidad y precios para reservar.'
+    'Hola Villa María , me gustaría consultar disponibilidad y precios para reservar.'
   )}`;
 
   return (
@@ -108,15 +109,12 @@ export const Hero: React.FC<HeroProps> = ({
         
         {/* Headline & Title Section */}
         <div className="hidden lg:block text-center lg:text-left max-w-4xl mx-auto lg:mx-0 space-y-2 mb-4">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-[11px] sm:text-xs font-bold font-sans uppercase tracking-wider">
-            <span>✨</span>
-            <span className="truncate max-w-[260px] sm:max-w-none">{subtitle}</span>
-          </div>
 
           {/* Centered Large Professional Title - Super Big on Mobile */}
           <h1 className="text-5xl xs:text-6xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tighter text-center lg:text-left leading-[1.05] sm:leading-none pt-1 sm:pt-2 pb-1 break-words">
             {title}
           </h1>
+          <p className="font-serif italic text-xl lg:text-2xl text-emerald-900 pt-1">{stripEmoji(subtitle)}</p>
 
           <p className="text-xs sm:text-sm md:text-base text-[#1B3B36]/80 max-w-2xl text-center lg:text-left pt-1 leading-relaxed">
             {description}
@@ -126,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-10 items-center">
           
-          {/* PHOTO CAROUSEL "AL AIRE" (Full-width, large, rounded corners, arrows on touch/hover) 📸 */}
+          {/* PHOTO CAROUSEL "AL AIRE" (Full-width, large, rounded corners, arrows on touch/hover)  */}
           <div className="lg:col-span-7">
             <div
               ref={heroRef}
@@ -165,10 +163,8 @@ export const Hero: React.FC<HeroProps> = ({
 
               {/* Mobile overlay: title, price and primary actions over the photo */}
               <motion.div style={{ y: overlayY, opacity: overlayOpacity }} className="lg:hidden absolute inset-x-0 bottom-0 z-10 px-5 pb-12 text-white space-y-3">
-                <motion.span initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase, duration: 0.7 }} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-[11px] font-bold uppercase tracking-wider max-w-full">
-                  <span className="truncate">{subtitle}</span>
-                </motion.span>
                 <h1 className="text-5xl font-serif font-black tracking-tight leading-[1.02] drop-shadow-lg break-words"><WordReveal text={title} delay={introBase + 0.1} /></h1>
+                <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.4, duration: 0.7 }} className="font-serif italic text-lg text-emerald-100/95 -mt-1">{stripEmoji(subtitle)}</motion.p>
                 <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.55, duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="flex items-end justify-between gap-3 pt-1">
                   <div>
                     <span className="text-[11px] uppercase tracking-wider text-emerald-200 font-bold block">Desde</span>
@@ -221,7 +217,7 @@ export const Hero: React.FC<HeroProps> = ({
 
               {/* Editable Badge Overlay */}
               <div className="absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1 shadow-md max-w-[80%] truncate">
-                <span className="truncate">{photoBadge}</span>
+                <span className="truncate">{stripEmoji(String(photoBadge))}</span>
               </div>
             </div>
             <p className="lg:hidden px-1 pt-4 text-sm text-[#1B3B36]/80 leading-relaxed">{description}</p>
@@ -238,7 +234,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] uppercase font-bold text-emerald-800 tracking-wider block">
-                    Tarifa Estándar 🏷️
+                    Tarifa Estándar
                   </span>
                   <span className="text-xl sm:text-3xl font-serif font-bold text-[#1B3B36]">
                     {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
@@ -251,7 +247,7 @@ export const Hero: React.FC<HeroProps> = ({
                       <Star key={i} className="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-[#1B3B36]">4.96/5.0 ⭐</span>
+                  <span className="text-xs font-bold text-[#1B3B36]">4.96/5.0</span>
                   <span className="text-[11px] text-[#1B3B36]/60 block">(48 reseñas)</span>
                 </div>
               </div>
@@ -262,7 +258,7 @@ export const Hero: React.FC<HeroProps> = ({
                   className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <Calendar className="w-4 h-4 text-emerald-400" />
-                  <span>Reservar 📅</span>
+                  <span>Reservar</span>
                 </button>
 
                 <a
@@ -272,7 +268,7 @@ export const Hero: React.FC<HeroProps> = ({
                   className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>WhatsApp 💬</span>
+                  <span>WhatsApp</span>
                 </a>
               </div>
             </div>
@@ -284,7 +280,8 @@ export const Hero: React.FC<HeroProps> = ({
                   key={idx}
                   className="flex items-center gap-2 p-2.5 px-3 rounded-xl sm:rounded-2xl bg-white border border-[#1B3B36]/10 text-xs font-semibold text-[#1B3B36] shadow-sm min-h-[42px]"
                 >
-                  <span className="text-[11px] truncate">{item}</span>
+                  {React.createElement(iconForText(String(item)), { className: 'w-4 h-4 text-emerald-700 shrink-0', strokeWidth: 1.75 })}
+                  <span className="text-xs truncate">{stripEmoji(String(item))}</span>
                 </div>
               ))}
             </div>

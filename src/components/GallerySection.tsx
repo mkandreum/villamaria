@@ -1,3 +1,4 @@
+import { SectionHeader } from './SectionHeader';
 import React, { useState } from 'react';
 import { GALLERY_IMAGES } from '../data/mockData';
 import { Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -16,13 +17,13 @@ interface GallerySectionProps {
 
 export const GallerySection: React.FC<GallerySectionProps> = ({
   images,
-  badge = '📸 Recorrido Visual',
-  title = 'Fotos de Villa María 🌴',
+  badge = ' Recorrido Visual',
+  title = 'Fotos de Villa María',
   subtitle = 'Galería dinámica de la propiedad, jardines, piscina climatizada y estancias.',
-  cat1Label = 'Todas 📸',
-  cat2Label = 'Fachada & Porche 🏡',
-  cat3Label = 'Piscina & Jardines 🏊‍♂️',
-  cat4Label = 'Habitaciones & Salón 🛋️',
+  cat1Label = 'Todas',
+  cat2Label = 'Fachada & Porche',
+  cat3Label = 'Piscina & Jardines',
+  cat4Label = 'Habitaciones & Salón',
 }) => {
   const normalizedImages = React.useMemo(() => {
     if (!images) return GALLERY_IMAGES;
@@ -77,20 +78,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   }, [lightboxIndex === null, filteredImages.length]);
 
   return (
-    <section id="gallery" className="py-10 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section id="gallery" className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
-        {/* Title */}
-        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
-            <span>{badge}</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            {title}
-          </h2>
-          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
-            {subtitle}
-          </p>
+        <SectionHeader title={title} subtitle={subtitle}>
 
           {/* Categories */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-5 sm:mt-6">
@@ -108,7 +99,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
               </button>
             ))}
           </div>
-        </div>
+        </SectionHeader>
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">

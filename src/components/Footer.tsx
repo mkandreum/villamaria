@@ -28,7 +28,7 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <div>
                 <span className="font-serif text-2xl font-bold text-white block">
-                  Villa María 🌴
+                  Villa María
                 </span>
                 <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider block">
                   Alojamiento Turístico & Relax • Chichiriviche
@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
 
             <p className="text-xs text-[#EAE3D8] leading-relaxed max-w-sm font-sans">
-              Disfruta de las mejores vacaciones en el Estado Falcón. Urbanización privada con piscina climatizada, agua constante 24/7 y planta eléctrica. 🏖️
+              Disfruta de las mejores vacaciones en el Estado Falcón. Urbanización privada con piscina climatizada, agua constante 24/7 y planta eléctrica.
             </p>
 
             <div className="pt-2">
@@ -48,7 +48,7 @@ export const Footer: React.FC<FooterProps> = ({
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#1B3B36] hover:bg-[#EAE3D8] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm min-h-[44px] active:scale-95"
               >
                 <Navigation className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Ver en Google Maps 🗺️</span>
+                <span>Ver en Google Maps</span>
                 <ExternalLink className="w-3 h-3 ml-0.5 text-emerald-700" />
               </a>
             </div>
@@ -57,42 +57,42 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Direct Links */}
           <div className="md:col-span-3 space-y-3 text-xs">
             <h4 className="text-xs font-bold text-white uppercase tracking-[0.2em]">
-              Navegación 🧭
+              Navegación
             </h4>
             <ul className="space-y-2 text-[#EAE3D8]">
               <li>
                 <a href="#disponibilidad" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  📅 Calendario de Disponibilidad
+                   Calendario de Disponibilidad
                 </a>
               </li>
               <li>
                 <a href="#gallery" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  📸 Galería de Fotos & Piscina
+                   Galería de Fotos & Piscina
                 </a>
               </li>
               <li>
                 <a href="#amenities" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  ✨ Comodidades e Instalaciones
+                   Comodidades e Instalaciones
                 </a>
               </li>
               <li>
                 <a href="#location" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  📍 Ubicación & Mapa
+                   Ubicación & Mapa
                 </a>
               </li>
               <li>
                 <a href="#attractions" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  🚤 Cayos & Playas Cercanas
+                   Cayos & Playas Cercanas
                 </a>
               </li>
               <li>
                 <a href="#reviews" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  💬 Opiniones de Huéspedes
+                   Opiniones de Huéspedes
                 </a>
               </li>
               <li>
                 <a href="#faq" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                  💡 Preguntas Frecuentes
+                   Preguntas Frecuentes
                 </a>
               </li>
             </ul>
@@ -101,7 +101,7 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Contact */}
           <div className="md:col-span-4 space-y-3 text-xs">
             <h4 className="text-xs font-bold text-white uppercase tracking-[0.2em]">
-              Contacto Directo 📞
+              Contacto Directo
             </h4>
             <div className="space-y-3 text-[#EAE3D8]">
               <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom copyright */}
         <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#EAE3D8]/70 gap-2.5 font-sans text-center sm:text-left">
-          <p>© {new Date().getFullYear()} Villa María. Todos los derechos reservados. 🌴</p>
+          <p>© {new Date().getFullYear()} Villa María. Todos los derechos reservados.</p>
           <p className="flex items-center justify-center gap-1">
             Diseñado con <Heart className="w-3 h-3 text-red-400 fill-red-400" /> para vacaciones inolvidables.
           </p>

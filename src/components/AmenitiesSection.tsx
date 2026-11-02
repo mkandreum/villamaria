@@ -1,18 +1,18 @@
-import { Stagger, StaggerItem } from './Reveal';
 import React from 'react';
+import { Stagger, StaggerItem } from './Reveal';
+import { SectionHeader } from './SectionHeader';
+import { iconForText, stripEmoji } from '../utils/icons';
 import { AMENITIES } from '../data/mockData';
 
 interface AmenitiesSectionProps {
   amenities?: any;
-  badge?: string;
   title?: string;
   subtitle?: string;
 }
 
 export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
   amenities,
-  badge = '✨ Servicios de la Propiedad',
-  title = 'Comodidades Incluidas 🏡',
+  title = 'Comodidades incluidas',
   subtitle = 'Instalaciones preparadas para tu máximo confort durante tus vacaciones en Chichiriviche.',
 }) => {
   const normalizedAmenities = React.useMemo(() => {
@@ -35,53 +35,30 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
     }));
   }, [amenities]);
 
-  const getEmojiForAmenity = (title: string) => {
-    const t = title.toLowerCase();
-    if (t.includes('wifi') || t.includes('internet')) return '📶';
-    if (t.includes('piscina') || t.includes('pool')) return '🏊‍♂️';
-    if (t.includes('aparcamiento') || t.includes('parking') || t.includes('garaje')) return '🚗';
-    if (t.includes('aire') || t.includes('clima')) return '❄️';
-    if (t.includes('barbacoa') || t.includes('parrilla')) return '🍖';
-    if (t.includes('cocina')) return '🍳';
-    if (t.includes('luz') || t.includes('planta')) return '⚡';
-    if (t.includes('tv') || t.includes('smart')) return '📺';
-    return '✨';
-  };
 
   return (
-    <section id="amenities" className="py-10 sm:py-20 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        
-        {/* Title */}
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
-            <span>{badge}</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            {title}
-          </h2>
-          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
-            {subtitle}
-          </p>
-        </div>
+    <section id="amenities" className="py-16 sm:py-24 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionHeader title={stripEmoji(title)} subtitle={subtitle} />
 
-        {/* Grid */}
-        <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
-          {normalizedAmenities.map((item: any, idx: number) => (
-            <StaggerItem key={item.id || idx}>
-            <div
-              className="bg-white h-full rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex items-start gap-3.5 sm:gap-4"
-            >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#EAE3D8] text-xl sm:text-2xl flex items-center justify-center shrink-0 shadow-inner">
-                {item.emoji || getEmojiForAmenity(item.title)}
-              </div>
-              <div className="space-y-1 min-w-0">
-                <h3 className="text-sm sm:text-base font-serif font-bold text-[#1B3B36] truncate">{item.title}</h3>
-                <p className="text-xs text-[#1B3B36]/70 leading-relaxed font-sans">{item.description}</p>
-              </div>
-            </div>
-            </StaggerItem>
-          ))}
+        <Stagger className="grid grid-cols-1 md:grid-cols-2 gap-x-14 border-t border-[#1B3B36]/15">
+          {normalizedAmenities.map((item: any, idx: number) => {
+            const label = stripEmoji(String(item.title));
+            const Icon = iconForText(`${label} ${item.description || ''}`);
+            return (
+              <StaggerItem key={item.id || idx}>
+                <div className="flex items-start gap-4 py-5 sm:py-6 border-b border-[#1B3B36]/15">
+                  <span className="mt-0.5 w-11 h-11 shrink-0 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center">
+                    <Icon className="w-5 h-5" strokeWidth={1.75} />
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-serif font-bold text-[#1B3B36] leading-snug">{label}</h3>
+                    <p className="text-sm text-[#1B3B36]/70 leading-relaxed mt-1 text-pretty">{item.description}</p>
+                  </div>
+                </div>
+              </StaggerItem>
+            );
+          })}
         </Stagger>
       </div>
     </section>

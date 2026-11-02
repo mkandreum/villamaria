@@ -120,13 +120,13 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
         {/* Modal Header */}
         <div className="mb-3.5 sm:mb-4 shrink-0 pr-8">
           <span className="text-[11px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">
-            Reserva Directa Villa María 🏡
+            Reserva Directa Villa María
           </span>
           <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1B3B36] mt-1 leading-tight">
             Datos de Reserva
           </h2>
           <p className="text-xs text-[#1B3B36]/70 mt-0.5 font-sans">
-            {breakdown.nights} {breakdown.nights === 1 ? 'noche' : 'noches'} ({formatDateSpanish(checkIn)} ➔ {formatDateSpanish(checkOut)})
+            {breakdown.nights} {breakdown.nights === 1 ? 'noche' : 'noches'} ({formatDateSpanish(checkIn)}  {formatDateSpanish(checkOut)})
           </p>
         </div>
 
@@ -135,7 +135,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           {/* Personal Info */}
           <div className="space-y-2.5">
             <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
-              1. Datos del Huésped Principal 👤
+              1. Datos del Huésped Principal
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
@@ -199,7 +199,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           {/* Payment Method Preferences */}
           <div className="space-y-2 pt-2 border-t border-[#1B3B36]/10">
             <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
-              2. Método de Pago (Anticipo 50%) 💳
+              2. Método de Pago (Anticipo 50%)
             </h3>
             
             <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-[#1B3B36] flex items-start gap-2">
@@ -274,7 +274,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[48px] cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>{submitting ? 'Enviando…' : 'Confirmar Reserva y Comprobante 📅'}</span>
+            <span>{submitting ? 'Enviando…' : 'Confirmar Reserva y Comprobante'}</span>
           </button>
         </form>
       </div>
