@@ -63,30 +63,31 @@ export default function App() {
     loadPublicData().finally(() => setLoaded(true));
   }, []);
 
-  // Scroll-spy: keep the active tab in sync with the section on screen
+  // Scroll-spy: the section crossing the middle of the screen owns the tab.
+  // A tap on the bar locks it to the destination until that scroll has finished.
+  const navLock = React.useRef(false);
+  const lastSpied = React.useRef('hero');
+
   useEffect(() => {
-    const ids: Array<[string, string]> = [
-      ['hero', 'hero'], ['disponibilidad', 'booking'], ['gallery', 'gallery'], ['amenities', 'amenities'],
-    ];
-    const visibleRatios = new Map<string, number>();
+    const tabFor: Record<string, string> = { hero: 'hero', disponibilidad: 'booking', gallery: 'gallery', amenities: 'amenities' };
     const io = new IntersectionObserver(
       (entries) => {
-        entries.forEach((e) => visibleRatios.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0));
-        let best = '';
-        let max = 0;
-        for (const [domId, tab] of ids) {
-          const r = visibleRatios.get(domId) || 0;
-          if (r > max) { max = r; best = tab; }
-        }
-        if (best) setActiveSection(best);
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          lastSpied.current = tabFor[e.target.id] || '';
+          if (!navLock.current) setActiveSection(lastSpied.current);
+        });
       },
-      { threshold: [0, 0.2, 0.4, 0.6, 0.8] }
+      { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
     );
-    ids.forEach(([domId]) => { const el = document.getElementById(domId); if (el) io.observe(el); });
+    document.querySelectorAll('main > section[id]').forEach((el) => io.observe(el));
     const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.7);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { io.disconnect(); window.removeEventListener('scroll', onScroll); };
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -127,14 +128,32 @@ export default function App() {
   };
 
   const handleNavigate = (sectionId: string) => {
+    const el = document.getElementById(sectionId === 'booking' ? 'disponibilidad' : sectionId);
+    if (!el) return;
     setActiveSection(sectionId);
-    if (sectionId === 'booking') {
-      const el = document.getElementById('disponibilidad');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      const el = document.getElementById(sectionId);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
+    navLock.current = true;
+
+    // Release once scrolling has been quiet for a moment; a finger on the screen ends it at once
+    let quiet: number | undefined;
+    const release = () => {
+      window.clearTimeout(quiet);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('touchstart', release);
+      window.removeEventListener('wheel', release);
+      navLock.current = false;
+      setActiveSection(lastSpied.current);
+    };
+    const onScroll = () => {
+      window.clearTimeout(quiet);
+      quiet = window.setTimeout(release, 160);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('touchstart', release, { passive: true });
+    window.addEventListener('wheel', release, { passive: true });
+    // A slow phone may take a moment to start the scroll, so the first wait is longer
+    quiet = window.setTimeout(release, 700);
+
+    el.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleLogout = () => {
@@ -155,7 +174,8 @@ export default function App() {
 
   const liveBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, mockPricing);
 
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const availableToday = ![...availability.reservations, ...availability.blockedDates].some((r: any) => {
     const st = String(r.startDate || '').slice(0, 10);
     const en = String(r.endDate || '').slice(0, 10);
@@ -167,7 +187,7 @@ export default function App() {
 
   return (
     <CurrencyProvider>
-      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-28 md:pb-0 overflow-x-hidden">
+      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-28 md:pb-0 overflow-x-clip">
       {/* Top Announcement Promo Banner */}
       <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} />
 

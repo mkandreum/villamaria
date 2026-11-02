@@ -86,7 +86,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   const resolvedEmbed = React.useMemo(() => resolveEmbedUrl(embedUrl), [embedUrl]);
 
   return (
-    <section id="location" className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
 
         <SectionHeader title={title} subtitle={subtitle} />

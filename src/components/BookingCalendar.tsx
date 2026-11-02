@@ -135,7 +135,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   const { formatPrice } = useCurrency();
 
   return (
-    <section id="disponibilidad" className="py-14 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
+    <section className="py-14 sm:py-20 bg-[#F8F5F0] text-[#1B3B36] relative border-b border-[#1B3B36]/10 font-sans">
       <div className="max-w-4xl mx-auto px-3 sm:px-6">
         
         {/* Main Card Container */}

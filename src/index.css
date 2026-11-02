@@ -11,7 +11,7 @@
     font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
     background-color: #F8F5F0;
     color: #1B3B36;
-    overflow-x: hidden;
+    overflow-x: clip;
     touch-action: manipulation;
     overscroll-behavior-y: none;
   }
@@ -195,7 +195,7 @@ html[data-theme='dark'] .bg-\[\#EAE3D8\],
 html[data-theme='dark'] .via-\[\#EAE3D8\]\/40 { background-color: #1a322d; }
 html[data-theme='dark'] .text-\[\#1B3B36\],
 html[data-theme='dark'] .text-emerald-900,
-html[data-theme='dark'] .text-emerald-950 { color: #e8efe9; }
+html[data-theme='dark'] .bg-emerald-100.text-emerald-950 { color: #e8efe9; }
 html[data-theme='dark'] [class*='text-\[\#1B3B36\]\/'] { color: rgba(232, 239, 233, 0.72); }
 html[data-theme='dark'] [class*='border-\[\#1B3B36\]'] { border-color: rgba(232, 239, 233, 0.14); }
 html[data-theme='dark'] .max-md\:bg-\[\#F8F5F0\]\/90 { background-color: rgba(12, 26, 23, 0.92); }

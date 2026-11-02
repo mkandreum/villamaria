@@ -33,7 +33,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({ attracti
   }, [attractions]);
 
   return (
-    <section id="attractions" className="py-16 sm:py-24 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section className="py-16 sm:py-24 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         <SectionHeader title="Cayos & Playas Cercanas" subtitle="Descubre los mejores cayos de aguas turquesas a solo minutos de la villa." />

@@ -75,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-[calc(12px+env(safe-area-inset-bottom))] md:bottom-auto transition-all duration-300 ease-in-out w-[calc(100%-24px)] max-w-sm sm:max-w-md md:w-[calc(100%-20px)] md:max-w-3xl lg:max-w-4xl ${
+      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-[calc(12px+env(safe-area-inset-bottom))] md:bottom-auto transition-all duration-300 ease-in-out w-max max-w-[calc(100%-16px)] md:w-[calc(100%-20px)] md:max-w-3xl lg:max-w-4xl ${
         hasBanner ? 'md:top-10' : 'md:top-4'
       } ${
         visible
@@ -85,12 +85,12 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
-        className={`w-full px-1.5 py-1.5 md:px-3 md:py-2 rounded-full bg-white md:bg-[#1B3B36]/15 backdrop-blur-xl border border-[#1B3B36]/10 md:border-[#1B3B36]/20 shadow-[0_10px_40px_rgba(27,59,54,0.22)] md:shadow-[0_8px_32px_rgba(27,59,54,0.18)] text-[#1B3B36] flex items-center justify-between transition-all duration-300 ${
+        className={`w-full px-1 py-1 md:px-3 md:py-2 rounded-full bg-white md:bg-[#1B3B36]/15 backdrop-blur-xl border border-[#1B3B36]/10 md:border-[#1B3B36]/20 shadow-[0_10px_40px_rgba(27,59,54,0.22)] md:shadow-[0_8px_32px_rgba(27,59,54,0.18)] text-[#1B3B36] flex items-center justify-between transition-all duration-300 ${
           scrolled ? 'md:bg-[#1B3B36]/20 md:backdrop-blur-2xl md:border-[#1B3B36]/30 shadow-lg' : ''
         }`}
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens): labelled tab bar */}
-        <div className="flex md:hidden items-stretch justify-around w-full">
+        <div className="flex md:hidden items-stretch justify-center">
           {mobileTabs.map(({ id, label, Icon }) => {
             const active = activeSection === id;
             return (
@@ -98,7 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 key={id}
                 onClick={() => onNavigate(id)}
                 aria-current={active ? 'page' : undefined}
-                className="relative flex-1 min-h-[54px] flex flex-col items-center justify-center gap-0.5 rounded-full cursor-pointer active:scale-90 transition-transform"
+                className="relative w-[58px] min-h-[52px] flex flex-col items-center justify-center gap-0.5 rounded-full cursor-pointer active:scale-90 transition-transform"
               >
                 {active && (
                   <motion.span
@@ -116,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
           <button
             onClick={onAccountClick}
-            className="relative flex-1 min-h-[54px] flex flex-col items-center justify-center gap-0.5 rounded-full cursor-pointer active:scale-90 transition-transform"
+            className="relative w-[58px] min-h-[52px] flex flex-col items-center justify-center gap-0.5 rounded-full cursor-pointer active:scale-90 transition-transform"
           >
             {currentUser?.role === 'ADMIN' ? (
               <ShieldCheck className="w-5 h-5 text-amber-700" />
@@ -124,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <User className="w-5 h-5 text-[#1B3B36]/70" />
             )}
             <span className="text-[11px] font-bold leading-none text-[#1B3B36]/70">
-              {currentUser ? (currentUser.role === 'ADMIN' ? 'Admin' : 'Mis reservas') : 'Entrar'}
+              {currentUser ? (currentUser.role === 'ADMIN' ? 'Admin' : 'Reservas') : 'Entrar'}
             </span>
           </button>
         </div>

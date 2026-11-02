@@ -36,7 +36,7 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-          className="fixed left-1/2 -translate-x-1/2 bottom-[calc(88px+env(safe-area-inset-bottom))] z-40 md:hidden w-[calc(100%-24px)] max-w-sm bg-emerald-950/95 text-emerald-100 border border-emerald-400/30 shadow-2xl rounded-2xl p-2 pl-4 font-sans backdrop-blur-xl"
+          className="fixed left-1/2 -translate-x-1/2 bottom-[calc(80px+env(safe-area-inset-bottom))] z-40 md:hidden w-[min(calc(100%-24px),316px)] bg-emerald-950/95 text-emerald-100 border border-emerald-400/30 shadow-2xl rounded-2xl p-2 pl-4 font-sans backdrop-blur-xl"
         >
           <div className="flex items-center justify-between gap-3 w-full">
             <div className="flex flex-col min-w-0" aria-live="polite">

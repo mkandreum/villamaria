@@ -90,11 +90,6 @@ export const Footer: React.FC<FooterProps> = ({
                    Opiniones de Huéspedes
                 </a>
               </li>
-              <li>
-                <a href="#faq" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
-                   Preguntas Frecuentes
-                </a>
-              </li>
             </ul>
           </div>
 

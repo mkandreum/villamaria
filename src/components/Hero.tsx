@@ -78,26 +78,68 @@ export const Hero: React.FC<HeroProps> = ({
 
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
+  const [loadedImgs, setLoadedImgs] = useState<Record<number, boolean>>({});
+  const trackRef = React.useRef<HTMLDivElement>(null);
+  const interactedAt = React.useRef(0);
   const introBase = React.useMemo(() => { try { return sessionStorage.getItem('vm-splash') === '1' ? 0.1 : 1.15; } catch { return 0.1; } }, []);
   const heroRef = React.useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', reduceMotion ? '0%' : '18%']);
+  // Stays under the 10% vertical overscan of the track, so the edges are never exposed
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', reduceMotion ? '0%' : '7%']);
   const overlayY = useTransform(scrollYProgress, [0, 0.6], [0, reduceMotion ? 0 : -60]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.6], [1, reduceMotion ? 1 : 0.15]);
-  const [loadedImgs, setLoadedImgs] = useState<Record<number, boolean>>({});
-  const touchStartX = React.useRef<number | null>(null);
-  const goTo = (delta: number) => setActivePhotoIndex((prev) => (prev + delta + photos.length) % photos.length);
   const { formatPrice } = useCurrency();
 
-  // Auto slide photos every 4 seconds
+  const scrollToSlide = (i: number, smooth = true) => {
+    const el = trackRef.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: smooth ? 'smooth' : 'instant' });
+  };
+  const goTo = (delta: number) => {
+    interactedAt.current = Date.now();
+    scrollToSlide(Math.max(0, Math.min(photos.length, activePhotoIndex + delta)));
+  };
+
+  // Track position drives the dots; a copy of the first photo closes the loop seamlessly
   useEffect(() => {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || photos.length < 2) return;
+    const el = trackRef.current;
+    if (!el) return;
+    let frame = 0;
+    let settle: number | undefined;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const i = Math.round(el.scrollLeft / el.clientWidth);
+        setActivePhotoIndex(i % photos.length);
+      });
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        if (Math.round(el.scrollLeft / el.clientWidth) >= photos.length) el.scrollTo({ left: 0, behavior: 'instant' });
+      }, 140);
+    };
+    const onTouch = () => { interactedAt.current = Date.now(); };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    el.addEventListener('touchstart', onTouch, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(settle);
+      el.removeEventListener('scroll', onScroll);
+      el.removeEventListener('touchstart', onTouch);
+    };
+  }, [photos.length]);
+
+  // Autoplay rests while the visitor is handling the photos or looking elsewhere
+  useEffect(() => {
+    if (reduceMotion || photos.length < 2) return;
     const timer = setInterval(() => {
-      if (!document.hidden) setActivePhotoIndex((prev) => (prev + 1) % photos.length);
+      const el = trackRef.current;
+      if (!el || document.hidden || Date.now() - interactedAt.current < 8000) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      scrollToSlide(Math.round(el.scrollLeft / el.clientWidth) + 1);
     }, 5000);
     return () => clearInterval(timer);
-  }, [photos.length]);
+  }, [photos.length, reduceMotion]);
 
   const waUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodeURIComponent(
     'Hola Villa María , me gustaría consultar disponibilidad y precios para reservar.'
@@ -128,41 +170,40 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-7">
             <div
               ref={heroRef}
-              onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-              onTouchEnd={(e) => {
-                if (touchStartX.current === null) return;
-                const dx = e.changedTouches[0].clientX - touchStartX.current;
-                touchStartX.current = null;
-                if (Math.abs(dx) > 40) goTo(dx < 0 ? 1 : -1);
-              }}
               onMouseEnter={() => setShowArrows(true)}
               onMouseLeave={() => setShowArrows(false)}
-              className="relative -mx-3 sm:-mx-6 lg:mx-0 rounded-none lg:rounded-3xl overflow-hidden shadow-2xl h-[calc(100svh-7rem)] min-h-[460px] max-h-[720px] lg:h-auto lg:max-h-none lg:aspect-[16/9] group bg-emerald-950 touch-pan-y"
+              className="relative -mx-3 sm:-mx-6 lg:mx-0 rounded-none lg:rounded-3xl overflow-hidden shadow-2xl h-[calc(100svh-7rem)] min-h-[460px] max-h-[720px] lg:h-auto lg:max-h-none lg:aspect-[16/9] group bg-emerald-950 isolate"
             >
-              <motion.div style={{ y: parallaxY }} className="absolute -inset-[10%] lg:inset-0">
-              {photos.map((img: string, idx: number) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Villa María ${idx + 1}`}
-                  loading={idx === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                  {...(idx === 0 ? { fetchPriority: 'high' as const } : {})}
-                  onLoad={() => setLoadedImgs((m) => ({ ...m, [idx]: true }))}
-                  className={`absolute inset-0 w-full h-full object-cover transition-[opacity,transform] duration-[1400ms] ease-out ${
-                    idx === activePhotoIndex && loadedImgs[idx] ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
-                  }`}
-                />
-              ))}
+              <motion.div style={{ y: parallaxY }} className="absolute inset-x-0 -inset-y-[10%] bg-emerald-950">
+                <div
+                  ref={trackRef}
+                  className="no-scrollbar flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory overscroll-x-contain"
+                  style={{ touchAction: 'pan-x pan-y' }}
+                >
+                  {[...photos, ...(photos.length > 1 ? [photos[0]] : [])].map((img: string, idx: number) => (
+                    <div key={idx} className="relative h-full w-full shrink-0 snap-center snap-always overflow-hidden bg-emerald-950">
+                      <img
+                        src={img}
+                        alt={idx < photos.length ? `Villa María, foto ${idx + 1}` : ''}
+                        loading={idx < 2 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        draggable={false}
+                        {...(idx === 0 ? { fetchPriority: 'high' as const } : {})}
+                        onLoad={() => setLoadedImgs((m) => ({ ...m, [idx]: true }))}
+                        className={`absolute inset-0 w-full h-full object-cover select-none transition-[opacity,transform] ease-out ${
+                          loadedImgs[idx] ? 'opacity-100' : 'opacity-0'
+                        } ${idx % photos.length === activePhotoIndex ? 'scale-105 duration-[6000ms]' : 'scale-100 duration-500'}`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </motion.div>
-              
-              {!loadedImgs[activePhotoIndex] && <div className="absolute inset-0 shimmer-badge" aria-hidden />}
 
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/20 to-emerald-950/30 lg:from-emerald-950/70 lg:via-transparent lg:to-transparent" />
+                            {/* Gradient overlay */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/20 to-emerald-950/30 lg:from-emerald-950/70 lg:via-transparent lg:to-transparent" />
 
               {/* Mobile overlay: title, price and primary actions over the photo */}
-              <motion.div style={{ y: overlayY, opacity: overlayOpacity }} className="lg:hidden absolute inset-x-0 bottom-0 z-10 px-5 pb-12 text-white space-y-3">
+              <motion.div style={{ y: overlayY, opacity: overlayOpacity }} className="pointer-events-none lg:hidden absolute inset-x-0 bottom-0 z-10 px-5 pb-12 text-white space-y-3">
                 <h1 className="text-5xl font-serif font-black tracking-tight leading-[1.02] drop-shadow-lg break-words"><WordReveal text={title} delay={introBase + 0.1} /></h1>
                 <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.4, duration: 0.7 }} className="font-serif italic text-lg text-emerald-100/95 -mt-1">{stripEmoji(subtitle)}</motion.p>
                 <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.55, duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="flex items-end justify-between gap-3 pt-1">
@@ -174,7 +215,7 @@ export const Hero: React.FC<HeroProps> = ({
                   </div>
                   <button
                     onClick={onSearch}
-                    className="shine cta-pulse px-5 min-h-[48px] rounded-2xl bg-white text-[#1B3B36] font-bold text-sm flex items-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer"
+                    className="pointer-events-auto shine cta-pulse px-5 min-h-[48px] rounded-2xl bg-white text-[#1B3B36] font-bold text-sm flex items-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer"
                   >
                     <Calendar className="w-4 h-4" /> Ver fechas
                   </button>
@@ -185,14 +226,14 @@ export const Hero: React.FC<HeroProps> = ({
               {showArrows && photos.length > 1 && (
                 <>
                   <button
-                    onClick={() => setActivePhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)}
+                    onClick={() => goTo(-1)}
                     className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
                     title="Anterior foto"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => setActivePhotoIndex((prev) => (prev + 1) % photos.length)}
+                    onClick={() => goTo(1)}
                     className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
                     title="Siguiente foto"
                   >
@@ -206,7 +247,7 @@ export const Hero: React.FC<HeroProps> = ({
                 {photos.map((_: any, idx: number) => (
                   <button
                     key={idx}
-                    onClick={() => setActivePhotoIndex(idx)}
+                    onClick={() => { interactedAt.current = Date.now(); scrollToSlide(idx); }}
                     aria-label={`Ver foto ${idx + 1}`}
                     className={`h-2.5 rounded-full transition-all cursor-pointer ${
                       idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2.5 bg-white/60 hover:bg-white'
@@ -216,7 +257,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Editable Badge Overlay */}
-              <div className="absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1 shadow-md max-w-[80%] truncate">
+              <div className="pointer-events-none absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1 shadow-md max-w-[80%] truncate">
                 <span className="truncate">{stripEmoji(String(photoBadge))}</span>
               </div>
             </div>
