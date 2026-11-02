@@ -161,7 +161,7 @@ export default function App() {
 
   return (
     <CurrencyProvider>
-      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-24 md:pb-0 overflow-x-hidden">
+      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-28 md:pb-0 overflow-x-hidden">
       {/* Top Announcement Promo Banner */}
       <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} />
 

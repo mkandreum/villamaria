@@ -20,7 +20,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ phone, avail
       rel="noopener noreferrer"
       aria-label={availableToday ? 'Escribir por WhatsApp: casa disponible hoy' : 'Escribir por WhatsApp'}
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1, bottom: raised ? 'calc(144px + env(safe-area-inset-bottom))' : 'calc(84px + env(safe-area-inset-bottom))' }}
+      animate={{ scale: 1, opacity: 1, bottom: raised ? 'calc(156px + env(safe-area-inset-bottom))' : 'calc(96px + env(safe-area-inset-bottom))' }}
       transition={{ type: 'spring', stiffness: 360, damping: 28 }}
       className="fixed right-3 md:!bottom-6 md:right-6 z-40 flex items-center gap-2 rounded-full bg-[#25D366] text-white shadow-xl h-12 min-w-12 px-3.5 font-bold text-sm active:scale-95 cursor-pointer"
     >

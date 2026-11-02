@@ -8,7 +8,7 @@ const readInitial = (): 'light' | 'dark' => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'light' || saved === 'dark') return saved;
   } catch {}
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'light'; // light by default; dark only when the visitor picks it
 };
 
 export const ThemeToggle: React.FC = () => {
