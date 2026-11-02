@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -20,6 +21,7 @@ import {
 } from '../utils/dateUtils';
 import { useCurrency } from '../context/CurrencyContext';
 import { CurrencyToggle } from './CurrencyToggle';
+import { AnimatedPrice } from './Motion';
 
 interface BookingCalendarProps {
   checkIn: string;
@@ -58,6 +60,21 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
 
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const todayStr = (() => {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  })();
+  const step = !checkIn ? 1 : !checkOut ? 2 : 3;
+
+  // After picking the checkout date, bring the price summary into view (mobile)
+  useEffect(() => {
+    if (checkIn && checkOut && window.matchMedia('(max-width: 767px)').matches) {
+      const t = setTimeout(() => summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 250);
+      return () => clearTimeout(t);
+    }
+  }, [checkOut]);
+
   const year = currentViewDate.getFullYear();
   const month = currentViewDate.getMonth();
 
@@ -68,7 +85,9 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
   const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+  const isCurrentMonth = year === new Date().getFullYear() && month === new Date().getMonth();
   const prevMonth = () => {
+    if (isCurrentMonth) return;
     setCurrentViewDate(new Date(year, month - 1, 1));
   };
 
@@ -134,6 +153,23 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             <p className="text-xs text-[#1B3B36]/70 mt-1 max-w-md mx-auto">
               Selecciona tus huéspedes y las fechas de llegada y salida.
             </p>
+            <ol className="flex items-center justify-center gap-2 mt-4 text-[11px] font-bold" aria-label="Progreso de reserva">
+              {['Huéspedes', 'Llegada', 'Salida'].map((label, i) => {
+                const done = i === 0 ? true : i === 1 ? Boolean(checkIn) : Boolean(checkOut);
+                const current = (i === 0 && false) || (i === 1 && step === 1) || (i === 2 && step === 2);
+                return (
+                  <li key={label} className="flex items-center gap-2">
+                    <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-colors ${
+                      done && !current ? 'bg-emerald-900 text-white border-emerald-900' : current ? 'bg-emerald-100 text-emerald-950 border-emerald-500' : 'text-[#1B3B36]/60 border-[#1B3B36]/20'
+                    }`}>
+                      {done && !current ? <CheckCircle2 className="w-3 h-3" /> : <span className="tabular-nums">{i + 1}</span>}
+                      {label}
+                    </span>
+                    {i < 2 && <span className="w-3 h-px bg-[#1B3B36]/25" />}
+                  </li>
+                );
+              })}
+            </ol>
           </div>
 
           {/* STEP 1: SELECT GUESTS */}
@@ -144,7 +180,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <div>
-                <span className="text-[10px] text-[#1B3B36]/70 block font-semibold mb-1">Adultos</span>
+                <span className="text-[11px] text-[#1B3B36]/70 block font-semibold mb-1">Adultos</span>
                 <select
                   value={adults}
                   onChange={(e) => onAdultsChange(Number(e.target.value))}
@@ -158,7 +194,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 </select>
               </div>
               <div>
-                <span className="text-[10px] text-[#1B3B36]/70 block font-semibold mb-1">Niños</span>
+                <span className="text-[11px] text-[#1B3B36]/70 block font-semibold mb-1">Niños</span>
                 <select
                   value={childrenCount}
                   onChange={(e) => onChildrenChange(Number(e.target.value))}
@@ -205,32 +241,45 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             </div>
 
             {/* Days Header */}
-            <div className="grid grid-cols-7 text-center text-[10px] font-bold text-[#1B3B36]/60 uppercase tracking-wider py-1 border-b border-[#1B3B36]/10">
+            <div className="grid grid-cols-7 text-center text-[11px] font-bold text-[#1B3B36]/60 uppercase tracking-wider py-1 border-b border-[#1B3B36]/10">
               {daysOfWeek.map((d) => (
                 <div key={d}>{d}</div>
               ))}
             </div>
 
+            <p className="text-xs font-semibold text-emerald-900 text-center mb-2" aria-live="polite">
+              {step === 1 ? 'Toca tu fecha de llegada' : step === 2 ? 'Ahora toca tu fecha de salida' : 'Fechas elegidas. Toca otra para cambiar.'}
+            </p>
             {/* Days Grid */}
-            <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+            <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={`${year}-${month}`}
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -16 }}
+              transition={{ duration: 0.18 }}
+              className="grid grid-cols-7 gap-1 sm:gap-1.5"
+            >
               {daysGrid.map((dateStr, idx) => {
                 if (!dateStr) return <div key={`empty-${idx}`} className="h-10 sm:h-11" />;
 
                 const dayNum = parseInt(dateStr.split('-')[2], 10);
-                const isBooked = isDateBooked(dateStr, bookings);
+                const isPast = dateStr < todayStr;
+                const isToday = dateStr === todayStr;
+                const isBooked = isPast || isDateBooked(dateStr, bookings);
                 const isSelectedStart = dateStr === checkIn;
                 const isSelectedEnd = dateStr === checkOut;
                 const isInSelectedRange = checkIn && checkOut && dateStr > checkIn && dateStr < checkOut;
 
                 let btnClass = 'h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-bold transition-all flex flex-col items-center justify-center cursor-pointer min-h-[40px] ';
                 if (isBooked) {
-                  btnClass += 'bg-red-50 text-red-300 cursor-not-allowed line-through ';
+                  btnClass += isPast ? 'bg-transparent text-[#1B3B36]/25 cursor-not-allowed ' : 'bg-red-50 text-red-300 cursor-not-allowed line-through ';
                 } else if (isSelectedStart || isSelectedEnd) {
                   btnClass += 'bg-[#1B3B36] text-white font-black shadow-md scale-105 ';
                 } else if (isInSelectedRange) {
                   btnClass += 'bg-emerald-100 text-emerald-950 font-bold ';
                 } else {
-                  btnClass += 'bg-[#F8F5F0] hover:bg-emerald-50 text-[#1B3B36] border border-[#1B3B36]/10 active:scale-95 ';
+                  btnClass += `bg-[#F8F5F0] hover:bg-emerald-50 text-[#1B3B36] border active:scale-95 ${isToday ? 'border-emerald-600 ring-1 ring-emerald-600/40' : 'border-[#1B3B36]/10'} `;
                 }
 
                 return (
@@ -238,22 +287,25 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                     key={dateStr}
                     disabled={isBooked}
                     onClick={() => handleDayClick(dateStr)}
+                    aria-label={`${dayNum} de ${monthNames[month]}${isSelectedStart ? ', llegada' : isSelectedEnd ? ', salida' : ''}${isBooked && !isPast ? ', ocupado' : ''}`}
+                    aria-pressed={isSelectedStart || isSelectedEnd}
                     className={btnClass}
                   >
                     <span>{dayNum}</span>
                     {isSelectedStart ? (
-                      <span className="text-[7px] text-emerald-300 font-bold uppercase leading-none">Llegada</span>
+                      <span className="text-[11px] text-emerald-300 font-bold uppercase leading-none">Entra</span>
                     ) : isSelectedEnd ? (
-                      <span className="text-[7px] text-emerald-300 font-bold uppercase leading-none">Salida</span>
+                      <span className="text-[11px] text-emerald-300 font-bold uppercase leading-none">Sale</span>
                     ) : null}
                   </button>
                 );
               })}
-            </div>
+            </motion.div>
+            </AnimatePresence>
           </div>
 
             {/* STEP 3: PRICE SUMMARY & RESERVATION CTA */}
-          <div className="bg-[#F8F5F0] border border-[#1B3B36]/15 rounded-2xl p-3.5 sm:p-5 space-y-3">
+          <div ref={summaryRef} className="bg-[#F8F5F0] border border-[#1B3B36]/15 rounded-2xl p-3.5 sm:p-5 space-y-3 scroll-mt-24">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#1B3B36]/70">Llegada:</span>
               <div className="flex items-center gap-2">
@@ -264,7 +316,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                       onCheckInChange('');
                       onCheckOutChange('');
                     }}
-                    className="text-[10px] text-emerald-800 hover:text-emerald-950 font-bold underline py-1 px-1 cursor-pointer"
+                    className="text-[11px] text-emerald-800 hover:text-emerald-950 font-bold underline py-1 px-1 cursor-pointer"
                   >
                     Limpiar
                   </button>
@@ -283,8 +335,14 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
               </div>
             )}
 
+            <AnimatePresence initial={false}>
             {priceBreakdown.nights > 0 && !isOccupiedError && (
-              <div className="pt-3 border-t border-[#1B3B36]/15 space-y-2.5">
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden pt-3 border-t border-[#1B3B36]/15 space-y-2.5">
                 <div className="flex justify-between text-xs text-[#1B3B36]/80">
                   <span>{priceBreakdown.nights} noche(s) x {formatPrice(pricing.baseNightlyRate)}</span>
                   <span>{formatPrice(priceBreakdown.baseNightsSubtotal)}</span>
@@ -298,18 +356,18 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                     Total Estancia:
                     <CurrencyToggle />
                   </span>
-                  <span className="text-xl sm:text-2xl text-[#1B3B36]">{formatPrice(priceBreakdown.totalPrice)}</span>
+                  <span className="text-xl sm:text-2xl text-[#1B3B36]"><AnimatedPrice value={priceBreakdown.totalPrice} /></span>
                 </div>
 
                 <button
                   onClick={onInitiateBooking}
-                  className="w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+                  className="shine w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Reservar Ahora 📅</span>
                 </button>
 
-                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-[#1B3B36]/60 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[#1B3B36]/60 pt-2">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" /> Reserva Directa Segura
                   </span>
@@ -318,8 +376,9 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                   <span>•</span>
                   <span>🌊 Falcón, Chichiriviche</span>
                 </div>
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
 
         </div>

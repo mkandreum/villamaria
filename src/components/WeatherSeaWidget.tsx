@@ -118,7 +118,7 @@ export const WeatherSeaWidget: React.FC = () => {
                 {weather.condition}
               </span>
             </div>
-            <p className="text-[10px] text-[#1B3B36]/70 truncate flex items-center gap-1 mt-0.5">
+            <p className="text-[11px] text-[#1B3B36]/70 truncate flex items-center gap-1 mt-0.5">
               <Compass className="w-3 h-3 text-emerald-700 shrink-0" />
               <span>Chichiriviche • {weather.seaStatus}</span>
             </p>
@@ -126,7 +126,7 @@ export const WeatherSeaWidget: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] bg-emerald-100 text-emerald-900 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+          <span className="text-[11px] bg-emerald-100 text-emerald-900 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
             Morrocoy Hoy
           </span>
           <button
@@ -147,22 +147,22 @@ export const WeatherSeaWidget: React.FC = () => {
         <div className="mt-2 p-3 bg-white/95 backdrop-blur-md rounded-2xl border border-emerald-800/15 shadow-lg space-y-2 text-xs text-[#1B3B36] animate-fadeIn">
           <div className="flex items-center justify-between border-b border-[#1B3B36]/10 pb-1.5 text-[11px] font-bold text-emerald-900">
             <span>🌊 Estado del Mar & Pronóstico Náutico</span>
-            <span className="text-[10px] text-[#1B3B36]/60 font-mono">Hora: {weather.updatedAt}</span>
+            <span className="text-[11px] text-[#1B3B36]/60 font-mono">Hora: {weather.updatedAt}</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-[#EAE3D8]/50 p-2 rounded-xl">
-              <span className="text-[10px] text-[#1B3B36]/60 block font-semibold">Sensación</span>
+              <span className="text-[11px] text-[#1B3B36]/60 block font-semibold">Sensación</span>
               <span className="font-bold text-sm text-[#1B3B36]">{weather.feelsLike}°C</span>
             </div>
             <div className="bg-[#EAE3D8]/50 p-2 rounded-xl">
-              <span className="text-[10px] text-[#1B3B36]/60 block font-semibold flex items-center justify-center gap-0.5">
+              <span className="text-[11px] text-[#1B3B36]/60 block font-semibold flex items-center justify-center gap-0.5">
                 <Wind className="w-3 h-3 text-emerald-700" /> Viento
               </span>
               <span className="font-bold text-sm text-[#1B3B36]">{weather.windSpeed} km/h</span>
             </div>
             <div className="bg-[#EAE3D8]/50 p-2 rounded-xl">
-              <span className="text-[10px] text-[#1B3B36]/60 block font-semibold flex items-center justify-center gap-0.5">
+              <span className="text-[11px] text-[#1B3B36]/60 block font-semibold flex items-center justify-center gap-0.5">
                 <Droplets className="w-3 h-3 text-emerald-700" /> Humedad
               </span>
               <span className="font-bold text-sm text-[#1B3B36]">{weather.humidity}%</span>

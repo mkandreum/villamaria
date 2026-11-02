@@ -89,7 +89,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
           <div className="bg-[#EAE3D8] border border-[#1B3B36]/15 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between pb-2 border-b border-[#1B3B36]/10">
               <div>
-                <span className="text-[9px] text-[#1B3B36]/60 uppercase tracking-widest font-bold block">
+                <span className="text-[11px] text-[#1B3B36]/60 uppercase tracking-widest font-bold block">
                   Código de Reserva
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">

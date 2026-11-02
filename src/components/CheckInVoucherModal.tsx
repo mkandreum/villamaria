@@ -292,7 +292,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
 
         {/* Modal Header */}
         <div className="text-center mb-3 sm:mb-4 pr-8 sm:pr-0 print:hidden">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30 mb-1">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold uppercase tracking-wider border border-emerald-500/30 mb-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>Pase Digital Oficial</span>
           </span>
@@ -310,7 +310,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight">
                 VILLA MARÍA 🌴
               </h2>
-              <p className="text-[10px] sm:text-xs text-emerald-300 uppercase tracking-widest font-bold mt-0.5">
+              <p className="text-[11px] sm:text-xs text-emerald-300 uppercase tracking-widest font-bold mt-0.5">
                 Pase de Entrada & Check-In Garita
               </p>
             </div>
@@ -319,7 +319,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
             <div className="p-4 sm:p-5 space-y-3.5 border-b border-[#1B3B36]/10">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-[#1B3B36]/60 block">
+                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#1B3B36]/60 block">
                     Huésped Principal
                   </span>
                   <h4 className="text-lg sm:text-xl font-bold font-serif text-[#1B3B36] leading-tight">
@@ -335,7 +335,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
               {/* Booking Reference Code */}
               <div className="flex items-center justify-between bg-[#EAE3D8] rounded-xl p-2.5 sm:p-3 border border-[#1B3B36]/10">
                 <div>
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-[#1B3B36]/70 block">
+                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#1B3B36]/70 block">
                     Código de Entrada
                   </span>
                   <span className="font-mono font-bold text-sm sm:text-base text-[#1B3B36]">
@@ -355,33 +355,33 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
               {/* Dates & Guests Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
                 <div className="bg-white p-2.5 rounded-xl border border-[#1B3B36]/10">
-                  <span className="text-[10px] text-[#1B3B36]/60 font-semibold block flex items-center gap-1">
+                  <span className="text-[11px] text-[#1B3B36]/60 font-semibold block flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-emerald-700" /> Check-in
                   </span>
                   <span className="font-bold text-sm text-[#1B3B36] block mt-0.5">
                     {new Date(reservation.checkIn).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </span>
-                  <span className="text-[10px] text-emerald-800 font-medium">Desde las 3:00 PM</span>
+                  <span className="text-[11px] text-emerald-800 font-medium">Desde las 3:00 PM</span>
                 </div>
 
                 <div className="bg-white p-2.5 rounded-xl border border-[#1B3B36]/10">
-                  <span className="text-[10px] text-[#1B3B36]/60 font-semibold block flex items-center gap-1">
+                  <span className="text-[11px] text-[#1B3B36]/60 font-semibold block flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-emerald-700" /> Check-out
                   </span>
                   <span className="font-bold text-sm text-[#1B3B36] block mt-0.5">
                     {new Date(reservation.checkOut).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </span>
-                  <span className="text-[10px] text-emerald-800 font-medium">Hasta las 12:00 PM</span>
+                  <span className="text-[11px] text-emerald-800 font-medium">Hasta las 12:00 PM</span>
                 </div>
 
                 <div className="col-span-2 sm:col-span-1 bg-white p-2.5 rounded-xl border border-[#1B3B36]/10 flex flex-col justify-between">
-                  <span className="text-[10px] text-[#1B3B36]/60 font-semibold block flex items-center gap-1">
+                  <span className="text-[11px] text-[#1B3B36]/60 font-semibold block flex items-center gap-1">
                     <Users className="w-3 h-3 text-emerald-700" /> Ocupantes
                   </span>
                   <span className="font-bold text-sm text-[#1B3B36]">
                     {totalGuests} persona{totalGuests > 1 ? 's' : ''}
                   </span>
-                  <span className="text-[10px] text-emerald-800 font-medium">Casa completa</span>
+                  <span className="text-[11px] text-emerald-800 font-medium">Casa completa</span>
                 </div>
               </div>
             </div>
@@ -428,11 +428,11 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 <div className="bg-white p-2 rounded-lg border border-[#1B3B36]/10">
-                  <span className="text-[10px] text-[#1B3B36]/60 block">Red:</span>
+                  <span className="text-[11px] text-[#1B3B36]/60 block">Red:</span>
                   <span className="font-mono font-bold text-[#1B3B36]">{wifiSsid}</span>
                 </div>
                 <div className="bg-white p-2 rounded-lg border border-[#1B3B36]/10">
-                  <span className="text-[10px] text-[#1B3B36]/60 block">Contraseña:</span>
+                  <span className="text-[11px] text-[#1B3B36]/60 block">Contraseña:</span>
                   <span className="font-mono font-bold text-[#1B3B36]">{wifiPass}</span>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from './Reveal';
 import React, { useState, useEffect } from 'react';
 import { Star, Plus, UserCheck, Send, X, Loader2 } from 'lucide-react';
 import { api } from '../api';
@@ -120,7 +121,7 @@ export const ReviewsSection: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-[10px] uppercase font-bold text-[#1B3B36]/70 block mb-1">Calificación</label>
+              <label className="text-[11px] uppercase font-bold text-[#1B3B36]/70 block mb-1">Calificación</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -163,7 +164,7 @@ export const ReviewsSection: React.FC = () => {
                 Cancelar
               </button>
             </div>
-            <p className="text-[10px] text-[#1B3B36]/40 text-center">
+            <p className="text-[11px] text-[#1B3B36]/40 text-center">
               Tu opinión será publicada tras revisión del anfitrión.
             </p>
           </form>
@@ -185,11 +186,11 @@ export const ReviewsSection: React.FC = () => {
 
         {/* Review Cards */}
         {!loading && reviews.length > 0 && (
-          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-3 px-3 sm:mx-0 sm:px-0 scrollbar-none no-scrollbar font-sans">
+          <Stagger className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-3 px-3 sm:mx-0 sm:px-0 scrollbar-none no-scrollbar font-sans">
             {reviews.map((rev: any) => (
+              <StaggerItem key={rev.id} className="min-w-[270px] sm:min-w-0 w-[82vw] sm:w-auto snap-center shrink-0 sm:shrink flex">
               <div
-                key={rev.id}
-                className="min-w-[270px] sm:min-w-0 w-[82vw] sm:w-auto snap-center bg-white border border-[#1B3B36]/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md flex flex-col justify-between shrink-0 sm:shrink"
+                className="w-full bg-white border border-[#1B3B36]/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md flex flex-col justify-between shrink-0 sm:shrink"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -202,10 +203,10 @@ export const ReviewsSection: React.FC = () => {
                       />
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-[#1B3B36] truncate">{rev.author}</h4>
-                        {rev.location && <p className="text-[10px] text-[#1B3B36]/60 truncate">{rev.location}</p>}
+                        {rev.location && <p className="text-[11px] text-[#1B3B36]/60 truncate">{rev.location}</p>}
                       </div>
                     </div>
-                    <span className="text-[10px] text-[#1B3B36]/50 shrink-0">{rev.date}</span>
+                    <span className="text-[11px] text-[#1B3B36]/50 shrink-0">{rev.date}</span>
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -222,13 +223,14 @@ export const ReviewsSection: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#1B3B36]/10 mt-3 flex items-center gap-1.5 text-[10px] text-emerald-800 font-bold uppercase tracking-wider">
+                <div className="pt-3 border-t border-[#1B3B36]/10 mt-3 flex items-center gap-1.5 text-[11px] text-emerald-800 font-bold uppercase tracking-wider">
                   <UserCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                   <span>Estadía Verificada 🏡</span>
                 </div>
               </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </div>
     </section>

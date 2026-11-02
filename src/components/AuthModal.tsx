@@ -82,6 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 <input
                   type="text"
                   required
+                  autoComplete="name"
                   placeholder="Juan Pérez"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -97,6 +98,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
               <Mail className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
                 required
                 placeholder="tuemail@ejemplo.com"
                 value={email}
@@ -107,12 +111,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1">Contraseña</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">Contraseña{isRegister ? ' (mínimo 8 caracteres)' : ''}</label>
             <div className="relative">
               <Lock className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
               <input
                 type="password"
                 required
+                minLength={isRegister ? 8 : undefined}
+                autoComplete={isRegister ? 'new-password' : 'current-password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -128,6 +134,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 <Phone className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
                 <input
                   type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   placeholder="+34 600 000 000"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}

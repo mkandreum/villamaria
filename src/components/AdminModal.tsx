@@ -624,7 +624,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                 <Icon className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline text-xs">{tab.label}</span>
                 {tab.badge && (
-                  <span className={`text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none shrink-0 ${tab.badgeColor || 'bg-emerald-900 text-white'}`}>
+                  <span className={`text-[11px] sm:text-[11px] font-black px-1.5 py-0.5 rounded-full leading-none shrink-0 ${tab.badgeColor || 'bg-emerald-900 text-white'}`}>
                     {tab.badge}
                   </span>
                 )}
@@ -655,7 +655,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       <p className="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-300 font-serif mt-1 sm:mt-2 truncate">
                         US$ {Number(metrics?.monthlyIncome || 0).toLocaleString('en-US')}
                       </p>
-                      <p className="text-[10px] sm:text-[11px] text-emerald-400/60 mt-1">De reservas con pago confirmado</p>
+                      <p className="text-[11px] sm:text-[11px] text-emerald-400/60 mt-1">De reservas con pago confirmado</p>
                     </div>
 
                     <div className="bg-gradient-to-br from-emerald-900/60 to-emerald-950 border border-amber-500/30 rounded-2xl p-3.5 sm:p-5 shadow-lg relative overflow-hidden">
@@ -666,7 +666,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       <p className="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-bold text-amber-300 font-serif mt-1 sm:mt-2 truncate">
                         {metrics?.pendingReservations || 0}
                       </p>
-                      <p className="text-[10px] sm:text-[11px] text-amber-400/60 mt-1">Requieren verificación de pago</p>
+                      <p className="text-[11px] sm:text-[11px] text-amber-400/60 mt-1">Requieren verificación de pago</p>
                     </div>
 
                     <div className="bg-gradient-to-br from-emerald-900/60 to-emerald-950 border border-emerald-500/30 rounded-2xl p-3.5 sm:p-5 shadow-lg relative overflow-hidden">
@@ -677,7 +677,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       <p className="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-400 font-serif mt-1 sm:mt-2 truncate">
                         {metrics?.confirmedReservations || 0}
                       </p>
-                      <p className="text-[10px] sm:text-[11px] text-emerald-400/60 mt-1">Total de estancias activadas</p>
+                      <p className="text-[11px] sm:text-[11px] text-emerald-400/60 mt-1">Total de estancias activadas</p>
                     </div>
 
                     <div className="bg-gradient-to-br from-emerald-900/60 to-emerald-950 border border-teal-500/30 rounded-2xl p-3.5 sm:p-5 shadow-lg relative overflow-hidden">
@@ -688,7 +688,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                       <p className="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-bold text-teal-300 font-serif mt-1 sm:mt-2 truncate">
                         {metrics?.totalUsers || 0}
                       </p>
-                      <p className="text-[10px] sm:text-[11px] text-teal-400/60 mt-1">Cuentas creadas en la web</p>
+                      <p className="text-[11px] sm:text-[11px] text-teal-400/60 mt-1">Cuentas creadas en la web</p>
                     </div>
                   </div>
 
@@ -707,7 +707,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         >
                           <div>
                             <span className="text-xs font-bold text-white block">📅 Ver Calendario Mensual</span>
-                            <span className="text-[10px] text-emerald-300/70">Visualiza la ocupación de Villa María</span>
+                            <span className="text-[11px] text-emerald-300/70">Visualiza la ocupación de Villa María</span>
                           </div>
                           <span className="text-emerald-400 font-bold ml-2">➔</span>
                         </button>
@@ -718,7 +718,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         >
                           <div>
                             <span className="text-xs font-bold text-emerald-300 block">➕ Crear Reserva Manual</span>
-                            <span className="text-[10px] text-emerald-300/70">Para llamadas o clientes directos</span>
+                            <span className="text-[11px] text-emerald-300/70">Para llamadas o clientes directos</span>
                           </div>
                           <span className="text-emerald-400 font-bold ml-2">➔</span>
                         </button>
@@ -729,7 +729,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                         >
                           <div>
                             <span className="text-xs font-bold text-white block">⚙️ Ajustar Precios & Fotos</span>
-                            <span className="text-[10px] text-emerald-300/70">Tarifas por noche y fotos de la galería</span>
+                            <span className="text-[11px] text-emerald-300/70">Tarifas por noche y fotos de la galería</span>
                           </div>
                           <span className="text-emerald-400 font-bold ml-2">➔</span>
                         </button>
@@ -752,7 +752,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                 <p className="font-semibold text-emerald-100 truncate">{u.name}</p>
                                 <p className="text-emerald-400/60 text-[11px] truncate">{u.email} {u.phone ? `• ${u.phone}` : ''}</p>
                               </div>
-                              <span className="text-[10px] text-emerald-400/50 font-mono shrink-0">
+                              <span className="text-[11px] text-emerald-400/50 font-mono shrink-0">
                                 {new Date(u.createdAt).toLocaleDateString('es-ES')}
                               </span>
                             </div>
@@ -951,11 +951,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
                               <div className="space-y-1 min-w-0 flex-1">
                                 <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                                  <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded">
+                                  <span className="text-[11px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded">
                                     ID: {resItem.id.slice(0, 8)}
                                   </span>
                                   <span
-                                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full uppercase ${
                                       resItem.status === 'CONFIRMED'
                                         ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                                         : resItem.status === 'PENDING'
@@ -1104,7 +1104,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-[10px] font-bold text-violet-300/70 mb-1 uppercase">Nueva Llegada</label>
+                                  <label className="block text-[11px] font-bold text-violet-300/70 mb-1 uppercase">Nueva Llegada</label>
                                   <input
                                     type="date"
                                     value={rescheduleForm.newStartDate}
@@ -1113,7 +1113,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-[10px] font-bold text-violet-300/70 mb-1 uppercase">Nueva Salida</label>
+                                  <label className="block text-[11px] font-bold text-violet-300/70 mb-1 uppercase">Nueva Salida</label>
                                   <input
                                     type="date"
                                     value={rescheduleForm.newEndDate}
@@ -1136,7 +1136,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
                               {rescheduleForm.additionalCost && (
                                 <div>
-                                  <label className="block text-[10px] font-bold text-amber-300/70 mb-1 uppercase">Importe adicional (US$)</label>
+                                  <label className="block text-[11px] font-bold text-amber-300/70 mb-1 uppercase">Importe adicional (US$)</label>
                                   <input
                                     type="number"
                                     min={0}
@@ -1336,12 +1336,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                     <div className="mt-4 p-3.5 sm:p-4 rounded-xl bg-emerald-950/60 border border-amber-500/30 space-y-2">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300/80">Tasa Oficial del Día (BCV) — Bs/US$</span>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300/80">Tasa Oficial del Día (BCV) — Bs/US$</span>
                           <p className="text-lg sm:text-xl font-serif font-bold text-amber-200 leading-none mt-1">
                             {exchangeRate?.rate != null ? `Bs. ${exchangeRate.rate}` : 'No disponible'}
                           </p>
                           {exchangeRate?.date && (
-                            <p className="text-[10px] sm:text-[11px] text-emerald-300/60 mt-1">
+                            <p className="text-[11px] sm:text-[11px] text-emerald-300/60 mt-1">
                               Actualizada: {exchangeRate.date}
                               {exchangeRate.updatedAt ? ` · ${new Date(exchangeRate.updatedAt).toLocaleString('es-VE')}` : ''}
                             </p>
@@ -1630,7 +1630,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                               <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400/80 mb-0.5">
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-emerald-400/80 mb-0.5">
                                   Nombre del Servicio *
                                 </label>
                                 <input
@@ -1642,7 +1642,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                 />
                               </div>
                               <div className="sm:col-span-2">
-                                <label className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400/80 mb-0.5">
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-emerald-400/80 mb-0.5">
                                   Descripción para el Huésped *
                                 </label>
                                 <input
@@ -1717,7 +1717,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                             Cuerpo HTML de la Plantilla
                           </label>
                           <div className="flex items-center gap-1 flex-wrap">
-                            <span className="text-[10px] text-emerald-400/70 font-mono">Variables (toca para copiar):</span>
+                            <span className="text-[11px] text-emerald-400/70 font-mono">Variables (toca para copiar):</span>
                             {selectedTemplate.variables?.split(',').map((v: string) => {
                               const trimmed = v.trim();
                               const isCopied = copiedVariable === trimmed;
@@ -1726,7 +1726,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                                   key={trimmed}
                                   type="button"
                                   onClick={() => handleCopyVariable(trimmed)}
-                                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono border transition-all flex items-center gap-1 min-h-[28px] ${
+                                  className={`px-1.5 py-0.5 rounded text-[11px] font-mono border transition-all flex items-center gap-1 min-h-[28px] ${
                                     isCopied
                                       ? 'bg-emerald-400 text-emerald-950 border-emerald-300 font-bold'
                                       : 'bg-emerald-950 text-emerald-300 border-emerald-500/30 hover:bg-emerald-900'

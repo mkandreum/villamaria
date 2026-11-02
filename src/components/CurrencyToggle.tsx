@@ -17,7 +17,7 @@ export const CurrencyToggle: React.FC = () => {
           type="button"
           onClick={() => setCurrency(c)}
           aria-pressed={currency === c}
-          className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all active:scale-95 ${
+          className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all active:scale-95 ${
             currency === c
               ? 'bg-[#1B3B36] text-white shadow'
               : 'text-[#1B3B36]/70 hover:text-[#1B3B36] hover:bg-[#EAE3D8]/60'

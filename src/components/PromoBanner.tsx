@@ -45,7 +45,7 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
   return (
     <aside
       aria-label="Anuncio promocional"
-      className="relative z-40 bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border-b border-emerald-500/20 text-emerald-100 py-0.5 h-6 sm:h-7 flex items-center text-[10px] font-sans shadow-none overflow-hidden"
+      className="relative z-40 bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border-b border-emerald-500/20 text-emerald-100 py-0.5 h-6 sm:h-7 flex items-center text-[11px] font-sans shadow-none overflow-hidden"
     >
       <div className="flex items-center justify-between relative w-full">
         {/* Continuous Left-Scrolling Marquee Container */}
@@ -59,7 +59,7 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
                     <IconComponent className="w-2 h-2 text-emerald-400" />
                     <span>{item.badge}</span>
                   </span>
-                  <span className="text-[10px] text-white/90 font-medium leading-none">
+                  <span className="text-[11px] text-white/90 font-medium leading-none">
                     {item.content}
                   </span>
                 </div>

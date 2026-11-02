@@ -93,13 +93,13 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
               >
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
-                    <span className="text-[10px] font-mono font-bold text-[#1B3B36] bg-[#EAE3D8] px-2 py-0.5 rounded border border-[#1B3B36]/10">
+                    <span className="text-[11px] font-mono font-bold text-[#1B3B36] bg-[#EAE3D8] px-2 py-0.5 rounded border border-[#1B3B36]/10">
                       {b.id}
                     </span>
                     <h3 className="text-sm font-bold text-[#1B3B36] mt-1 truncate">{b.guestName}</h3>
                   </div>
                   <span
-                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider shrink-0 ${
+                    className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider shrink-0 ${
                       b.status === 'confirmed'
                         ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                         : b.status === 'pending'

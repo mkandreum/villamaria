@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from './Reveal';
 import React from 'react';
 import { AMENITIES } from '../data/mockData';
 
@@ -65,11 +66,11 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
+        <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
           {normalizedAmenities.map((item: any, idx: number) => (
+            <StaggerItem key={item.id || idx}>
             <div
-              key={item.id || idx}
-              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex items-start gap-3.5 sm:gap-4"
+              className="bg-white h-full rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex items-start gap-3.5 sm:gap-4"
             >
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#EAE3D8] text-xl sm:text-2xl flex items-center justify-center shrink-0 shadow-inner">
                 {item.emoji || getEmojiForAmenity(item.title)}
@@ -79,8 +80,9 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
                 <p className="text-xs text-[#1B3B36]/70 leading-relaxed font-sans">{item.description}</p>
               </div>
             </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

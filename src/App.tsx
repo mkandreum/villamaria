@@ -20,6 +20,10 @@ import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { Reveal } from './components/Reveal';
 import { Toast, ToastState } from './components/Toast';
+import { StickyMobileBar } from './components/StickyMobileBar';
+import { FloatingWhatsApp } from './components/FloatingWhatsApp';
+import { ThemeToggle } from './components/ThemeToggle';
+import { ScrollProgress, Splash } from './components/Motion';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(() => getAuthUser());
@@ -51,8 +55,37 @@ export default function App() {
   const [isMyBookingsModalOpen, setIsMyBookingsModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
+  const [loaded, setLoaded] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
+
   useEffect(() => {
-    loadPublicData();
+    loadPublicData().finally(() => setLoaded(true));
+  }, []);
+
+  // Scroll-spy: keep the active tab in sync with the section on screen
+  useEffect(() => {
+    const ids: Array<[string, string]> = [
+      ['hero', 'hero'], ['disponibilidad', 'booking'], ['gallery', 'gallery'], ['amenities', 'amenities'],
+    ];
+    const visibleRatios = new Map<string, number>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => visibleRatios.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0));
+        let best = '';
+        let max = 0;
+        for (const [domId, tab] of ids) {
+          const r = visibleRatios.get(domId) || 0;
+          if (r > max) { max = r; best = tab; }
+        }
+        if (best) setActiveSection(best);
+      },
+      { threshold: [0, 0.2, 0.4, 0.6, 0.8] }
+    );
+    ids.forEach(([domId]) => { const el = document.getElementById(domId); if (el) io.observe(el); });
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.7);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { io.disconnect(); window.removeEventListener('scroll', onScroll); };
   }, []);
 
   useEffect(() => {
@@ -61,7 +94,7 @@ export default function App() {
     }
   }, [currentUser]);
 
-  const loadPublicData = async () => {
+  const loadPublicData = async (): Promise<void> => {
     try {
       const [propRes, availRes] = await Promise.all([
         api.getPropertySettings().catch(() => ({ settings: {} })),
@@ -116,11 +149,19 @@ export default function App() {
 
   const liveBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, mockPricing);
 
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const availableToday = ![...availability.reservations, ...availability.blockedDates].some((r: any) => {
+    const st = String(r.startDate || '').slice(0, 10);
+    const en = String(r.endDate || '').slice(0, 10);
+    return st && en && st <= todayKey && todayKey < en;
+  });
+  const showSticky = pastHero && !isBookingModalOpen && (activeSection !== 'booking' || Boolean(checkIn && checkOut));
+
   const isBannerActive = propertySettings.banner_enabled !== 'false';
 
   return (
     <CurrencyProvider>
-      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-20 md:pb-0 overflow-x-hidden">
+      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-24 md:pb-0 overflow-x-hidden">
       {/* Top Announcement Promo Banner */}
       <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} />
 
@@ -232,6 +273,24 @@ export default function App() {
         </Reveal></section>
       </main>
 
+      <Splash ready={loaded} />
+      <ScrollProgress />
+      <StickyMobileBar
+        visible={showSticky}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        totalPrice={liveBreakdown.totalPrice}
+        nights={liveBreakdown.nights}
+        pricePerNight={pricePerNight}
+        onOpenBooking={() => setIsBookingModalOpen(true)}
+        onScrollToCalendar={() => handleNavigate('booking')}
+      />
+      <FloatingWhatsApp
+        phone={propertySettings.whatsapp_number || propertySettings.contact_phone}
+        availableToday={loaded && availableToday}
+        raised={showSticky}
+      />
+      <ThemeToggle />
       <Toast toast={toast} onDismiss={dismissToast} />
 
       {/* Footer */}

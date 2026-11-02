@@ -16,7 +16,7 @@ interface BookingFormModalProps {
   paymentEfectivo?: boolean;
   paymentTransferencia?: boolean;
   onClose: () => void;
-  onSubmitBooking: (booking: Booking) => void;
+  onSubmitBooking: (booking: Booking) => void | Promise<void>;
 }
 
 export const BookingFormModal: React.FC<BookingFormModalProps> = ({
@@ -35,6 +35,20 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const errors: Record<string, string> = {};
+  if (guestName.trim().length < 3) errors.guestName = 'Escribe tu nombre y apellido.';
+  if (guestPhone.replace(/\D/g, '').length < 7) errors.guestPhone = 'Indica un teléfono válido, con código de país.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.trim())) errors.guestEmail = 'Necesitamos un correo válido para enviarte la confirmación.';
+  const showError = (k: string) => (touched[k] && errors[k] ? errors[k] : '');
+  const fieldClass = (k: string) =>
+    `w-full bg-white border rounded-xl p-2.5 text-sm text-[#1B3B36] focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${
+      showError(k) ? 'border-red-400 focus:ring-red-300' : 'border-[#1B3B36]/20 focus:ring-emerald-300'
+    }`;
+  const ErrorText: React.FC<{ id: string; k: string }> = ({ id, k }) =>
+    showError(k) ? <p id={id} role="alert" className="text-[11px] text-red-600 font-semibold mt-1">{showError(k)}</p> : null;
   
   const allMethods = [
     { id: 'zelle', label: 'Zelle (USD)', icon: DollarSign, enabled: paymentZelle },
@@ -57,9 +71,14 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
   const breakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, pricing);
   const { formatPrice } = useCurrency();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!guestName || !guestPhone || !checkIn || !checkOut) return;
+    if (submitting) return;
+    if (Object.keys(errors).length > 0 || !checkIn || !checkOut) {
+      setTouched({ guestName: true, guestPhone: true, guestEmail: true });
+      (document.querySelector('[aria-invalid="true"]') as HTMLElement | null)?.focus();
+      return;
+    }
 
     const newBooking: Booking = {
       id: `VM-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
@@ -77,7 +96,12 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
       paymentMethod: paymentMethod as any,
     };
 
-    onSubmitBooking(newBooking);
+    setSubmitting(true);
+    try {
+      await onSubmitBooking(newBooking);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const [specialRequests, setSpecialRequests] = useState('');
@@ -95,7 +119,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
         {/* Modal Header */}
         <div className="mb-3.5 sm:mb-4 shrink-0 pr-8">
-          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">
+          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">
             Reserva Directa Villa María 🏡
           </span>
           <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1B3B36] mt-1 leading-tight">
@@ -107,7 +131,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 scrollbar-none">
+        <form noValidate onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 scrollbar-none">
           {/* Personal Info */}
           <div className="space-y-2.5">
             <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
@@ -120,12 +144,16 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  required
+                  autoComplete="name"
                   placeholder="Ej. Juan Pérez"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#1B3B36] focus:outline-none min-h-[44px]"
+                  onBlur={() => setTouched((t) => ({ ...t, guestName: true }))}
+                  aria-invalid={Boolean(showError('guestName'))}
+                  aria-describedby="err-name"
+                  className={fieldClass('guestName')}
                 />
+                <ErrorText id="err-name" k="guestName" />
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-[#1B3B36]/70 block mb-0.5">
@@ -133,26 +161,38 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                 </label>
                 <input
                   type="tel"
-                  required
+                  inputMode="tel"
+                  autoComplete="tel"
                   placeholder="+58 414 1234567"
                   value={guestPhone}
                   onChange={(e) => setGuestPhone(e.target.value)}
-                  className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#1B3B36] focus:outline-none min-h-[44px]"
+                  onBlur={() => setTouched((t) => ({ ...t, guestPhone: true }))}
+                  aria-invalid={Boolean(showError('guestPhone'))}
+                  aria-describedby="err-phone"
+                  className={fieldClass('guestPhone')}
                 />
+                <ErrorText id="err-phone" k="guestPhone" />
               </div>
             </div>
 
             <div>
               <label className="text-[11px] font-semibold text-[#1B3B36]/70 block mb-0.5">
-                Correo Electrónico
+                Correo Electrónico *
               </label>
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
                 placeholder="juan@gmail.com"
                 value={guestEmail}
                 onChange={(e) => setGuestEmail(e.target.value)}
-                className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#1B3B36] focus:outline-none min-h-[44px]"
+                onBlur={() => setTouched((t) => ({ ...t, guestEmail: true }))}
+                aria-invalid={Boolean(showError('guestEmail'))}
+                aria-describedby="err-email"
+                className={fieldClass('guestEmail')}
               />
+              <ErrorText id="err-email" k="guestEmail" />
             </div>
           </div>
 
@@ -162,7 +202,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
               2. Método de Pago (Anticipo 50%) 💳
             </h3>
             
-            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[10px] text-[#1B3B36] flex items-start gap-2">
+            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-[#1B3B36] flex items-start gap-2">
               <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <span>
                 Las instrucciones detalladas para el pago del anticipo se enviarán por WhatsApp tras enviar la solicitud.
@@ -215,7 +255,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           {/* Summary Box */}
           <div className="bg-[#EAE3D8] p-3 rounded-2xl border border-[#1B3B36]/15 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-[#1B3B36]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
+              <span className="text-[11px] text-[#1B3B36]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
               <CurrencyToggle />
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -230,10 +270,11 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           {/* Submit CTA */}
           <button
             type="submit"
-            className="w-full bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[48px] cursor-pointer"
+            disabled={submitting}
+            className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[48px] cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Confirmar Reserva y Comprobante 📅</span>
+            <span>{submitting ? 'Enviando…' : 'Confirmar Reserva y Comprobante 📅'}</span>
           </button>
         </form>
       </div>

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Image as ImageIcon, Sparkles, Calendar, User, ShieldCheck, LogOut } from 'lucide-react';
+import { motion } from 'motion/react';
+
+const mobileTabs = [
+  { id: 'hero', label: 'Inicio', Icon: Home },
+  { id: 'gallery', label: 'Fotos', Icon: ImageIcon },
+  { id: 'amenities', label: 'Servicios', Icon: Sparkles },
+  { id: 'booking', label: 'Fechas', Icon: Calendar },
+];
 
 interface NavbarProps {
   activeSection: string;
@@ -24,6 +32,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
+  const onAccountClick = () => {
+    if (!currentUser) onOpenLoginModal();
+    else if (currentUser.role === 'ADMIN') onOpenAdminModal();
+    else onOpenMyBookingsModal();
+  };
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -62,102 +75,58 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-3 md:bottom-auto transition-all duration-300 ease-in-out w-[calc(100%-20px)] max-w-sm sm:max-w-md md:max-w-3xl lg:max-w-4xl ${
+      className={`fixed z-50 left-0 right-0 bottom-0 md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-auto transition-all duration-300 ease-in-out w-full md:w-[calc(100%-20px)] md:max-w-3xl lg:max-w-4xl ${
         hasBanner ? 'md:top-10' : 'md:top-4'
       } ${
         visible
           ? 'translate-y-0 opacity-100 pointer-events-auto'
-          : 'translate-y-24 opacity-0 pointer-events-none md:-translate-y-24'
+          : 'max-md:translate-y-0 md:-translate-y-24 md:opacity-0 md:pointer-events-none'
       }`}
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
-        className={`w-full px-2 sm:px-3 py-2 rounded-full bg-[#1B3B36]/15 backdrop-blur-xl border border-[#1B3B36]/20 shadow-[0_8px_32px_rgba(27,59,54,0.18)] text-[#1B3B36] flex items-center justify-between transition-all duration-300 ${
-          scrolled ? 'bg-[#1B3B36]/20 backdrop-blur-2xl border-[#1B3B36]/30 shadow-lg' : ''
+        className={`w-full px-1.5 pt-1.5 pb-[max(env(safe-area-inset-bottom),6px)] md:px-3 md:py-2 max-md:rounded-t-3xl max-md:bg-[#F8F5F0]/90 md:rounded-full md:bg-[#1B3B36]/15 backdrop-blur-xl border border-[#1B3B36]/20 max-md:border-b-0 shadow-[0_-8px_32px_rgba(27,59,54,0.12)] md:shadow-[0_8px_32px_rgba(27,59,54,0.18)] text-[#1B3B36] flex items-center justify-between transition-all duration-300 ${
+          scrolled ? 'md:bg-[#1B3B36]/20 md:backdrop-blur-2xl md:border-[#1B3B36]/30 shadow-lg' : ''
         }`}
       >
-        {/* MOBILE NAVIGATION LAYOUT (< md screens) */}
-        <div className="flex md:hidden items-center justify-around w-full gap-1">
-          {/* 1. Fotos */}
-          <button
-            onClick={() => onNavigate('gallery')}
-            title="Fotos"
-            className={`relative min-w-[44px] min-h-[44px] rounded-full flex flex-col items-center justify-center transition-all duration-200 active:scale-90 ${
-              activeSection === 'gallery'
-                ? 'bg-[#1B3B36] text-white shadow-md font-bold scale-105'
-                : 'text-[#1B3B36] hover:text-emerald-900 hover:bg-[#1B3B36]/10'
-            }`}
-          >
-            <ImageIcon className="w-5 h-5" />
-          </button>
-
-          {/* 2. Servicios */}
-          <button
-            onClick={() => onNavigate('amenities')}
-            title="Servicios"
-            className={`relative min-w-[44px] min-h-[44px] rounded-full flex flex-col items-center justify-center transition-all duration-200 active:scale-90 ${
-              activeSection === 'amenities'
-                ? 'bg-[#1B3B36] text-white shadow-md font-bold scale-105'
-                : 'text-[#1B3B36] hover:text-emerald-900 hover:bg-[#1B3B36]/10'
-            }`}
-          >
-            <Sparkles className="w-5 h-5" />
-          </button>
-
-          {/* 3. VM (CENTRAL - INICIO) */}
-          <button
-            onClick={() => onNavigate('hero')}
-            title="Inicio - Villa María"
-            className={`relative min-w-[46px] min-h-[46px] rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-md ${
-              activeSection === 'hero'
-                ? 'bg-[#1B3B36] text-white font-black shadow-emerald-950/40 scale-105 ring-2 ring-emerald-600'
-                : 'bg-gradient-to-tr from-[#1B3B36] to-emerald-800 text-white font-bold shadow-sm'
-            }`}
-          >
-            <span className="font-serif text-sm font-black tracking-tighter text-white">VM</span>
-          </button>
-
-          {/* 4. Reservar */}
-          <button
-            onClick={() => onNavigate('booking')}
-            title="Reservar"
-            className={`relative min-w-[44px] min-h-[44px] rounded-full flex flex-col items-center justify-center transition-all duration-200 active:scale-90 ${
-              activeSection === 'booking'
-                ? 'bg-[#1B3B36] text-white shadow-md font-bold scale-105'
-                : 'text-[#1B3B36] hover:text-emerald-900 hover:bg-[#1B3B36]/10'
-            }`}
-          >
-            <Calendar className="w-5 h-5" />
-          </button>
-
-          {/* 5. ACCEDER / USER / ADMIN */}
-          {currentUser ? (
-            currentUser.role === 'ADMIN' ? (
+        {/* MOBILE NAVIGATION LAYOUT (< md screens): labelled tab bar */}
+        <div className="flex md:hidden items-stretch justify-around w-full">
+          {mobileTabs.map(({ id, label, Icon }) => {
+            const active = activeSection === id;
+            return (
               <button
-                onClick={onOpenAdminModal}
-                title="Panel de Administración"
-                className="min-w-[44px] min-h-[44px] rounded-full bg-amber-500/20 border border-amber-600/40 text-amber-900 flex items-center justify-center transition-all active:scale-90 shadow-sm"
+                key={id}
+                onClick={() => onNavigate(id)}
+                aria-current={active ? 'page' : undefined}
+                className="relative flex-1 min-h-[56px] flex flex-col items-center justify-center gap-0.5 rounded-2xl cursor-pointer active:scale-90 transition-transform"
               >
-                <ShieldCheck className="w-5 h-5 text-amber-800" />
+                {active && (
+                  <motion.span
+                    layoutId="mobile-tab-pill"
+                    className="absolute inset-x-2 inset-y-1 rounded-2xl bg-[#1B3B36]"
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  />
+                )}
+                <Icon className={`relative w-5 h-5 transition-colors ${active ? 'text-white' : 'text-[#1B3B36]/70'}`} />
+                <span className={`relative text-[11px] font-bold leading-none transition-colors ${active ? 'text-white' : 'text-[#1B3B36]/70'}`}>
+                  {label}
+                </span>
               </button>
+            );
+          })}
+          <button
+            onClick={onAccountClick}
+            className="relative flex-1 min-h-[56px] flex flex-col items-center justify-center gap-0.5 rounded-2xl cursor-pointer active:scale-90 transition-transform"
+          >
+            {currentUser?.role === 'ADMIN' ? (
+              <ShieldCheck className="w-5 h-5 text-amber-700" />
             ) : (
-              <button
-                onClick={onOpenMyBookingsModal}
-                title="Mis Reservas"
-                className="min-w-[44px] min-h-[44px] rounded-full bg-[#1B3B36]/10 border border-[#1B3B36]/20 text-[#1B3B36] flex items-center justify-center transition-all active:scale-90 shadow-sm"
-              >
-                <User className="w-5 h-5 text-[#1B3B36]" />
-              </button>
-            )
-          ) : (
-            <button
-              onClick={onOpenLoginModal}
-              title="Iniciar Sesión"
-              className="min-w-[44px] min-h-[44px] rounded-full bg-[#1B3B36] text-white flex items-center justify-center transition-all active:scale-90 shadow-md"
-            >
-              <User className="w-5 h-5" />
-            </button>
-          )}
+              <User className="w-5 h-5 text-[#1B3B36]/70" />
+            )}
+            <span className="text-[11px] font-bold leading-none text-[#1B3B36]/70">
+              {currentUser ? (currentUser.role === 'ADMIN' ? 'Admin' : 'Mis reservas') : 'Entrar'}
+            </span>
+          </button>
         </div>
 
         {/* DESKTOP / TABLET NAVIGATION LAYOUT (>= md screens) */}

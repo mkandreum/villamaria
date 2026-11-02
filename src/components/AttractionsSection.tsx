@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from './Reveal';
 import React from 'react';
 import { NEARBY_ATTRACTIONS } from '../data/mockData';
 import { Compass, Waves, Navigation } from 'lucide-react';
@@ -46,19 +47,21 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({ attracti
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
+        <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
           {normalizedAttractions.map((cayo: any) => (
+            <StaggerItem key={cayo.id} className="h-full">
             <div
-              key={cayo.id}
-              className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#1B3B36]/10 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
+              className="bg-white h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-[#1B3B36]/10 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
             >
               <div className="relative h-40 sm:h-44 overflow-hidden">
                 <img
                   src={cayo.imageUrl}
                   alt={cayo.title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                 />
-                <span className="absolute bottom-2.5 left-2.5 bg-emerald-950/85 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                <span className="absolute bottom-2.5 left-2.5 bg-emerald-950/85 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
                   <span>⏱️</span> {cayo.duration}
                 </span>
               </div>
@@ -69,14 +72,15 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({ attracti
                   <p className="text-xs text-[#1B3B36]/70 leading-relaxed font-sans mt-1">{cayo.description}</p>
                 </div>
 
-                <div className="pt-3 border-t border-[#1B3B36]/10 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-emerald-800 uppercase tracking-wider">
+                <div className="pt-3 border-t border-[#1B3B36]/10 flex items-center gap-1.5 text-[11px] sm:text-[11px] font-bold text-emerald-800 uppercase tracking-wider">
                   <Navigation className="w-3.5 h-3.5 shrink-0" />
                   <span>Acceso en embarcación</span>
                 </div>
               </div>
             </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

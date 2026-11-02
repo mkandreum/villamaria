@@ -169,3 +169,55 @@
   }
   .animate-marquee { animation: none; overflow-x: auto; }
 }
+
+/* ---------- Design tokens ---------- */
+:root {
+  --vm-bg: #F8F5F0;
+  --vm-surface: #ffffff;
+  --vm-sand: #EAE3D8;
+  --vm-ink: #1B3B36;
+  --vm-accent: #C17D5C;
+}
+
+/* ---------- Dark theme (remaps the palette used across components) ---------- */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --vm-bg: #0c1a17;
+  --vm-surface: #14272300;
+  --vm-ink: #e8efe9;
+}
+html[data-theme='dark'] body,
+html[data-theme='dark'] .bg-\[\#F8F5F0\],
+html[data-theme='dark'] .from-\[\#F8F5F0\],
+html[data-theme='dark'] .to-\[\#F8F5F0\] { background-color: #0c1a17; --tw-gradient-from: #0c1a17; --tw-gradient-to: #0c1a17; }
+html[data-theme='dark'] .bg-white { background-color: #132622; }
+html[data-theme='dark'] .bg-\[\#EAE3D8\],
+html[data-theme='dark'] .via-\[\#EAE3D8\]\/40 { background-color: #1a322d; }
+html[data-theme='dark'] .text-\[\#1B3B36\],
+html[data-theme='dark'] .text-emerald-900,
+html[data-theme='dark'] .text-emerald-950 { color: #e8efe9; }
+html[data-theme='dark'] [class*='text-\[\#1B3B36\]\/'] { color: rgba(232, 239, 233, 0.72); }
+html[data-theme='dark'] [class*='border-\[\#1B3B36\]'] { border-color: rgba(232, 239, 233, 0.14); }
+html[data-theme='dark'] .max-md\:bg-\[\#F8F5F0\]\/90 { background-color: rgba(12, 26, 23, 0.92); }
+html[data-theme='dark'] .bg-\[\#1B3B36\] { background-color: #2f6b5f; }
+html[data-theme='dark'] img { filter: brightness(0.92); }
+
+/* Sheen sweep on primary buttons */
+.shine { position: relative; overflow: hidden; isolation: isolate; }
+.shine::after {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+}
+.shine:hover::after, .shine:focus-visible::after { transform: translateX(120%); transition: transform 0.9s ease; }
+@media (hover: none) { .shine::after { animation: shineLoop 4.5s ease-in-out infinite 1.5s; } }
+@keyframes shineLoop { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+/* Soft floating glow for the featured CTA */
+@keyframes ctaPulse { 0%,100% { box-shadow: 0 8px 24px rgba(16,185,129,.28); } 50% { box-shadow: 0 8px 36px rgba(16,185,129,.55); } }
+.cta-pulse { animation: ctaPulse 2.8s ease-in-out infinite; }
+html[data-theme='dark'] .bg-emerald-100 { background-color: #14532d; }
+html[data-theme='dark'] .bg-emerald-50,
+html[data-theme='dark'] .hover\:bg-emerald-50:hover { background-color: #123d2c; }
+html[data-theme='dark'] .bg-red-50 { background-color: rgba(127, 29, 29, 0.35); }
+html[data-theme='dark'] .text-emerald-800 { color: #6ee7b7; }
