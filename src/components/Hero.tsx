@@ -235,14 +235,14 @@ export const Hero: React.FC<HeroProps> = ({
                 <>
                   <button
                     onClick={() => goTo(-1)}
-                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition active:scale-90 z-20 cursor-pointer"
                     title="Anterior foto"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => goTo(1)}
-                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-90 z-20 cursor-pointer"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition active:scale-90 z-20 cursor-pointer"
                     title="Siguiente foto"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -257,7 +257,7 @@ export const Hero: React.FC<HeroProps> = ({
                     key={idx}
                     onClick={() => { interactedAt.current = Date.now(); scrollToSlide(idx); }}
                     aria-label={`Ver foto ${idx + 1}`}
-                    className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                    className={`h-2.5 rounded-full transition cursor-pointer ${
                       idx === activePhotoIndex ? 'w-6 bg-emerald-400' : 'w-2.5 bg-white/60 hover:bg-white'
                     }`}
                   />
@@ -304,7 +304,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <button
                   onClick={onSearch}
-                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <Calendar className="w-4 h-4 text-emerald-400" />
                   <span>Reservar</span>
@@ -314,7 +314,7 @@ export const Hero: React.FC<HeroProps> = ({
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
                   <span>WhatsApp</span>

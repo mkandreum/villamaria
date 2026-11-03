@@ -123,7 +123,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
                 href={mapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold uppercase tracking-wider transition-all shadow-md min-h-[48px] active:scale-95 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold uppercase tracking-wider transition shadow-md min-h-[48px] active:scale-95 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-emerald-400" />
                 <span className="truncate">Abrir en Google Maps GPS</span>

@@ -75,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       aria-label="Navegación flotante principal"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-[calc(12px+env(safe-area-inset-bottom))] md:bottom-auto transition-all duration-300 ease-in-out w-max max-w-[calc(100%-16px)] md:w-[calc(100%-20px)] md:max-w-3xl lg:max-w-4xl ${
+      className={`fixed z-50 left-1/2 -translate-x-1/2 bottom-[calc(12px+env(safe-area-inset-bottom))] md:bottom-auto transition duration-300 ease-in-out w-max max-w-[calc(100%-16px)] md:w-[calc(100%-20px)] md:max-w-3xl lg:max-w-4xl ${
         hasBanner ? 'md:top-10' : 'md:top-4'
       } ${
         visible
@@ -85,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       {/* GLASSMORPHIC PILL CONTAINER */}
       <div
-        className={`w-full px-1 py-1 md:px-3 md:py-2 rounded-full bg-white md:bg-[#1B3B36]/15 backdrop-blur-xl border border-[#1B3B36]/10 md:border-[#1B3B36]/20 shadow-[0_10px_40px_rgba(27,59,54,0.22)] md:shadow-[0_8px_32px_rgba(27,59,54,0.18)] text-[#1B3B36] flex items-center justify-between transition-all duration-300 ${
+        className={`w-full px-1 py-1 md:px-3 md:py-2 rounded-full bg-white md:bg-[#1B3B36]/15 backdrop-blur-xl border border-[#1B3B36]/10 md:border-[#1B3B36]/20 shadow-[0_10px_40px_rgba(27,59,54,0.22)] md:shadow-[0_8px_32px_rgba(27,59,54,0.18)] text-[#1B3B36] flex items-center justify-between transition duration-300 ${
           scrolled ? 'md:bg-[#1B3B36]/20 md:backdrop-blur-2xl md:border-[#1B3B36]/30 shadow-lg' : ''
         }`}
       >
@@ -158,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold transition duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-[#1B3B36] text-white shadow-md font-bold'
                       : 'text-[#1B3B36] hover:text-emerald-900 hover:bg-[#1B3B36]/10'
@@ -178,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {currentUser.role === 'ADMIN' ? (
                   <button
                     onClick={onOpenAdminModal}
-                    className="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-600/40 text-amber-900 hover:bg-amber-500/30 flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95"
+                    className="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-600/40 text-amber-900 hover:bg-amber-500/30 flex items-center gap-1.5 text-xs font-bold transition shadow-sm cursor-pointer active:scale-95"
                   >
                     <ShieldCheck className="w-4 h-4 text-amber-800" />
                     <span>Admin Panel</span>
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ) : (
                   <button
                     onClick={onOpenMyBookingsModal}
-                    className="px-3.5 py-1.5 rounded-full bg-[#1B3B36]/10 border border-[#1B3B36]/20 text-[#1B3B36] hover:bg-[#1B3B36]/20 flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer active:scale-95"
+                    className="px-3.5 py-1.5 rounded-full bg-[#1B3B36]/10 border border-[#1B3B36]/20 text-[#1B3B36] hover:bg-[#1B3B36]/20 flex items-center gap-1.5 text-xs font-bold transition cursor-pointer active:scale-95"
                   >
                     <User className="w-4 h-4 text-[#1B3B36]" />
                     <span>{currentUser.name.split(' ')[0]}</span>
@@ -203,7 +203,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 onClick={onOpenLoginModal}
-                className="px-4 py-1.5 rounded-full bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+                className="px-4 py-1.5 rounded-full bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <User className="w-4 h-4" />
                 <span>Acceder</span>

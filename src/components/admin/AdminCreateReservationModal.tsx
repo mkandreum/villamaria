@@ -300,14 +300,14 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
             <button
               type="button"
               onClick={onClose}
-              className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/40 hover:bg-emerald-800 text-emerald-300 font-bold transition-all flex items-center justify-center"
+              className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/40 hover:bg-emerald-800 text-emerald-300 font-bold transition flex items-center justify-center"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="min-h-[44px] px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60"
+              className="min-h-[44px] px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold uppercase tracking-wider transition shadow-lg active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
               <span>{loading ? 'Guardando...' : 'Crear Reserva'}</span>

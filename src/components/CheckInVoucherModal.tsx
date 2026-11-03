@@ -283,7 +283,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
       <div className="bg-emerald-950 sm:border sm:border-emerald-500/30 sm:rounded-3xl max-w-xl w-full p-3 sm:p-6 shadow-2xl relative my-2 text-emerald-100 font-sans max-h-[96vh] flex flex-col print:border-none print:shadow-none print:max-h-none print:p-0 print:bg-white">
         
         {/* Close Button - Hidden in Print */}
-        <button
+        <button aria-label="Cerrar"
           onClick={onClose}
           className="absolute top-3 right-3 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors z-10 print:hidden min-w-[36px] min-h-[36px] flex items-center justify-center"
         >
@@ -344,7 +344,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
                 </div>
                 <button
                   onClick={handleCopyCode}
-                  className="flex items-center gap-1 text-[11px] font-bold text-emerald-900 bg-white/80 hover:bg-white px-2.5 py-1 rounded-lg border border-[#1B3B36]/15 transition-all print:hidden"
+                  className="flex items-center gap-1 text-[11px] font-bold text-emerald-900 bg-white/80 hover:bg-white px-2.5 py-1 rounded-lg border border-[#1B3B36]/15 transition print:hidden"
                   title="Copiar código"
                 >
                   {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -454,7 +454,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-[11px] uppercase tracking-wide transition-all print:hidden"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-[11px] uppercase tracking-wide transition print:hidden"
               >
                 <span>GPS Maps</span>
                 <ExternalLink className="w-3 h-3" />
@@ -477,7 +477,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
             {/* Google Wallet Button */}
             <button
               onClick={handleAddToGoogleWallet}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-black hover:bg-neutral-900 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 border border-neutral-700 min-h-[44px]"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-black hover:bg-neutral-900 text-white font-bold text-xs uppercase tracking-wider transition shadow-md active:scale-95 border border-neutral-700 min-h-[44px]"
               title="Añadir a Google Wallet y Calendario"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
@@ -493,7 +493,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
             <button
               onClick={handleDownloadImage}
               disabled={downloading}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 disabled:opacity-50 min-h-[44px]"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wider transition shadow-md active:scale-95 disabled:opacity-50 min-h-[44px]"
             >
               <Download className="w-4 h-4" />
               <span>{downloading ? 'Generando...' : 'Guardar PNG'}</span>
@@ -502,7 +502,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
             {/* Print / PDF Button */}
             <button
               onClick={handlePrint}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-500/30 font-bold text-xs uppercase tracking-wider transition-all active:scale-95 min-h-[44px]"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-500/30 font-bold text-xs uppercase tracking-wider transition active:scale-95 min-h-[44px]"
             >
               <Printer className="w-4 h-4" />
               <span>Imprimir / PDF</span>

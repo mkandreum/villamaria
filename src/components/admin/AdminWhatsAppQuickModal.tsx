@@ -336,7 +336,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
       <div className="bg-emerald-950 border border-emerald-500/30 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative my-3 text-emerald-100 font-sans max-h-[94vh] flex flex-col">
         
         {/* Close Button */}
-        <button
+        <button aria-label="Cerrar"
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
         >
@@ -409,7 +409,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
         <div className="flex items-center gap-1.5 p-1 bg-emerald-900/50 rounded-xl mb-3 shrink-0 border border-emerald-500/20">
           <button
             onClick={() => setActiveTab('email')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all min-h-[38px] ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition min-h-[38px] ${
               activeTab === 'email'
                 ? 'bg-emerald-500 text-emerald-950 shadow-md'
                 : 'text-emerald-300 hover:text-white hover:bg-emerald-800/40'
@@ -421,7 +421,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
 
           <button
             onClick={() => setActiveTab('whatsapp')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all min-h-[38px] ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition min-h-[38px] ${
               activeTab === 'whatsapp'
                 ? 'bg-[#25D366] text-white shadow-md'
                 : 'text-emerald-300 hover:text-white hover:bg-emerald-800/40'
@@ -444,7 +444,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
             return (
               <div
                 key={tpl.id}
-                className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-4 space-y-2.5 transition-all hover:border-emerald-500/40"
+                className="bg-emerald-900/40 border border-emerald-500/20 rounded-2xl p-3.5 sm:p-4 space-y-2.5 transition hover:border-emerald-500/40"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
@@ -475,7 +475,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
                 <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
                   <button
                     onClick={() => handleCopy(tpl.text, idx)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/70 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all min-h-[38px]"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/70 hover:bg-emerald-800 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition min-h-[38px]"
                   >
                     {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{isCopied ? '¡Copiado!' : 'Copiar'}</span>
@@ -486,7 +486,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
                     <>
                       <a
                         href={mailtoLink}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-500/30 text-xs font-semibold transition-all min-h-[38px]"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-500/30 text-xs font-semibold transition min-h-[38px]"
                         title="Abrir en tu app de correo predeterminada"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -496,7 +496,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
                       <button
                         onClick={() => handleSendEmail(tpl, idx)}
                         disabled={isSending}
-                        className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wide transition-all shadow-md active:scale-95 disabled:opacity-50 min-h-[38px]"
+                        className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs uppercase tracking-wide transition shadow-md active:scale-95 disabled:opacity-50 min-h-[38px]"
                       >
                         {isSending ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -511,7 +511,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
                       href={waLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs uppercase tracking-wide transition-all shadow-md active:scale-95 min-h-[38px]"
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs uppercase tracking-wide transition shadow-md active:scale-95 min-h-[38px]"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>Enviar por WhatsApp</span>

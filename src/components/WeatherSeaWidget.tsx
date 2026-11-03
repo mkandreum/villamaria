@@ -103,7 +103,7 @@ export const WeatherSeaWidget: React.FC = () => {
     <div className="relative inline-block w-full max-w-sm sm:max-w-md font-sans">
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-white/80 hover:bg-white backdrop-blur-md border border-emerald-800/15 rounded-2xl p-2.5 sm:p-3 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 text-[#1B3B36]"
+        className="bg-white/80 hover:bg-white backdrop-blur-md border border-emerald-800/15 rounded-2xl p-2.5 sm:p-3 shadow-sm hover:shadow-md transition cursor-pointer flex items-center justify-between gap-3 text-[#1B3B36]"
       >
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-300/40 text-2xl flex items-center justify-center shrink-0 shadow-inner">

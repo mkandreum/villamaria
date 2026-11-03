@@ -44,7 +44,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-[#1B3B36]/80 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-4 overflow-y-auto">
       <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-xl w-full p-4 sm:p-8 shadow-2xl relative my-auto max-h-[94vh] flex flex-col font-sans overflow-hidden">
-        <button
+        <button aria-label="Cerrar"
           onClick={onClose}
           className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer"
         >
@@ -153,7 +153,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                           hostPhone,
                         })
                       }
-                      className="text-xs text-emerald-950 font-bold bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all min-h-[36px] cursor-pointer"
+                      className="text-xs text-emerald-950 font-bold bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition min-h-[36px] cursor-pointer"
                     >
                       <Ticket className="w-3.5 h-3.5" />
                       <span> Pase de Entrada & QR</span>

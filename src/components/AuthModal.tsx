@@ -44,7 +44,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 z-50 bg-emerald-950/80 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-4 overflow-y-auto">
       <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-5 sm:p-8 shadow-2xl relative text-emerald-100 font-sans my-auto max-h-[94vh] overflow-y-auto">
-        <button
+        <button aria-label="Cerrar"
           onClick={onClose}
           className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors min-w-[38px] min-h-[38px] flex items-center justify-center cursor-pointer"
         >
@@ -148,7 +148,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-md hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 min-h-[48px] cursor-pointer active:scale-95"
+            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 font-bold rounded-xl text-xs uppercase tracking-wider shadow-md hover:from-emerald-400 hover:to-teal-400 transition flex items-center justify-center gap-2 disabled:opacity-50 mt-2 min-h-[48px] cursor-pointer active:scale-95"
           >
             {loading ? (
               <>

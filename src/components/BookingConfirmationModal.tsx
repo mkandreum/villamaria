@@ -63,7 +63,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-6 overflow-y-auto">
       <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
         {/* Close Button */}
-        <button
+        <button aria-label="Cerrar"
           onClick={onClose}
           className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-white transition-colors z-10 min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer"
         >
@@ -157,7 +157,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             {/* Digital Pass with QR Button */}
             <button
               onClick={() => setShowVoucher(true)}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all min-h-[48px] active:scale-95 cursor-pointer"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition min-h-[48px] active:scale-95 cursor-pointer"
             >
               <Ticket className="w-4.5 h-4.5" />
               <span> Ver / Descargar Pase con Código QR</span>
@@ -167,7 +167,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all min-h-[48px] active:scale-95"
+              className="w-full bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition min-h-[48px] active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
               <span className="truncate">Enviar Comprobante por WhatsApp</span>

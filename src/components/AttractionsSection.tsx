@@ -48,7 +48,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
           {normalizedAttractions.map((cayo: any) => (
             <StaggerItem key={cayo.id} className="h-full">
             <div
-              className="bg-white h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-[#1B3B36]/10 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between"
+              className="bg-white h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-[#1B3B36]/10 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition duration-300 flex flex-col justify-between"
             >
               <div className="relative h-40 sm:h-44 overflow-hidden">
                 <img

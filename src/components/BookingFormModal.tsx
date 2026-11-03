@@ -110,7 +110,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-6 overflow-y-auto">
       <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
         {/* Close Button */}
-        <button
+        <button aria-label="Cerrar"
           onClick={onClose}
           className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-white transition-colors z-10 min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer"
         >
@@ -218,7 +218,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                       key={m.id}
                       type="button"
                       onClick={() => setPaymentMethod(m.id)}
-                      className={`p-2.5 rounded-xl border text-left flex items-center gap-2 transition-all min-h-[44px] cursor-pointer ${
+                      className={`p-2.5 rounded-xl border text-left flex items-center gap-2 transition min-h-[44px] cursor-pointer ${
                         paymentMethod === m.id
                           ? 'bg-[#1B3B36] text-white border-[#1B3B36] font-bold shadow-sm'
                           : 'bg-white border-[#1B3B36]/15 text-[#1B3B36]/80 hover:bg-[#EAE3D8]'
@@ -271,7 +271,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           <button
             type="submit"
             disabled={submitting}
-            className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 min-h-[48px] cursor-pointer"
+            className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition active:scale-95 min-h-[48px] cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>{submitting ? 'Enviando…' : 'Confirmar Reserva y Comprobante'}</span>

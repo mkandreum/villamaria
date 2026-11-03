@@ -297,7 +297,7 @@ export const SmtpSettingsSection: React.FC = () => {
             type="button"
             onClick={handleTestConnection}
             disabled={testingConnection}
-            className="w-full sm:w-auto px-4 py-2.5 bg-emerald-900/60 hover:bg-emerald-800/80 border border-emerald-500/40 text-emerald-200 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 min-h-[44px]"
+            className="w-full sm:w-auto px-4 py-2.5 bg-emerald-900/60 hover:bg-emerald-800/80 border border-emerald-500/40 text-emerald-200 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-50 min-h-[44px]"
           >
             {testingConnection ? (
               <>
@@ -315,7 +315,7 @@ export const SmtpSettingsSection: React.FC = () => {
           <button
             type="submit"
             disabled={saving}
-            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 text-xs font-bold rounded-xl hover:from-emerald-400 hover:to-teal-400 transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]"
+            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-emerald-950 text-xs font-bold rounded-xl hover:from-emerald-400 hover:to-teal-400 transition shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50 min-h-[44px]"
           >
             {saving ? (
               <>
@@ -351,7 +351,7 @@ export const SmtpSettingsSection: React.FC = () => {
             type="button"
             onClick={handleSendTestEmail}
             disabled={sendingTestEmail || !testTargetEmail}
-            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-md min-h-[44px]"
+            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-50 shadow-md min-h-[44px]"
           >
             {sendingTestEmail ? (
               <>

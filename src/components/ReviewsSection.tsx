@@ -77,7 +77,7 @@ export const ReviewsSection: React.FC = () => {
           {!isAdding && !submitted && (
             <button
               onClick={() => setIsAdding(true)}
-              className="mt-4 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold font-sans uppercase tracking-wider transition-all min-h-[48px] shadow-md cursor-pointer active:scale-95"
+              className="mt-4 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold font-sans uppercase tracking-wider transition min-h-[48px] shadow-md cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4 text-emerald-400" />
               <span>Dejar una Opinión</span>
@@ -128,7 +128,7 @@ export const ReviewsSection: React.FC = () => {
                     type="button"
                     key={star}
                     onClick={() => setRating(star)}
-                    className="p-2.5 rounded-lg hover:bg-amber-50 transition-all min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer"
+                    className="p-2.5 rounded-lg hover:bg-amber-50 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer"
                   >
                     <Star className={`w-5 h-5 ${star <= rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
                   </button>
@@ -151,7 +151,7 @@ export const ReviewsSection: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#1B3B36] text-white py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider min-h-[48px] disabled:opacity-60 transition-all hover:bg-emerald-900 active:scale-95 cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#1B3B36] text-white py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider min-h-[48px] disabled:opacity-60 transition hover:bg-emerald-900 active:scale-95 cursor-pointer"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {submitting ? 'Enviando…' : 'Enviar Opinión'}
@@ -159,7 +159,7 @@ export const ReviewsSection: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="bg-[#EAE3D8] text-[#1B3B36] px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider min-h-[48px] hover:bg-[#d9d0c4] transition-all cursor-pointer"
+                className="bg-[#EAE3D8] text-[#1B3B36] px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider min-h-[48px] hover:bg-[#d9d0c4] transition cursor-pointer"
               >
                 Cancelar
               </button>

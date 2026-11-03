@@ -267,7 +267,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 const isSelectedEnd = dateStr === checkOut;
                 const isInSelectedRange = checkIn && checkOut && dateStr > checkIn && dateStr < checkOut;
 
-                let btnClass = 'h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-bold transition-all flex flex-col items-center justify-center cursor-pointer min-h-[40px] ';
+                let btnClass = 'h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-bold transition flex flex-col items-center justify-center cursor-pointer min-h-[40px] ';
                 if (isBooked) {
                   btnClass += isPast ? 'bg-transparent text-[#1B3B36]/25 cursor-not-allowed ' : 'bg-red-50 text-red-300 cursor-not-allowed line-through ';
                 } else if (isSelectedStart || isSelectedEnd) {
@@ -357,7 +357,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
                 <button
                   onClick={onInitiateBooking}
-                  className="shine w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+                  className="shine w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1B3B36] to-emerald-900 text-white hover:from-emerald-900 hover:to-teal-900 font-bold text-xs uppercase tracking-wider transition shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Reservar Ahora</span>

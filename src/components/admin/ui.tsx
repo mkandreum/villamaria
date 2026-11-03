@@ -120,7 +120,7 @@ export const Btn: React.FC<
   return (
     <button
       {...rest}
-      className={`min-h-[48px] px-4 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-50 cursor-pointer ${tones[tone]} ${block ? 'w-full' : ''} ${className}`}
+      className={`min-h-[48px] px-4 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 active:scale-[0.97] transition disabled:opacity-50 cursor-pointer ${tones[tone]} ${block ? 'w-full' : ''} ${className}`}
     >
       {children}
     </button>
