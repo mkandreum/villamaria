@@ -90,6 +90,7 @@ export const api = {
   getAvailability: () => request('/reservations/availability'),
   createReservation: (bookingData: any) => request('/reservations', { method: 'POST', body: JSON.stringify(bookingData) }),
   getMyBookings: () => request('/reservations/my-bookings'),
+  cancelMyBooking: (id: string) => request(`/reservations/${id}/cancel`, { method: 'POST' }),
 
   // Admin
   getDashboardMetrics: () => request('/admin/dashboard'),

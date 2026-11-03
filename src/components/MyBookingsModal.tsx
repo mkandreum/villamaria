@@ -30,7 +30,9 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   const [selectedVoucher, setSelectedVoucher] = useState<VoucherReservationData | null>(null);
   const { formatPrice } = useCurrency();
 
-  const userBookings = bookings.filter((b) => b.status !== 'blocked_by_owner');
+  const userBookings = bookings
+    .map((b) => ({ ...b, status: String(b.status || '').toLowerCase() }))
+    .filter((b) => b.status !== 'blocked_by_owner');
 
   const filtered = userBookings.filter(
     (b) =>
@@ -94,7 +96,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
                     <span className="text-[11px] font-mono font-bold text-[#1B3B36] bg-[#EAE3D8] px-2 py-0.5 rounded border border-[#1B3B36]/10">
-                      {b.id}
+                      {String(b.id).slice(0, 8).toUpperCase()}
                     </span>
                     <h3 className="text-sm font-bold text-[#1B3B36] mt-1 truncate">{b.guestName}</h3>
                   </div>

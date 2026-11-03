@@ -37,6 +37,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
   const [reservations, setReservations] = useState<any[]>([]);
   const [blockedDates, setBlockedDates] = useState<any[]>([]);
+  const [googleEvents, setGoogleEvents] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
@@ -54,7 +55,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
-    const [resRes, usersRes, blockRes, tplRes, propRes, revRes, exchRes] = await Promise.all([
+    const [resRes, usersRes, blockRes, tplRes, propRes, revRes, exchRes, availRes] = await Promise.all([
       api.getAdminReservations().catch(() => ({ reservations: [] })),
       api.getAdminUsers().catch(() => ({ users: [] })),
       api.getBlockedDates().catch(() => ({ blockedDates: [] })),
@@ -62,7 +63,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
       api.getPropertySettings().catch(() => ({ settings: {} })),
       api.getAdminReviews().catch(() => ({ reviews: [] })),
       api.getExchangeRate().catch(() => ({})),
+      api.getAvailability().catch(() => ({ googleCalendarEvents: [] })),
     ]);
+    setGoogleEvents(availRes.googleCalendarEvents || []);
     setReservations(resRes.reservations || []);
     setUsers(usersRes.users || []);
     setBlockedDates(blockRes.blockedDates || []);
@@ -185,6 +188,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
                   <AdminCalendarView
                     reservations={reservations}
                     blockedDates={blockedDates}
+                    googleCalendarEvents={googleEvents}
                     propertySettings={settings}
                     onRefresh={() => { load(); onRefreshData?.(); }}
                     onShowAlert={(a) => notify(a.type, a.text)}

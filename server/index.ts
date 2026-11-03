@@ -137,6 +137,15 @@ function authenticateToken(req: AuthenticatedRequest, res: express.Response, nex
   });
 }
 
+function optionalAuth(req: AuthenticatedRequest, _res: express.Response, next: express.NextFunction) {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return next();
+  jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
+    if (!err) req.user = decoded;
+    next();
+  });
+}
+
 function requireAdmin(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
   if (!req.user || req.user.role !== 'ADMIN') {
     return res.status(403).json({ error: 'Acceso denegado. Se requieren permisos de administrador.' });
@@ -859,7 +868,22 @@ app.get('/api/reservations/availability', async (_req, res) => {
   }
 });
 
-app.post('/api/reservations', bookingLimiter, async (req: AuthenticatedRequest, res) => {
+async function notifyCancellation(reservation: { id: string; guestName: string; guestEmail: string; startDate: Date; endDate: Date; googleEventId: string | null }) {
+  if (reservation.googleEventId) {
+    await deleteCalendarEvent(reservation.googleEventId).catch(() => null);
+  }
+  if (!reservation.guestEmail) return;
+  const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_CANCELLED' } });
+  if (!tpl) return;
+  const html = tpl.bodyHtml
+    .replace(/{{guest_name}}/g, escapeHtml(reservation.guestName))
+    .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8).toUpperCase())
+    .replace(/{{start_date}}/g, new Date(reservation.startDate).toLocaleDateString('es-ES', { timeZone: 'UTC' }))
+    .replace(/{{end_date}}/g, new Date(reservation.endDate).toLocaleDateString('es-ES', { timeZone: 'UTC' }));
+  sendEmail(reservation.guestEmail, tpl.subject, html);
+}
+
+app.post('/api/reservations', bookingLimiter, optionalAuth, async (req: AuthenticatedRequest, res) => {
   try {
     const { guestName, guestEmail, guestPhone, startDate, endDate, guestsCount, notes } = req.body;
     if (!guestName || !guestEmail || !guestPhone || !startDate || !endDate) {
@@ -1010,10 +1034,30 @@ app.post('/api/reservations', bookingLimiter, async (req: AuthenticatedRequest, 
 app.get('/api/reservations/my-bookings', authenticateToken, async (req: AuthenticatedRequest, res) => {
   try {
     const bookings = await prisma.reservation.findMany({
-      where: { userId: req.user!.id },
+      where: { OR: [{ userId: req.user!.id }, { guestEmail: req.user!.email.toLowerCase() }] },
       orderBy: { startDate: 'desc' },
     });
     res.json({ bookings });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/reservations/:id/cancel', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  try {
+    const reservation = await prisma.reservation.findUnique({ where: { id: req.params.id } });
+    if (!reservation || (reservation.userId !== req.user!.id && reservation.guestEmail.toLowerCase() !== req.user!.email.toLowerCase())) {
+      return res.status(404).json({ error: 'Reserva no encontrada.' });
+    }
+    if (reservation.status === 'CANCELLED') {
+      return res.status(400).json({ error: 'La reserva ya está cancelada.' });
+    }
+    if (reservation.endDate.getTime() < Date.now()) {
+      return res.status(400).json({ error: 'No se puede cancelar una estancia ya finalizada.' });
+    }
+    const updated = await prisma.reservation.update({ where: { id: reservation.id }, data: { status: 'CANCELLED' } });
+    await notifyCancellation(reservation);
+    res.json({ success: true, reservation: updated });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -1237,23 +1281,7 @@ app.put('/api/admin/reservations/:id/status', authenticateToken, requireAdmin, a
       data: { status, internalNotes },
     });
 
-    // If cancelled: remove Google Event + send cancellation email to client
-    if (status === 'CANCELLED') {
-      if (reservation.googleEventId) {
-        await deleteCalendarEvent(reservation.googleEventId);
-      }
-      if (reservation.guestEmail) {
-        const tpl = await prisma.emailTemplate.findUnique({ where: { code: 'BOOKING_CANCELLED' } });
-        if (tpl) {
-          const html = tpl.bodyHtml
-            .replace(/{{guest_name}}/g, reservation.guestName)
-            .replace(/{{reservation_id}}/g, reservation.id.slice(0, 8).toUpperCase())
-            .replace(/{{start_date}}/g, new Date(reservation.startDate).toLocaleDateString('es-ES'))
-            .replace(/{{end_date}}/g, new Date(reservation.endDate).toLocaleDateString('es-ES'));
-          sendEmail(reservation.guestEmail, tpl.subject, html);
-        }
-      }
-    }
+    if (status === 'CANCELLED') await notifyCancellation(reservation);
 
     res.json({ success: true, reservation: updated });
   } catch (error: any) {

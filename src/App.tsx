@@ -8,11 +8,11 @@ import { AmenitiesSection } from './components/AmenitiesSection';
 import { LocationSection } from './components/LocationSection';
 import { AttractionsSection } from './components/AttractionsSection';
 import { ReviewsSection } from './components/ReviewsSection';
-import { BookingFormModal } from './components/BookingFormModal';
-import { BookingConfirmationModal } from './components/BookingConfirmationModal';
-import { MyBookingsModal } from './components/MyBookingsModal';
+const BookingFormModal = React.lazy(() => import('./components/BookingFormModal').then((m) => ({ default: m.BookingFormModal })));
+const BookingConfirmationModal = React.lazy(() => import('./components/BookingConfirmationModal').then((m) => ({ default: m.BookingConfirmationModal })));
+const MyBookingsModal = React.lazy(() => import('./components/MyBookingsModal').then((m) => ({ default: m.MyBookingsModal })));
 const AdminModal = React.lazy(() => import('./components/AdminModal').then((m) => ({ default: m.AdminModal })));
-import { AuthModal } from './components/AuthModal';
+const AuthModal = React.lazy(() => import('./components/AuthModal').then((m) => ({ default: m.AuthModal })));
 import { Footer } from './components/Footer';
 import { HouseRulesAndFAQ } from './components/HouseRulesAndFAQ';
 import { PromoBanner } from './components/PromoBanner';
@@ -353,6 +353,7 @@ export default function App() {
         tagline={propertySettings.footer_tagline}
       />
 
+      <React.Suspense fallback={null}>
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <AuthModal
@@ -438,7 +439,8 @@ export default function App() {
           onClose={() => setIsMyBookingsModalOpen(false)}
           onCancelBooking={async (id: string) => {
             try {
-              await api.updateReservationStatus(id, { status: 'CANCELLED' });
+              await api.cancelMyBooking(id);
+              setToast({ type: 'success', message: 'Reserva cancelada.' });
               loadUserBookings();
               loadPublicData();
             } catch (err: any) {
@@ -450,7 +452,6 @@ export default function App() {
 
       {/* Admin Management Hub Modal */}
       {isAdminModalOpen && (
-        <React.Suspense fallback={null}>
         <AdminModal
           onClose={() => setIsAdminModalOpen(false)}
           onRefreshData={() => {
@@ -458,8 +459,8 @@ export default function App() {
             if (currentUser) loadUserBookings();
           }}
         />
-        </React.Suspense>
       )}
+      </React.Suspense>
       </div>
     </CurrencyProvider>
   );
