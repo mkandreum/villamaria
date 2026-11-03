@@ -1,7 +1,6 @@
 import React from 'react';
 import { Palmtree, MapPin, Phone, Mail, Navigation, Heart, ExternalLink, Instagram, Facebook, Youtube, Music2 } from 'lucide-react';
 import { useSite } from '../context/SiteContext';
-import { PROPERTY_INFO } from '../data/mockData';
 
 interface FooterProps {
   address?: string;
@@ -13,13 +12,14 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({
-  address = PROPERTY_INFO.locationName,
-  phone = PROPERTY_INFO.formattedPhone,
-  email = PROPERTY_INFO.email,
-  mapsLink = PROPERTY_INFO.googleMapsUrl,
-  description = 'Disfruta de las mejores vacaciones en el Estado Falcón. Urbanización privada con piscina climatizada, agua constante 24/7 y planta eléctrica.',
-  tagline = 'Alojamiento Turístico & Relax • Chichiriviche',
+  address,
+  phone,
+  email,
+  mapsLink,
+  description,
+  tagline,
 }) => {
+  const { t, siteName } = useSite();
   const site = useSite();
   const socials = [
     { key: 'instagram', label: 'Instagram', Icon: Instagram },
@@ -66,16 +66,16 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
 
             <div className="pt-2">
-              <a
+              {mapsLink && (<a
                 href={mapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#1c1c1c] hover:bg-[#e1dfd8] text-xs font-bold transition  min-h-[44px] active:scale-95"
               >
                 <Navigation className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Ver en Google Maps</span>
+                <span>{t('txt_foot_maps')}</span>
                 <ExternalLink className="w-3 h-3 ml-0.5 text-emerald-700" />
-              </a>
+              </a>)}
             </div>
 
             {socials.length > 0 && (
@@ -98,9 +98,7 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Direct Links */}
           <div className="md:col-span-3 space-y-3 text-xs">
-            <h4 className="text-xs font-bold text-white ">
-              Navegación
-            </h4>
+            <h4 className="text-xs font-bold text-white ">{t('txt_foot_nav')}</h4>
             <ul className="space-y-2 text-[#e1dfd8]">
               {links.map((l) => (
                 <li key={l.id}>
@@ -114,26 +112,24 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Contact */}
           <div className="md:col-span-4 space-y-3 text-xs">
-            <h4 className="text-xs font-bold text-white ">
-              Contacto Directo
-            </h4>
+            <h4 className="text-xs font-bold text-white ">{t('txt_foot_contact')}</h4>
             <div className="space-y-3 text-[#e1dfd8]">
-              <div className="flex items-center gap-2">
+              {address && (<div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>{address}</span>
-              </div>
-              <div className="flex items-center gap-2">
+              </div>)}
+              {phone && (<div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
                 <a href={`tel:${phone}`} className="hover:underline py-1">
                   {phone}
                 </a>
-              </div>
-              <div className="flex items-center gap-2">
+              </div>)}
+              {email && (<div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
                 <a href={`mailto:${email}`} className="hover:underline py-1">
                   {email}
                 </a>
-              </div>
+              </div>)}
             </div>
           </div>
         </div>
@@ -142,8 +138,7 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between text-[13px] text-[#e1dfd8]/70 gap-2.5 font-sans text-center sm:text-left">
           <p>© {new Date().getFullYear()} {site.siteName}. Todos los derechos reservados.</p>
           <p className="flex items-center justify-center gap-1">
-            Diseñado con <Heart className="w-3 h-3 text-red-400 fill-red-400" /> para vacaciones inolvidables.
-          </p>
+            Diseñado con <Heart className="w-3 h-3 text-red-400 fill-red-400" />{t('txt_foot_love')}</p>
         </div>
       </div>
     </footer>

@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { prisma } from './db.js';
 import { encryptText, decryptText } from './utils/crypto.js';
 import { getActiveTransporter, sendEmail, testSmtpConnection, sendTestEmailDirect } from './utils/mailer.js';
+import { SITE_TEXTS } from './siteTexts.js';
 import { createCalendarEvent, deleteCalendarEvent, fetchExternalBlockedEvents } from './utils/googleCalendar.js';
 import { fetchBcvRate, venezuelaDateNow } from './utils/bcv.js';
 
@@ -249,6 +250,14 @@ async function initializeDatabase() {
         await prisma.propertySetting.create({
           data: { key, value: obj.value, category: obj.category },
         });
+      }
+    }
+
+    // Everything the site writes starts here once; later edits and deliberate blanks are kept
+    for (const { key, value } of SITE_TEXTS) {
+      const existing = await prisma.propertySetting.findUnique({ where: { key } });
+      if (!existing) {
+        await prisma.propertySetting.create({ data: { key, value, category: 'content' } });
       }
     }
 
@@ -1782,8 +1791,25 @@ app.use((err: any, _req: express.Request, res: express.Response, next: express.N
 const distPath = path.join(process.cwd(), 'dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+  // Google and WhatsApp read the HTML without running the app, so the share data goes in here
+  const indexHtml = fs.readFileSync(path.join(distPath, 'index.html'), 'utf8');
+  app.get('*', async (_req, res) => {
+    try {
+      const rows = await prisma.propertySetting.findMany({ where: { key: { in: ['seo_title', 'seo_description', 'seo_image'] } } });
+      const seo = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+      const title = escapeHtml(seo.seo_title || '');
+      const description = escapeHtml(seo.seo_description || '');
+      const image = escapeHtml(seo.seo_image || '');
+      const html = indexHtml
+        .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+        .replace(/(<meta name="description" content=")[^"]*/, `$1${description}`)
+        .replace(/(<meta property="og:title" content=")[^"]*/, `$1${title}`)
+        .replace(/(<meta property="og:description" content=")[^"]*/, `$1${description}`)
+        .replace('</head>', image ? `<meta property="og:image" content="${image}" /></head>` : '</head>');
+      res.type('html').send(html);
+    } catch {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
   });
 }
 

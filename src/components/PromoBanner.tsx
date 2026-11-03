@@ -19,14 +19,10 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
   if (!enabled || !visible) return null;
 
   const icons = [Sparkles, Compass, ShieldCheck, Waves];
-  const defaults = [
-    { badge: 'Garantía Total', text: text || 'Suministro constante de agua, planta eléctrica 24/7 y piscina privada climatizada.' },
-    { badge: 'Ubicación Premium', text: 'Calle 15, Chichiriviche • A 5 minutos de los embarcaderos a Cayo Sombrero.' },
-    { badge: 'Reserva Flexible', text: 'Confirmación inmediata por WhatsApp y atención personalizada.' },
-    { badge: 'Piscina Privada', text: 'Piscina climatizada con hamacas y área de solárium.' },
-  ];
   const source = (items || []).filter((i) => i && String(i.text || '').trim());
-  const promoItems = (source.length > 0 ? source : defaults).map((i, idx) => ({
+  const list = source.length > 0 ? source : String(text ?? '').trim() ? [{ badge: '', text }] : [];
+  if (list.length === 0) return null;
+  const promoItems = list.map((i, idx) => ({
     icon: icons[idx % icons.length],
     badge: i.badge || '',
     content: String(i.text),

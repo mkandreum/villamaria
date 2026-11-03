@@ -1,6 +1,6 @@
+import { useSite } from '../context/SiteContext';
 import { SectionHeader } from './SectionHeader';
 import React, { useState } from 'react';
-import { GALLERY_IMAGES } from '../data/mockData';
 import { Images } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PhotoViewer } from './PhotoViewer';
@@ -20,16 +20,17 @@ interface GallerySectionProps {
 
 export const GallerySection: React.FC<GallerySectionProps> = ({
   images,
-  badge = ' Recorrido Visual',
-  title = 'Fotos de Villa María',
-  subtitle = 'Galería dinámica de la propiedad, jardines, piscina climatizada y estancias.',
-  cat1Label = 'Todas',
-  cat2Label = 'Fachada & Porche',
-  cat3Label = 'Piscina & Jardines',
-  cat4Label = 'Habitaciones & Salón',
+  badge,
+  title,
+  subtitle,
+  cat1Label,
+  cat2Label,
+  cat3Label,
+  cat4Label,
 }) => {
+  const { t, siteName } = useSite();
   const normalizedImages = React.useMemo(() => {
-    if (!images) return GALLERY_IMAGES;
+    if (!images) return [];
     let list = images;
     if (typeof images === 'string') {
       try {
@@ -38,9 +39,9 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
         list = [];
       }
     }
-    if (!Array.isArray(list) || list.length === 0) return GALLERY_IMAGES;
+    if (!Array.isArray(list)) return [];
 
-    return list.map((item, idx) => ({
+    return list.map((item: any, idx: number) => ({
       id: item.id || `img-${idx}`,
       url: typeof item === 'string' ? item : item.url || item.imageUrl,
       title: item.title || '',
@@ -72,6 +73,8 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   const PREVIEW = 7;
   const visible = expanded ? filteredImages : filteredImages.slice(0, PREVIEW);
   const hidden = filteredImages.length - visible.length;
+
+  if (normalizedImages.length === 0) return null;
 
   const tileShape = (i: number) => {
     const pos = i % 7;
@@ -143,7 +146,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                   <PhotoReveal className="absolute inset-0" delay={Math.min(idx, 7) * 0.07}>
                   <img
                     src={img.url}
-                    alt={img.title || `Foto ${idx + 1} de Villa María`}
+                    alt={img.title || `Foto ${idx + 1}`}
                     loading={idx < 3 ? 'eager' : 'lazy'}
                     decoding="async"
                     onLoad={() => setLoaded((m) => ({ ...m, [img.url]: true }))}

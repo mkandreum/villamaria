@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import { Stagger, StaggerItem } from './Reveal';
 import { WordReveal } from './Motion';
 import React, { useState, useEffect } from 'react';
@@ -11,6 +12,7 @@ function avatarUrl(name: string) {
 }
 
 export const ReviewsSection: React.FC = () => {
+  const { t, siteName } = useSite();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -60,16 +62,12 @@ export const ReviewsSection: React.FC = () => {
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1c1c1c] font-bold tracking-tight">
-            <WordReveal text="Opiniones de Huéspedes" inView />
+            <WordReveal text={t('txt_rev_title')} inView />
           </h2>
-          <p className="text-[#1c1c1c]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
-            Experiencias reales de familias que han disfrutado de su estancia en Villa María.
-          </p>
+          <p className="text-[#1c1c1c]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">{t('txt_rev_sub')}</p>
 
           {submitted && !isAdding && (
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-semibold">
-               ¡Gracias! Tu opinión fue enviada y será publicada tras revisión.
-            </div>
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-semibold">{t('txt_rev_thanks')}</div>
           )}
 
           {!isAdding && !submitted && (
@@ -78,7 +76,7 @@ export const ReviewsSection: React.FC = () => {
               className="mt-4 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl sm:rounded-2xl bg-[#1c1c1c] text-white hover:bg-emerald-900 text-xs font-bold font-sans transition min-h-[48px]  cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4 text-emerald-400" />
-              <span>Dejar una Opinión</span>
+              <span>{t('txt_rev_add')}</span>
             </button>
           )}
         </div>
@@ -103,7 +101,7 @@ export const ReviewsSection: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 type="text"
-                placeholder="Tu Nombre *"
+                placeholder={t('txt_rev_name')}
                 required
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
@@ -111,7 +109,7 @@ export const ReviewsSection: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Ciudad / Origen"
+                placeholder={t('txt_rev_city')}
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="bg-[#efeeea]  rounded-xl p-3 text-xs text-[#1c1c1c] focus:outline-none focus:border-emerald-700 min-h-[44px]"
@@ -119,7 +117,7 @@ export const ReviewsSection: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-[13px] font-bold text-[#1c1c1c]/70 block mb-1">Calificación</label>
+              <label className="text-[13px] font-bold text-[#1c1c1c]/70 block mb-1">{t('txt_rev_rating')}</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -137,7 +135,7 @@ export const ReviewsSection: React.FC = () => {
             <textarea
               rows={3}
               required
-              placeholder="¿Qué tal tu estancia en Villa María? *"
+              placeholder={t('txt_rev_comment')}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               className="w-full bg-[#efeeea]  rounded-xl p-3 text-xs text-[#1c1c1c] focus:outline-none focus:border-emerald-700 resize-none"
@@ -158,13 +156,9 @@ export const ReviewsSection: React.FC = () => {
                 type="button"
                 onClick={() => setIsAdding(false)}
                 className="bg-[#e1dfd8] text-[#1c1c1c] px-5 py-3 rounded-xl text-xs font-bold min-h-[48px] hover:bg-[#d9d0c4] transition cursor-pointer"
-              >
-                Cancelar
-              </button>
+              >{t('txt_rev_cancel')}</button>
             </div>
-            <p className="text-[13px] text-[#1c1c1c]/40 text-center">
-              Tu opinión será publicada tras revisión del anfitrión.
-            </p>
+            <p className="text-[13px] text-[#1c1c1c]/40 text-center">{t('txt_rev_note')}</p>
           </form>
         )}
 
@@ -178,7 +172,7 @@ export const ReviewsSection: React.FC = () => {
         {/* Empty state */}
         {!loading && reviews.length === 0 && (
           <div className="text-center py-12 text-[#1c1c1c]/40 text-sm">
-            <p>Aún no hay opiniones publicadas. ¡Sé el primero en dejar la tuya!</p>
+            <p>{t('txt_rev_empty')}</p>
           </div>
         )}
 
@@ -223,7 +217,7 @@ export const ReviewsSection: React.FC = () => {
 
                 <div className="pt-3  mt-3 flex items-center gap-1.5 text-[13px] text-emerald-800 font-bold ">
                   <UserCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>Estadía Verificada</span>
+                  <span>{t('txt_rev_verified')}</span>
                 </div>
               </div>
               </StaggerItem>

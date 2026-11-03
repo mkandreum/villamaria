@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
@@ -42,6 +43,7 @@ interface CheckInVoucherModalProps {
 }
 
 export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reservation, onClose }) => {
+  const { t, siteName } = useSite();
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [copiedWifi, setCopiedWifi] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
@@ -49,11 +51,11 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
   const [addedWallet, setAddedWallet] = useState(false);
   const voucherRef = useRef<HTMLDivElement>(null);
 
-  const wifiSsid = reservation.wifiSsid || 'VillaMaria_Privada_5G';
-  const wifiPass = reservation.wifiPass || 'MorrocoySol2026!';
-  const address = reservation.propertyAddress || 'Calle 15, Urbanización Privada, Chichiriviche, Edo. Falcón';
-  const mapsUrl = reservation.mapsUrl || 'https://maps.google.com/?q=10.9317,-68.2736';
-  const hostPhone = reservation.hostPhone || '+58 414 1234567';
+  const wifiSsid = reservation.wifiSsid || t('wifi_ssid');
+  const wifiPass = reservation.wifiPass || t('wifi_password');
+  const address = reservation.propertyAddress || t('location_address');
+  const mapsUrl = reservation.mapsUrl || t('location_maps_link');
+  const hostPhone = reservation.hostPhone || t('contact_phone');
 
   // Generate QR Code on mount
   useEffect(() => {
@@ -103,7 +105,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
       const startStr = formatGoogleDate(inDate);
       const endStr = formatGoogleDate(outDate);
 
-      const title = encodeURIComponent(`🌴 Estancia en Villa María (Reserva #${reservation.id.slice(0, 8)})`);
+      const title = encodeURIComponent(`Estancia en ${siteName} (Reserva #${reservation.id.slice(0, 8)})`);
       const details = encodeURIComponent(
         `🎟️ PASE DIGITAL DE ACCESO & CHECK-IN - VILLA MARÍA\n\n` +
         `👤 Huésped: ${reservation.guestName}\n` +
@@ -132,8 +134,8 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
         `DTSTAMP:${formatGoogleDate(new Date())}`,
         `DTSTART:${startStr}`,
         `DTEND:${endStr}`,
-        `SUMMARY:🌴 Estancia en Villa María (Reserva #${reservation.id.slice(0, 8)})`,
-        `DESCRIPTION:Pase de Entrada - Villa María\\nCódigo: ${reservation.id}\\nHuésped: ${reservation.guestName}\\nWi-Fi: ${wifiSsid} / ${wifiPass}\\nGarita: Calle 15\\nContacto: ${hostPhone}`,
+        `SUMMARY:Estancia en ${siteName} (Reserva #${reservation.id.slice(0, 8)})`,
+        `DESCRIPTION:Pase de Entrada - ${siteName}\\nCódigo: ${reservation.id}\\nHuésped: ${reservation.guestName}\\nWi-Fi: ${wifiSsid} / ${wifiPass}\\nGarita: Calle 15\\nContacto: ${hostPhone}`,
         `LOCATION:${address.replace(/,/g, '\\,')}`,
         'STATUS:CONFIRMED',
         'END:VEVENT',
@@ -191,11 +193,11 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 36px Georgia, serif';
       ctx.textAlign = 'center';
-      ctx.fillText('VILLA MARÍA 🌴', 400, 90);
+      ctx.fillText(siteName.toUpperCase(), 400, 90);
 
       ctx.fillStyle = '#A7F3D0';
       ctx.font = 'bold 14px sans-serif';
-      ctx.fillText('PASE DIGITAL DE ACCESO & CHECK-IN • CHICHIRIVICHE', 400, 130);
+      ctx.fillText(t('txt_v_png3'), 400, 130);
 
       // Guest Name
       ctx.textAlign = 'left';
@@ -205,7 +207,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
 
       ctx.fillStyle = '#059669';
       ctx.font = 'bold 14px sans-serif';
-      ctx.fillText('● RESERVA CONFIRMADA & ACCESO GARANTIZADO', 60, 250);
+      ctx.fillText(t('txt_v_png4'), 60, 250);
 
       // Code Box
       ctx.fillStyle = '#e1dfd8';
@@ -247,10 +249,10 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
       ctx.fillStyle = '#1c1c1c';
       ctx.font = 'bold 14px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Presenta este código en la garita de seguridad de la Calle 15', 400, 840);
+      ctx.fillText(t('txt_v_png1'), 400, 840);
       ctx.font = '13px sans-serif';
       ctx.fillStyle = '#6B7280';
-      ctx.fillText('Urb. Privada con vigilancia 24/7 y acceso controlado', 400, 865);
+      ctx.fillText(t('txt_v_png2'), 400, 865);
 
       // Address & Phone footer
       ctx.fillStyle = '#e1dfd8';
@@ -294,11 +296,9 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
         <div className="text-center mb-3 sm:mb-4 pr-8 sm:pr-0 print:hidden">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold uppercase tracking-wider border border-emerald-500/30 mb-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Pase Digital Oficial</span>
+            <span>{t('txt_v_official')}</span>
           </span>
-          <h3 className="text-lg sm:text-xl font-serif font-bold text-white">
-            Voucher de Check-in & Acceso
-          </h3>
+          <h3 className="text-lg sm:text-xl font-serif font-bold text-white">{t('txt_v_sub')}</h3>
         </div>
 
         {/* Scrollable Printable Voucher Card */}
@@ -310,34 +310,28 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
               <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight">
                 VILLA MARÍA 🌴
               </h2>
-              <p className="text-[11px] sm:text-xs text-emerald-300 uppercase tracking-widest font-bold mt-0.5">
-                Pase de Entrada & Check-In Garita
-              </p>
+              <p className="text-[11px] sm:text-xs text-emerald-300 uppercase tracking-widest font-bold mt-0.5">{t('txt_v_title')}</p>
             </div>
 
             {/* Guest & Status Header */}
             <div className="p-4 sm:p-5 space-y-3.5 border-b border-[#1c1c1c]/10">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#1c1c1c]/60 block">
-                    Huésped Principal
-                  </span>
+                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#1c1c1c]/60 block">{t('txt_v_guest')}</span>
                   <h4 className="text-lg sm:text-xl font-bold font-serif text-[#1c1c1c] leading-tight">
                     {reservation.guestName}
                   </h4>
                 </div>
                 <div className="flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full text-[11px] font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Reserva Autorizada</span>
+                  <span>{t('txt_v_ok')}</span>
                 </div>
               </div>
 
               {/* Booking Reference Code */}
               <div className="flex items-center justify-between bg-[#e1dfd8] rounded-xl p-2.5 sm:p-3 border border-[#1c1c1c]/10">
                 <div>
-                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#1c1c1c]/70 block">
-                    Código de Entrada
-                  </span>
+                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#1c1c1c]/70 block">{t('txt_v_code')}</span>
                   <span className="font-mono font-bold text-sm sm:text-base text-[#1c1c1c]">
                     {reservation.id}
                   </span>
@@ -376,12 +370,11 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
 
                 <div className="col-span-2 sm:col-span-1 bg-white p-2.5 rounded-xl border border-[#1c1c1c]/10 flex flex-col justify-between">
                   <span className="text-[11px] text-[#1c1c1c]/60 font-semibold block flex items-center gap-1">
-                    <Users className="w-3 h-3 text-emerald-700" /> Ocupantes
-                  </span>
+                    <Users className="w-3 h-3 text-emerald-700" />{t('txt_v_people')}</span>
                   <span className="font-bold text-sm text-[#1c1c1c]">
                     {totalGuests} persona{totalGuests > 1 ? 's' : ''}
                   </span>
-                  <span className="text-[11px] text-emerald-800 font-medium">Casa completa</span>
+                  <span className="text-[11px] text-emerald-800 font-medium">{t('txt_v_whole')}</span>
                 </div>
               </div>
             </div>
@@ -398,14 +391,12 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
                 <div className="text-left space-y-2 max-w-xs">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wider">
                     <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                    <span>Control de Garita</span>
+                    <span>{t('txt_v_gate')}</span>
                   </div>
                   <p className="text-xs text-[#1c1c1c]/80 leading-relaxed">
                     Muestra este código QR o menciona el código al vigilante de turno en la garita principal de la <strong>Calle 15</strong>.
                   </p>
-                  <p className="text-[11px] text-[#1c1c1c]/60">
-                    El personal tiene tu nombre y matrícula autorizados en la lista de huéspedes.
-                  </p>
+                  <p className="text-[11px] text-[#1c1c1c]/60">{t('txt_v_gate2')}</p>
                 </div>
               </div>
             </div>
@@ -415,7 +406,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#1c1c1c] flex items-center gap-1.5">
                   <Wifi className="w-4 h-4 text-emerald-800" />
-                  <span>Wi-Fi de Alta Velocidad (Fibra)</span>
+                  <span>{t('txt_v_wifi')}</span>
                 </span>
                 <button
                   onClick={handleCopyWifi}

@@ -1,10 +1,10 @@
+import { useSite } from '../context/SiteContext';
 import { SectionHeader } from './SectionHeader';
 import { PhotoReveal } from './Motion';
 import { Reveal, Stagger, StaggerItem } from './Reveal';
 import { iconForText, stripEmoji } from '../utils/icons';
 import React from 'react';
 import { MapPin, Navigation, ExternalLink } from 'lucide-react';
-import { PROPERTY_INFO } from '../data/mockData';
 
 interface LocationSectionProps {
   badge?: string;
@@ -32,11 +32,8 @@ interface LocationSectionProps {
  * without one. OpenStreetMap is a reliable, always-free alternative.
  */
 function resolveEmbedUrl(raw: string | undefined): string {
-  // Default OSM embed centered on Chichiriviche, Venezuela
-  const OSM_DEFAULT =
-    'https://www.openstreetmap.org/export/embed.html?bbox=-68.3136%2C10.8917%2C-68.2336%2C10.9717&layer=mapnik&marker=10.9317%2C-68.2736';
 
-  if (!raw || raw.trim() === '') return OSM_DEFAULT;
+  if (!raw || raw.trim() === '') return '';
 
   // If the admin pasted a complete <iframe ...> tag, extract the src attribute
   if (raw.includes('src=')) {
@@ -50,7 +47,7 @@ function resolveEmbedUrl(raw: string | undefined): string {
   // If it looks like a Google Maps URL (but NOT a proper embed URL),
   // we cannot convert it without an API key — fall back to OSM
   if (raw.includes('google.com/maps') || raw.includes('maps.google.com')) {
-    return OSM_DEFAULT;
+    return raw;
   }
 
   // If the admin pasted an OSM embed URL directly, use it
@@ -68,24 +65,24 @@ function resolveEmbedUrl(raw: string | undefined): string {
       `&layer=mapnik&marker=${lat}%2C${lng}`
     );
   }
-
-  // Anything else  OSM default
-  return OSM_DEFAULT;
+  return raw;
 }
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
-  badge = ' Ubicación Privilegiada',
-  title = 'Chichiriviche • Calle 15',
-  subtitle = 'Urbanización privada segura con fácil acceso a los embarcaderos y al Parque Nacional Morrocoy.',
-  address = PROPERTY_INFO.locationName,
-  description = (PROPERTY_INFO as any).locationDescription || (PROPERTY_INFO as any).shortLocation || 'Urbanización privada tranquila y segura en Chichiriviche.',
-  mapsLink = PROPERTY_INFO.googleMapsUrl,
+  badge,
+  title,
+  subtitle,
+  address,
+  description,
+  mapsLink,
   embedUrl,
-  bullet1 = '5 minutos de los embarcaderos a Cayo Sombrero',
-  bullet2 = 'Condominio privado con vigilancia las 24 horas',
-  bullet3 = 'Supermercados y servicios a 3 minutos',
+  bullet1,
+  bullet2,
+  bullet3,
 }) => {
-  const resolvedEmbed = React.useMemo(() => resolveEmbedUrl(embedUrl), [embedUrl]);
+  const { t, siteName } = useSite();
+  const resolvedEmbed = React.useMemo(() => (String(embedUrl ?? '').trim() ? resolveEmbedUrl(embedUrl) : ''), [embedUrl]);
+  const bullets = [bullet1, bullet2, bullet3].map((b) => stripEmoji(b)).filter(Boolean);
 
   return (
     <section className="py-16 sm:py-24 bg-[#efeeea] text-[#1c1c1c] relative font-sans ">
@@ -99,28 +96,24 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             <div className="space-y-2.5 sm:space-y-3">
               <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs ">
                 <MapPin className="w-4 h-4" />
-                <span>Dirección Exacta</span>
+                <span>{t('txt_loc_addr')}</span>
               </div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1c1c1c]">{address}</h3>
               <p className="text-xs text-[#1c1c1c]/80 leading-relaxed font-sans">{description}</p>
             </div>
 
+            {bullets.length > 0 && (
             <Stagger delay={0.2} className="space-y-2.5 sm:space-y-3 pt-3 sm:pt-4 ">
-              <StaggerItem className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
-                <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet1)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
-                <span>{stripEmoji(String(bullet1))}</span>
-              </StaggerItem>
-              <StaggerItem className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
-                <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet2)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
-                <span>{stripEmoji(String(bullet2))}</span>
-              </StaggerItem>
-              <StaggerItem className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
-                <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet3)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
-                <span>{stripEmoji(String(bullet3))}</span>
-              </StaggerItem>
+              {bullets.map((bullet) => (
+                <StaggerItem key={bullet} className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
+                  <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(bullet), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+                  <span>{bullet}</span>
+                </StaggerItem>
+              ))}
             </Stagger>
+            )}
 
-            <div className="pt-2">
+            {mapsLink && <div className="pt-2">
               <a
                 href={mapsLink}
                 target="_blank"
@@ -128,17 +121,17 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
                 className="w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl bg-[#1c1c1c] text-white hover:bg-emerald-900 text-xs font-bold transition  min-h-[48px] active:scale-95 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-emerald-400" />
-                <span className="leading-snug">Abrir en Google Maps GPS</span>
+                <span className="leading-snug">{t('txt_loc_btn')}</span>
                 <ExternalLink className="w-3.5 h-3.5 ml-1 shrink-0" />
               </a>
-            </div>
+            </div>}
           </Reveal>
 
           {/* Map iframe */}
-          <div className="lg:col-span-7 rounded-2xl sm:rounded-3xl overflow-hidden  border-2 sm:border-4 border-white h-[280px] sm:h-[380px] lg:h-[420px] relative bg-[#e1dfd8]">
+          {resolvedEmbed && (<div className="lg:col-span-7 rounded-2xl sm:rounded-3xl overflow-hidden  border-2 sm:border-4 border-white h-[280px] sm:h-[380px] lg:h-[420px] relative bg-[#e1dfd8]">
             <PhotoReveal className="w-full h-full">
             <iframe
-              title="Ubicación Villa María"
+              title={t('txt_loc_addr')}
               src={resolvedEmbed}
               className="w-full h-full border-0"
               allowFullScreen
@@ -146,7 +139,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
               referrerPolicy="no-referrer-when-downgrade"
             />
             </PhotoReveal>
-          </div>
+          </div>)}
         </div>
       </div>
     </section>

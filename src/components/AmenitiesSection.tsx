@@ -1,8 +1,8 @@
+import { useSite } from '../context/SiteContext';
 import React from 'react';
 import { Stagger, StaggerItem } from './Reveal';
 import { SectionHeader } from './SectionHeader';
 import { iconForText, stripEmoji, ICON_CHOICES } from '../utils/icons';
-import { AMENITIES } from '../data/mockData';
 
 interface AmenitiesSectionProps {
   amenities?: any;
@@ -12,11 +12,12 @@ interface AmenitiesSectionProps {
 
 export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
   amenities,
-  title = 'Comodidades incluidas',
-  subtitle = 'Instalaciones preparadas para tu máximo confort durante tus vacaciones en Chichiriviche.',
+  title,
+  subtitle,
 }) => {
+  const { t, siteName } = useSite();
   const normalizedAmenities = React.useMemo(() => {
-    if (!amenities) return AMENITIES;
+    if (!amenities) return [];
     let list = amenities;
     if (typeof amenities === 'string') {
       try {
@@ -25,15 +26,17 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
         list = [];
       }
     }
-    if (!Array.isArray(list) || list.length === 0) return AMENITIES;
+    if (!Array.isArray(list)) return [];
 
-    return list.map((item, idx) => ({
+    return list.map((item: any, idx: number) => ({
       id: item.id || `am-${idx}`,
       title: item.title || item.name || item,
-      description: item.description || 'Comodidad incluida para tu estancia.',
+      description: item.description || '',
       icon: item.icon || '',
     }));
   }, [amenities]);
+
+  if (normalizedAmenities.length === 0) return null;
 
 
   return (
@@ -53,7 +56,7 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({
                   </span>
                   <div className="min-w-0">
                     <h3 className="text-lg font-serif font-bold text-[#1c1c1c] leading-snug">{label}</h3>
-                    <p className="text-sm text-[#1c1c1c]/70 leading-relaxed mt-1 text-pretty">{item.description}</p>
+                    {item.description && <p className="text-sm text-[#1c1c1c]/70 leading-relaxed mt-1 text-pretty">{item.description}</p>}
                   </div>
                 </div>
               </StaggerItem>

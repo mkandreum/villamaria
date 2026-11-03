@@ -1,6 +1,6 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState } from 'react';
 import { Booking } from '../types';
-import { PROPERTY_INFO } from '../data/mockData';
 import { formatDateSpanish, calculateNights } from '../utils/dateUtils';
 import { useCurrency } from '../context/CurrencyContext';
 import { CheckInVoucherModal } from './CheckInVoucherModal';
@@ -29,19 +29,20 @@ interface BookingConfirmationModalProps {
 export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
   booking,
   onClose,
-  address = PROPERTY_INFO.locationName,
+  address,
   wifiSsid,
   wifiPass,
   mapsUrl,
   hostPhone,
 }) => {
+  const { t, siteName } = useSite();
   const [showVoucher, setShowVoucher] = useState(false);
   const [copied, setCopied] = useState(false);
   const nights = calculateNights(booking.checkIn, booking.checkOut);
   const { formatPrice } = useCurrency();
 
   const waText = encodeURIComponent(
-    `¡Hola Villa María! Acabo de solicitar una reserva:\n\n` +
+    `¡Hola ${siteName}! Acabo de solicitar una reserva:\n\n` +
       ` *Código:* ${booking.id}\n` +
       ` *Nombre:* ${booking.guestName}\n` +
       ` *Llegada:* ${formatDateSpanish(booking.checkIn)}\n` +
@@ -51,7 +52,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
       `Agradezco me envíen las indicaciones para concretar el anticipo. ¡Gracias!`
   );
 
-  const waUrl = `https://wa.me/${PROPERTY_INFO.phoneWhatsApp.replace('+', '')}?text=${waText}`;
+  const waUrl = `https://wa.me/${t('whatsapp_number').replace(/[^0-9]/g, '')}?text=${waText}`;
 
   const handleCopyCode = () => {
     navigator.clipboard?.writeText(booking.id).catch(() => {});
@@ -77,21 +78,15 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             <div className="w-12 h-12 bg-[#1c1c1c] text-white rounded-full flex items-center justify-center mx-auto shadow-md">
               <CheckCircle2 className="w-7 h-7 text-emerald-400" />
             </div>
-            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#1c1c1c]">
-              ¡Reserva Solicitada con Éxito!
-            </h2>
-            <p className="text-xs text-[#1c1c1c]/70 font-sans">
-              Tus fechas han quedado reservadas en nuestro sistema.
-            </p>
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#1c1c1c]">{t('txt_ok_title')}</h2>
+            <p className="text-xs text-[#1c1c1c]/70 font-sans">{t('txt_ok_sub')}</p>
           </div>
 
           {/* Voucher Ticket Box */}
           <div className="bg-[#e1dfd8] border border-[#1c1c1c]/15 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between pb-2 border-b border-[#1c1c1c]/10">
               <div>
-                <span className="text-[11px] text-[#1c1c1c]/60 uppercase tracking-widest font-bold block">
-                  Código de Reserva
-                </span>
+                <span className="text-[11px] text-[#1c1c1c]/60 uppercase tracking-widest font-bold block">{t('txt_ok_code')}</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="text-base font-mono font-bold text-[#1c1c1c]">
                     {booking.id}
@@ -113,7 +108,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
 
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-[#1c1c1c]/70">Huésped:</span>
+                <span className="text-[#1c1c1c]/70">{t('txt_ok_guest')}</span>
                 <span className="font-bold text-[#1c1c1c] truncate ml-2">{booking.guestName}</span>
               </div>
               <div className="flex justify-between">
@@ -125,11 +120,11 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
                 <span className="font-medium text-[#1c1c1c]">{formatDateSpanish(booking.checkOut)} ({nights} noches)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#1c1c1c]/70">Personas:</span>
+                <span className="text-[#1c1c1c]/70">{t('txt_ok_people')}</span>
                 <span className="font-medium text-[#1c1c1c]">{booking.adults} adultos, {booking.children} niños</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-[#1c1c1c]/10">
-                <span className="text-[#1c1c1c] font-bold">Monto Total:</span>
+                <span className="text-[#1c1c1c] font-bold">{t('txt_ok_total')}</span>
                 <span className="text-base font-serif font-bold text-[#1c1c1c]">{formatPrice(booking.totalPrice)}</span>
               </div>
             </div>
@@ -142,7 +137,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               <span className="text-[11px] truncate">{address}</span>
             </div>
             <a
-              href={PROPERTY_INFO.googleMapsUrl}
+              href={t('location_maps_link')}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#1c1c1c] hover:text-emerald-800 underline flex items-center gap-1 font-semibold text-[11px] shrink-0"
@@ -160,7 +155,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition min-h-[48px] active:scale-95 cursor-pointer"
             >
               <Ticket className="w-4.5 h-4.5" />
-              <span> Ver / Descargar Pase con Código QR</span>
+              <span>{t('txt_ok_pass')}</span>
             </button>
 
             <a
@@ -170,15 +165,13 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
               className="w-full bg-[#1c1c1c] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition min-h-[48px] active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span className="truncate">Enviar Comprobante por WhatsApp</span>
+              <span className="truncate">{t('txt_ok_wa')}</span>
             </a>
 
             <button
               onClick={onClose}
               className="w-full bg-[#e1dfd8] hover:bg-[#1c1c1c]/10 text-[#1c1c1c] py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition min-h-[44px] cursor-pointer"
-            >
-              Cerrar y Volver
-            </button>
+            >{t('txt_ok_close')}</button>
           </div>
         </div>
       </div>

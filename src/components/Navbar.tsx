@@ -4,10 +4,10 @@ import { motion } from 'motion/react';
 import { useSite } from '../context/SiteContext';
 
 const mobileTabs = [
-  { id: 'hero', label: 'Inicio', Icon: Home },
-  { id: 'gallery', label: 'Fotos', Icon: ImageIcon },
-  { id: 'amenities', label: 'Servicios', Icon: Sparkles },
-  { id: 'booking', label: 'Fechas', Icon: Calendar },
+  { id: 'hero', labelKey: 'txt_nav_home', Icon: Home },
+  { id: 'gallery', labelKey: 'txt_nav_photos', Icon: ImageIcon },
+  { id: 'amenities', labelKey: 'txt_nav_services', Icon: Sparkles },
+  { id: 'booking', labelKey: 'txt_nav_dates', Icon: Calendar },
 ];
 
 interface NavbarProps {
@@ -29,8 +29,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMyBookingsModal,
   onOpenAdminModal,
   onLogout,
-  hasBanner = true,
+  hasBanner,
 }) => {
+  const { t, siteName } = useSite();
   const site = useSite();
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -93,7 +94,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       >
         {/* MOBILE NAVIGATION LAYOUT (< md screens): labelled tab bar */}
         <div className="flex md:hidden items-stretch justify-center">
-          {mobileTabs.filter((t) => site.isVisible(t.id)).map(({ id, label, Icon }) => {
+          {mobileTabs.filter((tab) => site.isVisible(tab.id)).map(({ id, labelKey, Icon }) => {
+            const label = t(labelKey);
             const active = activeSection === id;
             return (
               <button
@@ -126,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <User className="w-5 h-5 text-[#1c1c1c]/70" />
             )}
             <span className="text-[11px] font-bold leading-none text-[#1c1c1c]/70">
-              {currentUser ? (currentUser.role === 'ADMIN' ? 'Admin' : 'Reservas') : 'Entrar'}
+              {currentUser ? (currentUser.role === 'ADMIN' ? 'Admin' : t('txt_nav_mybookings')) : t('txt_nav_login_mobile')}
             </span>
           </button>
         </div>
@@ -153,10 +155,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Nav Items */}
           <div className="flex items-center gap-1 xl:gap-2">
             {[
-              { id: 'hero', label: 'Inicio', icon: Home },
-              { id: 'gallery', label: 'Fotos', icon: ImageIcon },
-              { id: 'amenities', label: 'Servicios', icon: Sparkles },
-              { id: 'booking', label: 'Reservar', icon: Calendar },
+              { id: 'hero', label: t('txt_nav_home'), icon: Home },
+              { id: 'gallery', label: t('txt_nav_photos'), icon: ImageIcon },
+              { id: 'amenities', label: t('txt_nav_services'), icon: Sparkles },
+              { id: 'booking', label: t('txt_nav_book'), icon: Calendar },
             ].filter((item) => site.isVisible(item.id)).map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
@@ -216,7 +218,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="px-4 py-1.5 rounded-full bg-[#1c1c1c] text-white hover:bg-emerald-900 font-bold text-xs transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <User className="w-4 h-4" />
-                <span>Acceder</span>
+                <span>{t('txt_nav_login')}</span>
               </button>
             )}
           </div>

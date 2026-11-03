@@ -42,7 +42,10 @@ export default function App() {
   const dismissToast = React.useCallback(() => setToast(null), []);
 
   // Dynamic Property Settings & Availability from Database
-  const [propertySettings, setPropertySettings] = useState<any>({});
+  const [propertySettings, setPropertySettings] = useState<any>(() => {
+    // Last saved settings paint the first frame; the fresh copy replaces them when it arrives
+    try { return JSON.parse(localStorage.getItem('vm-settings') || '{}'); } catch { return {}; }
+  });
   const [availability, setAvailability] = useState<{ reservations: any[]; blockedDates: any[]; googleCalendarEvents: any[] }>({
     reservations: [],
     blockedDates: [],
@@ -118,6 +121,7 @@ export default function App() {
         cleaned[k] = typeof v === 'string' && !/^(https?:|\+?[\d\s()-]+$)/.test(v) && !/^[\[{]/.test(v) ? stripEmoji(v) : v;
       }
       setPropertySettings(cleaned);
+      try { localStorage.setItem('vm-settings', JSON.stringify(cleaned)); } catch {}
       setAvailability(availRes);
     } catch (err) {
       console.error('Error cargando datos públicos:', err);
@@ -171,8 +175,8 @@ export default function App() {
     setCurrentUser(null);
   };
 
-  const pricePerNight = propertySettings.price_per_night ? Number(propertySettings.price_per_night) : 150;
-  const cleaningFee = propertySettings.cleaning_fee ? Number(propertySettings.cleaning_fee) : 50;
+  const pricePerNight = Number(propertySettings.price_per_night) || 0;
+  const cleaningFee = Number(propertySettings.cleaning_fee) || 0;
 
   const mockPricing: PricingConfig = {
     baseNightlyRate: pricePerNight,
@@ -212,6 +216,7 @@ export default function App() {
 
   const isOff = (v: any) => v === false || v === 'false';
   const isBannerActive = !isOff(propertySettings.banner_enabled);
+  const showWeather = !isOff(propertySettings.weather_enabled);
   const bannerItems = (() => {
     const raw = propertySettings.banner_items;
     if (Array.isArray(raw)) return raw;
@@ -352,6 +357,7 @@ export default function App() {
             reviewsCount={propertySettings.hero_reviews_count}
             priceLabel={propertySettings.hero_price_label}
             whatsappGreeting={propertySettings.whatsapp_greeting}
+            showWeather={showWeather}
           />
         </section>
 

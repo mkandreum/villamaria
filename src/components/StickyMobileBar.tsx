@@ -26,6 +26,7 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
   onOpenBooking,
   onScrollToCalendar,
 }) => {
+  const { t, siteName } = useSite();
   const site = useSite();
   const hasDatesSelected = Boolean(checkIn && checkOut && totalPrice && totalPrice > 0);
   const { formatPrice } = useCurrency();
@@ -48,14 +49,14 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
                     {nights} {nights === 1 ? 'noche' : 'noches'}
                   </span>
                   <span className="text-base font-serif font-bold text-white leading-tight leading-snug">
-                    <AnimatedPrice value={totalPrice!} /> <span className="text-[13px] font-sans font-normal text-emerald-300">total</span>
+                    <AnimatedPrice value={totalPrice!} /> <span className="text-[13px] font-sans font-normal text-emerald-300">{t('txt_sticky_total')}</span>
                   </span>
                 </>
               ) : (
                 <>
                   <span className="text-[13px] text-emerald-300 font-semibold leading-snug">{site.siteName}</span>
                   <span className="text-base font-serif font-bold text-white leading-tight leading-snug">
-                    Desde {formatPrice(pricePerNight)} <span className="text-[13px] font-sans font-normal text-emerald-300">/noche</span>
+                    Desde {formatPrice(pricePerNight)} <span className="text-[13px] font-sans font-normal text-emerald-300">{t('txt_sticky_night')}</span>
                   </span>
                 </>
               )}

@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Star, Trash2 } from 'lucide-react';
 import { api } from '../../api';
-import { AMENITIES, NEARBY_ATTRACTIONS, FAQS, HOUSE_RULES } from '../../data/mockData';
+import { SITE_TEXTS } from '../../../server/siteTexts';
 import type { AdminCtx } from './types';
 import { SECTION_DEFS, orderedSections, hiddenSections } from '../../context/SiteContext';
 import { ICON_CHOICES } from '../../utils/icons';
 import { Btn, Card, Chip, Empty, Field, SectionTitle, Toggle, asList } from './ui';
 
-type Sub = 'brand' | 'sections' | 'share' | 'photos' | 'banner' | 'hero' | 'titles' | 'amenities' | 'attractions' | 'faq' | 'location' | 'footer';
+type Sub = 'brand' | 'sections' | 'share' | 'nav' | 'booking' | 'reviews' | 'account' | 'voucher' | 'weather' | 'photos' | 'banner' | 'hero' | 'titles' | 'amenities' | 'attractions' | 'faq' | 'location' | 'footer';
 const SUBS: Array<{ id: Sub; label: string }> = [
   { id: 'brand', label: 'Marca' },
   { id: 'sections', label: 'Secciones' },
@@ -21,6 +21,12 @@ const SUBS: Array<{ id: Sub; label: string }> = [
   { id: 'faq', label: 'Normas y FAQ' },
   { id: 'location', label: 'Ubicación' },
   { id: 'footer', label: 'Pie de página' },
+  { id: 'nav', label: 'Menús' },
+  { id: 'booking', label: 'Reserva' },
+  { id: 'reviews', label: 'Opiniones' },
+  { id: 'account', label: 'Cuenta' },
+  { id: 'voucher', label: 'Pase de entrada' },
+  { id: 'weather', label: 'Tiempo' },
 ];
 const CATS = [
   { id: 'fachada', label: 'Fachada' },
@@ -124,15 +130,15 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
   };
 
   // ---------- lists ----------
-  const amenities = asList<any>(s.amenities, AMENITIES as any[]).map((a) => ({ id: a.id || uid(), title: a.title || a.name || '', description: a.description || '', icon: a.icon || '' }));
-  const attractions = asList<any>(s.attractions, NEARBY_ATTRACTIONS as any[]).map((a) => ({
+  const amenities = asList<any>(s.amenities).map((a) => ({ id: a.id || uid(), title: a.title || a.name || '', description: a.description || '', icon: a.icon || '' }));
+  const attractions = asList<any>(s.attractions).map((a) => ({
     id: a.id || uid(),
     title: a.title || a.name || '',
-    duration: a.duration || a.travelTime || '',
+    duration: a.duration || a.travelTime || a.time || '',
     description: a.description || '',
     imageUrl: a.imageUrl || a.url || '',
   }));
-  const faqs = asList<any>(s.faqs, FAQS as any[]).map((f) => ({ id: f.id || uid(), question: f.question || f.q || '', answer: f.answer || f.a || '' }));
+  const faqs = asList<any>(s.faqs).map((f) => ({ id: f.id || uid(), question: f.question || f.q || '', answer: f.answer || f.a || '' }));
   const banner = asList<any>(s.banner_items).map((b) => ({ id: b.id || uid(), badge: b.badge || '', text: b.text || '' }));
 
   const [uploadingAttr, setUploadingAttr] = useState<string | null>(null);
@@ -175,6 +181,19 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
       </div>
     </Field>
   );
+
+  // Every fixed label of the site, written out in the tab where it belongs
+  const textGroup = (group: string, title = 'Otros textos de esta parte') => {
+    const items = SITE_TEXTS.filter((x) => x.group === group && x.key !== 'weather_lat' && x.key !== 'weather_lon');
+    if (items.length === 0) return null;
+    return (
+      <Card className="space-y-4">
+        <p className="font-semibold text-white">{title}</p>
+        {items.map((x) => text(x.key, x.label, x.value.length > 60 ? { multiline: true, rows: 3 } : {}))}
+        <p className="text-xs text-emerald-200/50">Si borras un texto, deja de salir en la web.</p>
+      </Card>
+    );
+  };
 
   const order = orderedSections(s.sections_order);
   const hidden = hiddenSections(s.sections_hidden);
@@ -264,25 +283,26 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
         <section className="space-y-4">
           <SectionTitle title="Portada" hint="Lo primero que ve el visitante." />
           <Card className="space-y-4">
-            {text('property_title', 'Nombre de la propiedad', { placeholder: 'Villa María' })}
-            {text('property_subtitle', 'Frase destacada', { placeholder: 'Tu refugio exclusivo en Chichiriviche' })}
+            {text('property_title', 'Nombre de la propiedad')}
+            {text('property_subtitle', 'Frase destacada')}
             {text('property_description', 'Descripción', { multiline: true, rows: 4 })}
-            {text('hero_photo_badge', 'Etiqueta sobre la foto', { placeholder: 'Piscina climatizada' })}
+            {text('hero_photo_badge', 'Etiqueta sobre la foto')}
           </Card>
           <Card className="space-y-4">
             <p className="font-semibold text-white">Cuatro características</p>
             {[1, 2, 3, 4].map((n) => text(`hero_feat${n}`, `Característica ${n}`))}
-            <p className="text-xs text-emerald-200/50">El icono se elige solo según las palabras (piscina, wifi, luz, parking…).</p>
+            <p className="text-xs text-emerald-200/50">Las que dejes vacías no salen en la web. El icono se elige solo según las palabras.</p>
           </Card>
           <Card className="space-y-4">
             <p className="font-semibold text-white">Tarjeta de precio</p>
-            {text('hero_price_label', 'Texto sobre el precio', { placeholder: 'Tarifa Estándar' })}
+            {text('hero_price_label', 'Texto bajo el precio')}
             <div className="grid grid-cols-2 gap-3">
-              {text('hero_rating', 'Puntuación', { placeholder: '4.96/5.0' })}
-              {text('hero_reviews_count', 'Nº de reseñas', { placeholder: '48', inputMode: 'numeric' })}
+              {text('hero_rating', 'Puntuación')}
+              {text('hero_reviews_count', 'Nº de reseñas', { inputMode: 'numeric' })}
             </div>
             {text('whatsapp_greeting', 'Mensaje inicial de WhatsApp', { multiline: true, rows: 2, hint: 'Se escribe solo cuando alguien pulsa el botón de WhatsApp de la portada.' })}
           </Card>
+          {textGroup('hero')}
         </section>
       )}
 
@@ -310,7 +330,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
 
       {sub === 'amenities' && (
         <section className="space-y-4">
-          <SectionTitle title="Servicios incluidos" hint="Elige un icono o deja que se asigne solo según el nombre." action={<button onClick={async () => (await ctx.confirm('¿Volver a la lista sugerida?')) && set('amenities', AMENITIES)} className="text-xs font-semibold text-emerald-300 underline min-h-[44px] px-1 cursor-pointer">Restaurar</button>} />
+          <SectionTitle title="Servicios incluidos" hint="Elige un icono o deja que se asigne solo según el nombre." />
           <ListEditor items={amenities} onChange={(v) => set('amenities', v)} make={() => ({ id: uid(), title: '', description: '', icon: '' })} label={(a) => a.title} addLabel="Añadir servicio" confirm={ctx.confirm}>
             {(a, up) => (
               <>
@@ -351,6 +371,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
               </>
             )}
           </ListEditor>
+          {textGroup('attractions')}
         </section>
       )}
 
@@ -358,8 +379,8 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
         <section className="space-y-4">
           <SectionTitle title="Normas, cancelación y preguntas" hint="Aparecen en la sección “Información” de la web." />
           <Card className="space-y-4">
-            <Field label="Normas de la casa" multiline rows={7} value={s.house_rules ?? HOUSE_RULES.join('\n')} onChange={(v) => set('house_rules', v)} hint="Una norma por línea." />
-            <Field label="Política de cancelación" multiline rows={3} value={s.cancellation_policy ?? ''} onChange={(v) => set('cancellation_policy', v)} placeholder="Cancelación gratuita hasta 7 días antes de la llegada." />
+            <Field label="Normas de la casa" multiline rows={7} value={s.house_rules ?? ''} onChange={(v) => set('house_rules', v)} hint="Una norma por línea." />
+            <Field label="Política de cancelación" multiline rows={3} value={s.cancellation_policy ?? ''} onChange={(v) => set('cancellation_policy', v)} />
           </Card>
           <SectionTitle title="Preguntas frecuentes" />
           <ListEditor items={faqs} onChange={(v) => set('faqs', v)} make={() => ({ id: uid(), question: '', answer: '' })} label={(f) => f.question} addLabel="Añadir pregunta" confirm={ctx.confirm}>
@@ -370,6 +391,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
               </>
             )}
           </ListEditor>
+          {textGroup('faq')}
         </section>
       )}
 
@@ -388,6 +410,26 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
             <p className="font-semibold text-white">Tres puntos destacados</p>
             {[1, 2, 3].map((n) => text(`location_bullet_${n}`, `Punto ${n}`))}
           </Card>
+          {textGroup('location')}
+        </section>
+      )}
+
+      {sub === 'nav' && <section className="space-y-4"><SectionTitle title="Menús" hint="Barra superior y barra inferior." />{textGroup('nav', 'Botones')}</section>}
+      {sub === 'booking' && <section className="space-y-4"><SectionTitle title="Reserva" hint="Calendario, formulario y confirmación." />{textGroup('booking', 'Textos')}</section>}
+      {sub === 'reviews' && <section className="space-y-4"><SectionTitle title="Opiniones" hint="Las reseñas se aprueban en Más → Reseñas." />{textGroup('reviews', 'Textos')}</section>}
+      {sub === 'account' && <section className="space-y-4"><SectionTitle title="Cuenta" hint="Acceso, registro y Mis reservas." />{textGroup('account', 'Textos')}</section>}
+      {sub === 'voucher' && <section className="space-y-4"><SectionTitle title="Pase de entrada" hint="El Wi-Fi y las horas se editan en Más." />{textGroup('voucher', 'Textos')}</section>}
+      {sub === 'weather' && (
+        <section className="space-y-4">
+          <SectionTitle title="Tiempo y mar" hint="Temperatura y estado del mar son datos automáticos." />
+          <Card className="space-y-4">
+            <Toggle checked={s.weather_enabled !== false && s.weather_enabled !== 'false'} onChange={(v) => set('weather_enabled', v)} label="Mostrar en la portada" />
+            <div className="grid grid-cols-2 gap-3">
+              {text('weather_lat', 'Latitud', { inputMode: 'decimal' })}
+              {text('weather_lon', 'Longitud', { inputMode: 'decimal' })}
+            </div>
+          </Card>
+          {textGroup('weather', 'Textos')}
         </section>
       )}
 
@@ -395,7 +437,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
         <section className="space-y-4">
           <SectionTitle title="Marca y redes" hint="El nombre y el logo salen en la barra, el pie y la barra móvil." />
           <Card className="space-y-4">
-            {text('site_name', 'Nombre del sitio', { placeholder: 'Villa María' })}
+            {text('site_name', 'Nombre del sitio')}
             {imageField('site_logo_url', 'Logo', 'Cuadrado, se muestra en círculo. Sin logo se usan las iniciales.', true)}
           </Card>
           <Card className="space-y-4">
@@ -434,7 +476,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
         <section className="space-y-4">
           <SectionTitle title="Google y WhatsApp" hint="Lo que se ve al buscar la casa en Google o al compartir el enlace." />
           <Card className="space-y-4">
-            {text('seo_title', 'Título', { placeholder: 'Villa María - Casa de playa en Chichiriviche', hint: 'Hasta 60 caracteres.' })}
+            {text('seo_title', 'Título', { hint: 'Hasta 60 caracteres.' })}
             {text('seo_description', 'Descripción', { multiline: true, rows: 3, hint: 'Hasta 160 caracteres.' })}
             {imageField('seo_image', 'Imagen al compartir', 'Mejor horizontal, 1200 × 630.')}
           </Card>
@@ -446,10 +488,11 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
         <section className="space-y-4">
           <SectionTitle title="Pie de página" />
           <Card className="space-y-4">
-            {text('footer_tagline', 'Línea bajo el nombre', { placeholder: 'Alojamiento Turístico & Relax • Chichiriviche' })}
+            {text('footer_tagline', 'Línea bajo el nombre')}
             {text('footer_description', 'Descripción', { multiline: true, rows: 4 })}
             <p className="text-xs text-emerald-200/50">Teléfono, correo y dirección se editan en Más → Contacto.</p>
           </Card>
+          {textGroup('footer')}
         </section>
       )}
     </div>

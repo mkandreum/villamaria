@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState } from 'react';
 import { X, Lock, Mail, User as UserIcon, Phone, AlertCircle, RefreshCw } from 'lucide-react';
 import { api, setAuthToken, setAuthUser } from '../api';
@@ -8,6 +9,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
+  const { t, siteName } = useSite();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,12 +59,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
             <Lock className="w-6 h-6" />
           </div>
           <h3 className="text-lg sm:text-xl font-bold font-serif text-white">
-            {isRegister ? 'Crear Cuenta de Cliente' : 'Acceso a Villa María'}
+            {isRegister ? t('txt_auth_reg') : t('txt_auth_login')}
           </h3>
           <p className="text-xs text-emerald-300/70 mt-1">
             {isRegister
-              ? 'Regístrate para gestionar tus reservas y consultar tu historial'
-              : 'Introduce tus credenciales para acceder'}
+              ? t('txt_auth_regsub')
+              : t('txt_auth_loginsub')}
           </p>
         </div>
 
@@ -76,7 +78,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
           {isRegister && (
             <div>
-              <label className="block text-xs font-semibold text-emerald-300 mb-1">Nombre Completo</label>
+              <label className="block text-xs font-semibold text-emerald-300 mb-1">{t('txt_auth_name')}</label>
               <div className="relative">
                 <UserIcon className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
                 <input
@@ -93,7 +95,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-emerald-300 mb-1">Correo Electrónico</label>
+            <label className="block text-xs font-semibold text-emerald-300 mb-1">{t('txt_auth_email')}</label>
             <div className="relative">
               <Mail className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
               <input
@@ -129,7 +131,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
 
           {isRegister && (
             <div>
-              <label className="block text-xs font-semibold text-emerald-300 mb-1">Teléfono (opcional)</label>
+              <label className="block text-xs font-semibold text-emerald-300 mb-1">{t('txt_auth_phone')}</label>
               <div className="relative">
                 <Phone className="w-4 h-4 absolute left-3 top-3.5 text-emerald-500/60" />
                 <input
@@ -156,7 +158,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
                 <span>Procesando...</span>
               </>
             ) : (
-              <span>{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</span>
+              <span>{isRegister ? 'Registrarse' : t('txt_auth_btnlogin')}</span>
             )}
           </button>
         </form>
@@ -170,7 +172,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
             }}
             className="text-xs text-emerald-400 hover:text-emerald-300 underline font-medium py-2 inline-block min-h-[38px]"
           >
-            {isRegister ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate gratis'}
+            {isRegister ? t('txt_auth_tologin') : t('txt_auth_toreg')}
           </button>
         </div>
       </div>

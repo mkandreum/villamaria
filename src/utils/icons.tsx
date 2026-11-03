@@ -7,8 +7,8 @@ import {
 const EMOJI_RE = /(?![©®™])[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}‍️]/gu;
 
 /** Removes decorative emoji from user-editable copy; the UI draws icons instead. */
-export const stripEmoji = (text: string): string =>
-  text.replace(EMOJI_RE, '').replace(/[ \t]{2,}/g, ' ').replace(/\s+([.,;:!?])/g, '$1').trim();
+export const stripEmoji = (text?: string | null): string =>
+  String(text ?? '').replace(EMOJI_RE, '').replace(/[ \t]{2,}/g, ' ').replace(/\s+([.,;:!?])/g, '$1').trim();
 
 const RULES: Array<[RegExp, LucideIcon]> = [
   [/wifi|wi-fi|internet|fibra/i, Wifi],

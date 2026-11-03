@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState, useEffect } from 'react';
 import { Sun, CloudSun, Cloud, Wind, Waves, Compass, Droplets, RefreshCw } from 'lucide-react';
 
@@ -14,17 +15,8 @@ interface WeatherData {
 }
 
 export const WeatherSeaWidget: React.FC = () => {
-  const [weather, setWeather] = useState<WeatherData>({
-    temp: 29,
-    feelsLike: 31,
-    humidity: 74,
-    windSpeed: 12,
-    condition: 'Soleado & Tropical',
-    seaStatus: 'Mar Calmo',
-    seaDescription: 'Excelente para navegar a Cayo Sombrero',
-    icon: '',
-    updatedAt: 'En vivo',
-  });
+  const { t, siteName } = useSite();
+  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -32,7 +24,7 @@ export const WeatherSeaWidget: React.FC = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        'https://api.open-meteo.com/v1/forecast?latitude=10.9317&longitude=-68.2736&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=America%2FCaracas'
+        `https://api.open-meteo.com/v1/forecast?latitude=${t('weather_lat')}&longitude=${t('weather_lon')}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=America%2FCaracas`
       );
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
@@ -87,17 +79,20 @@ export const WeatherSeaWidget: React.FC = () => {
         updatedAt: new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }),
       });
     } catch {
-      // Keep sensible fallback for Chichiriviche
+      // No data, no widget: nothing invented is shown
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if (!t('weather_lat') || !t('weather_lon')) return;
     fetchWeather();
     const interval = setInterval(fetchWeather, 300000); // 5 min
     return () => clearInterval(interval);
-  }, []);
+  }, [t('weather_lat'), t('weather_lon')]);
+
+  if (!weather) return null;
 
   return (
     <div className="relative inline-block w-full max-w-sm sm:max-w-md font-sans">
@@ -120,15 +115,13 @@ export const WeatherSeaWidget: React.FC = () => {
             </div>
             <p className="text-[13px] text-[#1c1c1c]/70 flex items-start gap-1 mt-0.5">
               <Compass className="w-3 h-3 text-emerald-700 shrink-0" />
-              <span>Chichiriviche • {weather.seaStatus}</span>
+              <span>{t('txt_weather_place')} • {weather.seaStatus}</span>
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[13px] bg-emerald-100 text-emerald-900 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-            Morrocoy Hoy
-          </span>
+          <span className="text-[13px] bg-emerald-100 text-emerald-900 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">{t('txt_weather_badge')}</span>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -146,7 +139,7 @@ export const WeatherSeaWidget: React.FC = () => {
       {isExpanded && (
         <div className="mt-2 p-3 bg-[#e1dfd8] rounded-2xl  space-y-2 text-xs text-[#1c1c1c] animate-fadeIn">
           <div className="flex items-center justify-between  pb-1.5 text-[13px] font-bold text-[#1c1c1c]">
-            <span> Estado del Mar & Pronóstico Náutico</span>
+            <span>{t('txt_weather_panel')}</span>
             <span className="text-[13px] text-[#1c1c1c]/60 font-mono">Hora: {weather.updatedAt}</span>
           </div>
 

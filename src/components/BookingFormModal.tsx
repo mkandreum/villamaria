@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState, useEffect } from 'react';
 import { Booking, PricingConfig } from '../types';
 import { formatDateSpanish, calculatePriceBreakdown } from '../utils/dateUtils';
@@ -32,6 +33,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
   onClose,
   onSubmitBooking,
 }) => {
+  const { t, siteName } = useSite();
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
@@ -119,12 +121,8 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
         {/* Modal Header */}
         <div className="mb-3.5 sm:mb-4 shrink-0 pr-8">
-          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">
-            Reserva Directa Villa María
-          </span>
-          <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1c1c1c] mt-1 leading-tight">
-            Datos de Reserva
-          </h2>
+          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">{t('txt_form_title')}</span>
+          <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1c1c1c] mt-1 leading-tight">{t('txt_form_summary')}</h2>
           <p className="text-xs text-[#1c1c1c]/70 mt-0.5 font-sans">
             {breakdown.nights} {breakdown.nights === 1 ? 'noche' : 'noches'} ({formatDateSpanish(checkIn)}  {formatDateSpanish(checkOut)})
           </p>
@@ -134,14 +132,10 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
         <form noValidate onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 scrollbar-none">
           {/* Personal Info */}
           <div className="space-y-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1c1c1c]">
-              1. Datos del Huésped Principal
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1c1c1c]">{t('txt_form_s1')}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
-                  Nombre y Apellido *
-                </label>
+                <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">{t('txt_form_name')}</label>
                 <input
                   type="text"
                   autoComplete="name"
@@ -156,9 +150,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                 <ErrorText id="err-name" k="guestName" />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
-                  Teléfono / WhatsApp *
-                </label>
+                <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">{t('txt_form_phone')}</label>
                 <input
                   type="tel"
                   inputMode="tel"
@@ -176,9 +168,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
-                Correo Electrónico *
-              </label>
+              <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">{t('txt_form_email')}</label>
               <input
                 type="email"
                 inputMode="email"
@@ -198,15 +188,11 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
           {/* Payment Method Preferences */}
           <div className="space-y-2 pt-2 border-t border-[#1c1c1c]/10">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1c1c1c]">
-              2. Método de Pago (Anticipo 50%)
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1c1c1c]">{t('txt_form_s2')}</h3>
             
             <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-[#1c1c1c] flex items-start gap-2">
               <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <span>
-                Las instrucciones detalladas para el pago del anticipo se enviarán por WhatsApp tras enviar la solicitud.
-              </span>
+              <span>{t('txt_form_payinfo')}</span>
             </div>
 
             {availableMethods.length > 0 ? (
@@ -233,16 +219,14 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             ) : (
               <div className="p-3 bg-white rounded-xl border border-[#1c1c1c]/15 text-xs text-[#1c1c1c] flex items-center gap-2 font-semibold">
                 <MessageCircle className="w-4 h-4 text-emerald-800" />
-                <span>Coordinación Directa por WhatsApp con el Anfitrión</span>
+                <span>{t('txt_form_sub')}</span>
               </div>
             )}
           </div>
 
           {/* Special Requests */}
           <div>
-            <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
-              Notas o Solicitudes Especiales
-            </label>
+            <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">{t('txt_form_notes')}</label>
             <textarea
               rows={2}
               placeholder="Ej. Hora estimada de llegada 3:00 PM."
@@ -255,13 +239,13 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           {/* Summary Box */}
           <div className="bg-[#e1dfd8] p-3 rounded-2xl border border-[#1c1c1c]/15 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[#1c1c1c]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
+              <span className="text-[11px] text-[#1c1c1c]/70 block font-semibold uppercase tracking-wider">{t('txt_form_total')}</span>
               <CurrencyToggle />
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-base sm:text-lg font-serif font-bold text-[#1c1c1c] truncate">{formatPrice(breakdown.totalPrice)}</span>
               <div className="text-right text-[11px] text-[#1c1c1c]/80 shrink-0">
-                <span>Anticipo 50%: </span>
+                <span>{t('txt_form_deposit')}</span>
                 <strong className="text-emerald-800 font-bold">{formatPrice(Math.round(breakdown.totalPrice / 2))}</strong>
               </div>
             </div>
@@ -274,7 +258,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1c1c1c] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition active:scale-95 min-h-[48px] cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>{submitting ? 'Enviando…' : 'Confirmar Reserva y Comprobante'}</span>
+            <span>{submitting ? 'Enviando…' : t('txt_form_cta')}</span>
           </button>
         </form>
       </div>

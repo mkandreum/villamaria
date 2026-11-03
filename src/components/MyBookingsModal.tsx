@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState } from 'react';
 import { Booking } from '../types';
 import { formatDateSpanish } from '../utils/dateUtils';
@@ -26,6 +27,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
   wifiPass,
   hostPhone,
 }) => {
+  const { t, siteName } = useSite();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVoucher, setSelectedVoucher] = useState<VoucherReservationData | null>(null);
   const { formatPrice } = useCurrency();
@@ -56,12 +58,8 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
             <BookmarkCheck className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
-            <h2 className="text-lg sm:text-xl font-serif text-[#1c1c1c] font-bold">
-              Mis Reservas en Villa María
-            </h2>
-            <p className="text-xs text-[#1c1c1c]/70 font-sans">
-              Consulta o gestiona tus estadías registradas
-            </p>
+            <h2 className="text-lg sm:text-xl font-serif text-[#1c1c1c] font-bold">{t('txt_my_title')}</h2>
+            <p className="text-xs text-[#1c1c1c]/70 font-sans">{t('txt_my_sub')}</p>
           </div>
         </div>
 
@@ -70,7 +68,7 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
           <Search className="w-4 h-4 text-[#1c1c1c]/50 absolute left-3.5 top-3.5" />
           <input
             type="text"
-            placeholder="Buscar por código, nombre o teléfono..."
+            placeholder={t('txt_my_search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-white border border-[#1c1c1c]/15 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#1c1c1c] focus:outline-none focus:border-emerald-700 min-h-[44px]"
@@ -81,10 +79,8 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
         {filtered.length === 0 ? (
           <div className="p-6 sm:p-8 text-center bg-[#e1dfd8]/50 rounded-2xl border border-dashed border-[#1c1c1c]/20 space-y-2 font-sans flex-1 flex flex-col items-center justify-center">
             <BookmarkCheck className="w-8 h-8 text-[#1c1c1c]/40 mx-auto" />
-            <p className="text-xs font-semibold text-[#1c1c1c]">No hay reservas registradas</p>
-            <p className="text-[11px] text-[#1c1c1c]/60 max-w-xs">
-              Usa el calendario principal para seleccionar tus fechas y realizar una reserva.
-            </p>
+            <p className="text-xs font-semibold text-[#1c1c1c]">{t('txt_my_empty')}</p>
+            <p className="text-[11px] text-[#1c1c1c]/60 max-w-xs">{t('txt_my_emptysub')}</p>
           </div>
         ) : (
           <div className="space-y-3 flex-1 overflow-y-auto pr-1 font-sans">
@@ -156,12 +152,12 @@ export const MyBookingsModal: React.FC<MyBookingsModalProps> = ({
                       className="text-xs text-emerald-950 font-bold bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition min-h-[36px] cursor-pointer"
                     >
                       <Ticket className="w-3.5 h-3.5" />
-                      <span> Pase de Entrada & QR</span>
+                      <span>{t('txt_my_pass')}</span>
                     </button>
 
                     <button
                       onClick={() => {
-                        if (confirm('¿Estás seguro de cancelar esta reserva?')) {
+                        if (confirm(t('txt_my_confirm'))) {
                           onCancelBooking(b.id);
                         }
                       }}

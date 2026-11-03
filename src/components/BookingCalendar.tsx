@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
@@ -42,7 +43,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   checkOut,
   adults,
   childrenCount,
-  bookings = [],
+  bookings,
   pricing,
   onCheckInChange,
   onCheckOutChange,
@@ -50,6 +51,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   onChildrenChange,
   onInitiateBooking,
 }) => {
+  const { t, siteName } = useSite();
   // Current view month (defaults to current month)
   const [currentViewDate, setCurrentViewDate] = useState<Date>(() => {
     if (checkIn) {
@@ -143,12 +145,8 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           
           {/* Header */}
           <div className="text-center border-b border-[#1c1c1c]/10 pb-4">
-            <h2 className="text-[clamp(1.75rem,5vw,2.75rem)] leading-[1.05] font-serif font-bold text-[#1c1c1c] tracking-tight text-balance">
-              Reserva tu estancia
-            </h2>
-            <p className="text-xs text-[#1c1c1c]/70 mt-1 max-w-md mx-auto">
-              Selecciona tus huéspedes y las fechas de llegada y salida.
-            </p>
+            <h2 className="text-[clamp(1.75rem,5vw,2.75rem)] leading-[1.05] font-serif font-bold text-[#1c1c1c] tracking-tight text-balance">{t('txt_cal_title')}</h2>
+            <p className="text-xs text-[#1c1c1c]/70 mt-1 max-w-md mx-auto">{t('txt_cal_sub')}</p>
             <ol className="flex items-center justify-center gap-1.5 mt-4 text-[13px] font-bold flex-wrap" aria-label="Progreso de reserva">
               {['Huéspedes', 'Llegada', 'Salida'].map((label, i) => {
                 const done = i === 0 ? true : i === 1 ? Boolean(checkIn) : Boolean(checkOut);
@@ -172,11 +170,11 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           <div className="bg-[#e1dfd8]/50 border border-[#1c1c1c]/10 rounded-2xl p-3.5 sm:p-4 space-y-2">
             <label className="text-xs font-bold text-[#1c1c1c] flex items-center gap-1.5">
               <Users className="w-4 h-4 text-emerald-800" />
-              <span>1. Número de Huéspedes</span>
+              <span>{t('txt_cal_guests')}</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <div>
-                <span className="text-[13px] text-[#1c1c1c]/70 block font-semibold mb-1">Adultos</span>
+                <span className="text-[13px] text-[#1c1c1c]/70 block font-semibold mb-1">{t('txt_cal_adults')}</span>
                 <select
                   value={adults}
                   onChange={(e) => onAdultsChange(Number(e.target.value))}
@@ -190,7 +188,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                 </select>
               </div>
               <div>
-                <span className="text-[13px] text-[#1c1c1c]/70 block font-semibold mb-1">Niños</span>
+                <span className="text-[13px] text-[#1c1c1c]/70 block font-semibold mb-1">{t('txt_cal_children')}</span>
                 <select
                   value={childrenCount}
                   onChange={(e) => onChildrenChange(Number(e.target.value))}
@@ -211,7 +209,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <label className="text-xs font-bold text-[#1c1c1c] flex items-center gap-1.5">
                 <CalendarIcon className="w-4 h-4 text-emerald-800" />
-                <span>2. Elige Fechas en el Calendario</span>
+                <span>{t('txt_cal_dates')}</span>
               </label>
 
               {/* Month Navigation */}
@@ -303,7 +301,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             {/* STEP 3: PRICE SUMMARY & RESERVATION CTA */}
           <div ref={summaryRef} className="bg-[#efeeea] border border-[#1c1c1c]/15 rounded-2xl p-3.5 sm:p-5 space-y-3 scroll-mt-24">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[#1c1c1c]/70">Llegada:</span>
+              <span className="text-[#1c1c1c]/70">{t('txt_cal_in')}</span>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-[#1c1c1c]">{checkIn ? formatDateSpanish(checkIn) : 'No seleccionada'}</span>
                 {(checkIn || checkOut) && (
@@ -313,21 +311,19 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                       onCheckOutChange('');
                     }}
                     className="text-[13px] text-emerald-800 hover:text-emerald-950 font-bold underline py-1 px-1 cursor-pointer"
-                  >
-                    Limpiar
-                  </button>
+                  >{t('txt_cal_clear')}</button>
                 )}
               </div>
             </div>
             <div className="flex items-center justify-between text-xs pt-1 border-t border-[#1c1c1c]/10">
-              <span className="text-[#1c1c1c]/70">Salida:</span>
+              <span className="text-[#1c1c1c]/70">{t('txt_cal_out')}</span>
               <span className="font-bold text-[#1c1c1c]">{checkOut ? formatDateSpanish(checkOut) : 'No seleccionada'}</span>
             </div>
 
             {isOccupiedError && (
               <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>Algunas de las fechas seleccionadas ya están ocupadas o bloqueadas. Por favor elige otro rango.</span>
+                <span>{t('txt_cal_busy')}</span>
               </div>
             )}
 
@@ -344,13 +340,11 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                   <span>{formatPrice(priceBreakdown.baseNightsSubtotal)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-[#1c1c1c]/80">
-                  <span>Gastos de limpieza</span>
+                  <span>{t('txt_cal_cleaning')}</span>
                   <span>{formatPrice(priceBreakdown.cleaningFee)}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between text-base font-serif font-bold text-[#1c1c1c] pt-2 border-t border-[#1c1c1c]/15 gap-1.5">
-                  <span className="flex items-center gap-2">
-                    Total Estancia:
-                    <CurrencyToggle />
+                  <span className="flex items-center gap-2">{t('txt_cal_total')}<CurrencyToggle />
                   </span>
                   <span className="text-xl sm:text-2xl text-[#1c1c1c]"><AnimatedPrice value={priceBreakdown.totalPrice} /></span>
                 </div>
@@ -360,17 +354,16 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
                   className="shine w-full mt-2 py-3.5 rounded-xl sm:rounded-2xl bg-[#1c1c1c] text-white font-bold text-xs transition  active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Reservar Ahora</span>
+                  <span>{t('txt_cal_cta')}</span>
                 </button>
 
                 <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] text-[#1c1c1c]/60 pt-2">
                   <span className="flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" /> Reserva Directa Segura
-                  </span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />{t('txt_cal_trust1')}</span>
                   <span>•</span>
-                  <span> Confirmación Inmediata</span>
+                  <span>{t('txt_cal_trust2')}</span>
                   <span>•</span>
-                  <span> Falcón, Chichiriviche</span>
+                  <span>{t('txt_cal_place')}</span>
                 </div>
               </motion.div>
             )}

@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React, { useState, useEffect } from 'react';
 import { Calendar, MessageCircle, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
@@ -8,6 +9,7 @@ import { Stagger, StaggerItem } from './Reveal';
 import { iconForText, stripEmoji } from '../utils/icons';
 
 interface HeroProps {
+  showWeather?: boolean;
   checkIn: string;
   checkOut: string;
   guests: number;
@@ -33,12 +35,6 @@ interface HeroProps {
   whatsappGreeting?: string;
 }
 
-const DEFAULT_HERO_PHOTOS = [
-  'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
-];
 
 export const Hero: React.FC<HeroProps> = ({
   checkIn,
@@ -48,23 +44,25 @@ export const Hero: React.FC<HeroProps> = ({
   onCheckOutChange,
   onGuestsChange,
   onSearch,
-  title = 'Villa María',
-  subtitle = 'Tu refugio exclusivo en Chichiriviche',
-  description = 'Villa María es una elegante finca vacacional totalmente equipada. Disfruta de piscina privada climatizada, servicio de agua constante 24/7, planta eléctrica y cercanía a los cayos de Morrocoy.',
-  pricePerNight = 150,
-  whatsappNumber = '+34600000000',
+  title,
+  subtitle,
+  description,
+  pricePerNight,
+  whatsappNumber,
   heroImage,
   images,
-  photoBadge = ' Piscina Climatizada',
-  feat1 = ' Piscina Privada',
-  feat2 = ' Fibra 600Mb',
-  feat3 = ' Luz y Agua 24/7',
-  feat4 = ' Parking Privado',
-  rating = '4.96/5.0',
-  reviewsCount = '48',
-  priceLabel = 'Tarifa Estándar',
-  whatsappGreeting = 'Hola Villa María, me gustaría consultar disponibilidad y precios para reservar.',
+  photoBadge,
+  feat1,
+  feat2,
+  feat3,
+  feat4,
+  rating,
+  reviewsCount,
+  priceLabel,
+  whatsappGreeting,
+  showWeather,
 }) => {
+  const { t, siteName } = useSite();
   const photos = React.useMemo(() => {
     let list = images;
     if (typeof images === 'string') {
@@ -76,13 +74,10 @@ export const Hero: React.FC<HeroProps> = ({
     }
     if (Array.isArray(list) && list.length > 0) {
       return list.map((item: any) =>
-        typeof item === 'string' ? item : item.url || item.imageUrl || DEFAULT_HERO_PHOTOS[0]
+        typeof item === 'string' ? item : item.url || item.imageUrl
       );
     }
-    if (heroImage) {
-      return [heroImage, ...DEFAULT_HERO_PHOTOS.slice(1)];
-    }
-    return DEFAULT_HERO_PHOTOS;
+    return [];
   }, [images, heroImage]);
 
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -152,9 +147,11 @@ export const Hero: React.FC<HeroProps> = ({
     return () => clearInterval(timer);
   }, [photos.length, reduceMotion]);
 
-  const waUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodeURIComponent(
-    whatsappGreeting
-  )}`;
+  const waDigits = String(whatsappNumber ?? '').replace(/[^0-9]/g, '');
+  const waUrl = `https://wa.me/${waDigits}?text=${encodeURIComponent(String(whatsappGreeting ?? ''))}`;
+  const features = [feat1, feat2, feat3, feat4].map((f) => stripEmoji(f)).filter(Boolean);
+  const badgeText = stripEmoji(photoBadge);
+  const hasRating = Boolean(String(rating ?? '').trim() || String(reviewsCount ?? '').trim());
 
   return (
     <section className="relative pt-0 md:pt-20 lg:pt-28 pb-12 md:pb-20 overflow-hidden bg-[#efeeea] text-[#1c1c1c] font-sans">
@@ -198,7 +195,7 @@ export const Hero: React.FC<HeroProps> = ({
                     <div key={idx} className="relative h-full w-full shrink-0 snap-center snap-always overflow-hidden bg-emerald-950">
                       <img
                         src={img}
-                        alt={idx < photos.length ? `Villa María, foto ${idx + 1}` : ''}
+                        alt={idx < photos.length ? `${siteName}, foto ${idx + 1}` : ''}
                         loading={idx < 2 ? 'eager' : 'lazy'}
                         decoding="async"
                         draggable={false}
@@ -222,17 +219,16 @@ export const Hero: React.FC<HeroProps> = ({
                 <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.3, duration: 0.7, ease: EASE_OUT }} className="text-base text-white/90 -mt-1">{stripEmoji(subtitle)}</motion.p>
                 <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.45, duration: 0.8, ease: EASE_OUT }} className="flex items-end justify-between gap-3 pt-1">
                   <div>
-                    <span className="text-[13px] text-emerald-200 font-bold block">Desde</span>
+                    <span className="text-[13px] text-emerald-200 font-bold block">{t('txt_from')}</span>
                     <span className="text-2xl font-serif font-bold leading-none">
-                      {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-white/80">/ noche</span>
+                      {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-white/80">{t('txt_per_night')}</span>
                     </span>
                   </div>
                   <button
                     onClick={onSearch}
                     className="pointer-events-auto shine px-5 min-h-[48px] rounded-2xl bg-white text-[#1c1c1c] font-bold text-sm flex items-center gap-2  active:scale-95 transition-transform cursor-pointer"
                   >
-                    <Calendar className="w-4 h-4" /> Ver fechas
-                  </button>
+                    <Calendar className="w-4 h-4" />{t('txt_see_dates')}</button>
                 </motion.div>
               </motion.div>
 
@@ -271,9 +267,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Editable Badge Overlay */}
-              <div className="pointer-events-none absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85  border border-emerald-400/30 text-white text-[13px] sm:text-[13px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1  max-w-[80%] truncate">
-                <span className="truncate">{stripEmoji(String(photoBadge))}</span>
-              </div>
+              {badgeText && (<div className="pointer-events-none absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85  border border-emerald-400/30 text-white text-[13px] sm:text-[13px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1  max-w-[80%] truncate"><span className="truncate">{badgeText}</span></div>)}
             </motion.div>
             <p className="lg:hidden px-1 pt-4 text-sm text-[#1c1c1c]/80 leading-relaxed">{description}</p>
           </div>
@@ -281,25 +275,25 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Right Column: Rating, WhatsApp CTA & Features */}
           <Stagger delay={isDesktop ? 0.6 : 0.05} gap={0.1} className="lg:col-span-5 space-y-3.5 sm:space-y-4">
             
-            <StaggerItem><WeatherSeaWidget /></StaggerItem>
+            {showWeather && <StaggerItem><WeatherSeaWidget /></StaggerItem>}
 
             <div className="space-y-6 pt-2">
               <StaggerItem className="flex items-end justify-between gap-4">
                 <div>
-                  <span className="text-5xl font-serif font-light tracking-tight text-[#1c1c1c]">
-                    {formatPrice(pricePerNight)} <span className="text-base font-sans text-[#1c1c1c]/70 tracking-normal">/ noche</span>
-                  </span>
+                  {Number(pricePerNight) > 0 && <span className="text-5xl font-serif font-light tracking-tight text-[#1c1c1c]">
+                    {formatPrice(pricePerNight)} <span className="text-base font-sans text-[#1c1c1c]/70 tracking-normal">{t('txt_per_night')}</span>
+                  </span>}
                   <span className="text-base text-[#1c1c1c]/70 block mt-1">{priceLabel}</span>
                 </div>
-                <div className="text-right shrink-0">
+                {hasRating && (<div className="text-right shrink-0">
                   <div className="flex text-amber-500 justify-end">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
                   <span className="text-base font-semibold text-[#1c1c1c]">{rating}</span>
-                  <span className="text-sm text-[#1c1c1c]/70 block">({reviewsCount} reseñas)</span>
-                </div>
+                  {String(reviewsCount ?? '').trim() && <span className="text-sm text-[#1c1c1c]/70 block">({reviewsCount} {t('txt_reviews_word')})</span>}
+                </div>)}
               </StaggerItem>
 
               <StaggerItem className="grid grid-cols-2 gap-3">
@@ -308,24 +302,24 @@ export const Hero: React.FC<HeroProps> = ({
                   className="py-3.5 rounded-full bg-[#1c1c1c] text-white hover:bg-emerald-800 font-semibold text-base transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
                 >
                   <Calendar className="w-4 h-4" />
-                  <span>Reservar</span>
+                  <span>{t('txt_book')}</span>
                 </button>
-                <a
+                {waDigits && (<a
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="py-3.5 rounded-full bg-emerald-300 hover:bg-emerald-200 text-[#1c1c1c] font-semibold text-base transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>WhatsApp</span>
-                </a>
+                  <span>{t('txt_whatsapp')}</span>
+                </a>)}
               </StaggerItem>
 
               <StaggerItem><ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-base text-[#1c1c1c]">
-                {[feat1, feat2, feat3, feat4].map((item, idx) => (
+                {features.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2.5 min-w-0">
                     {React.createElement(iconForText(String(item)), { className: 'w-4 h-4 mt-1 text-emerald-700 shrink-0', strokeWidth: 1.75 })}
-                    <span className="leading-snug">{stripEmoji(String(item))}</span>
+                    <span className="leading-snug">{item}</span>
                   </li>
                 ))}
               </ul></StaggerItem>

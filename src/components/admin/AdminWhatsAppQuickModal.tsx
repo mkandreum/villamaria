@@ -1,3 +1,4 @@
+import { useSite } from '../../context/SiteContext';
 import React, { useState } from 'react';
 import {
   X,
@@ -40,11 +41,12 @@ interface AdminWhatsAppQuickModalProps {
 export const AdminWhatsAppQuickModal: React.FC<AdminWhatsAppQuickModalProps> = ({
   reservation,
   onClose,
-  propertyAddress = 'Calle 15, Urbanización Privada, Chichiriviche, Edo. Falcón',
-  mapsUrl = 'https://maps.google.com/?q=10.9317,-68.2736',
-  wifiSsid = 'VillaMaria_Privada_5G',
-  wifiPass = 'MorrocoySol2026!',
+  propertyAddress,
+  mapsUrl,
+  wifiSsid,
+  wifiPass,
 }) => {
+  const { siteName } = useSite();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [sendingIndex, setSendingIndex] = useState<number | null>(null);
   const [emailStatus, setEmailStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -69,10 +71,10 @@ export const AdminWhatsAppQuickModal: React.FC<AdminWhatsAppQuickModalProps> = (
       id: 'welcome',
       title: '📍 1. Bienvenida & Ubicación GPS (24h antes del viaje)',
       subtitle: 'Instrucciones de llegada, enlace a Google Maps, hora de check-in e ingreso por garita.',
-      subject: `🌴 ¡Bienvenido a Villa María! Instrucciones de Llegada y Ubicación GPS (#${reservation.id.slice(0, 8)})`,
+      subject: `🌴 ¡Bienvenido a ${siteName}! Instrucciones de Llegada y Ubicación GPS (#${reservation.id.slice(0, 8)})`,
       icon: MapPin,
       color: 'border-emerald-500/40 text-emerald-300',
-      text: `¡Hola ${reservation.guestName}! 🌴 Te saludamos desde Villa María (Chichiriviche). Estamos listos para recibirte para tu estancia del ${startFormatted} al ${endFormatted}.
+      text: `¡Hola ${reservation.guestName}! 🌴 Te saludamos desde ${siteName} (Chichiriviche). Estamos listos para recibirte para tu estancia del ${startFormatted} al ${endFormatted}.
 
 📍 Dirección: ${propertyAddress}
 🗺️ GPS Google Maps: ${mapsUrl}
@@ -90,7 +92,7 @@ El personal de la garita de seguridad de la Calle 15 tiene tu nombre registrado 
             <div style="padding: 24px 20px;">
               <h2 style="color: #1c1c1c; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
               <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0 0 18px 0; line-height: 1.5;">
-                Estamos muy emocionados de recibirte en Villa María. A continuación tienes todos los datos clave para tu llegada del <strong>${startFormatted}</strong> al <strong>${endFormatted}</strong>:
+                Estamos muy emocionados de recibirte en ${siteName}. A continuación tienes todos los datos clave para tu llegada del <strong>${startFormatted}</strong> al <strong>${endFormatted}</strong>:
               </p>
               
               <div style="background-color: #e1dfd8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
@@ -112,7 +114,7 @@ El personal de la garita de seguridad de la Calle 15 tiene tu nombre registrado 
               </p>
             </div>
             <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
-              © Villa María • Chichiriviche, Falcón, Venezuela
+              © ${siteName} • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
         </div>
@@ -122,10 +124,10 @@ El personal de la garita de seguridad de la Calle 15 tiene tu nombre registrado 
       id: 'wifi_rules',
       title: '📶 2. Clave Wi-Fi, Normas & Servicios de la Casa',
       subtitle: 'Red Wi-Fi de alta velocidad, horario de piscina y planta eléctrica 24/7.',
-      subject: `📶 Clave de Wi-Fi y Guía de Comodidades en Villa María (#${reservation.id.slice(0, 8)})`,
+      subject: `📶 Clave de Wi-Fi y Guía de Comodidades en ${siteName} (#${reservation.id.slice(0, 8)})`,
       icon: Wifi,
       color: 'border-teal-500/40 text-teal-300',
-      text: `¡Hola ${reservation.guestName}! Esperamos que estés disfrutando de tu estadía en Villa María 🌴. Te recordamos los accesos y comodidades de la casa:
+      text: `¡Hola ${reservation.guestName}! Esperamos que estés disfrutando de tu estadía en ${siteName} 🌴. Te recordamos los accesos y comodidades de la casa:
 
 📶 Red Wi-Fi: ${wifiSsid}
 🔑 Contraseña: ${wifiPass}
@@ -168,7 +170,7 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
               </p>
             </div>
             <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
-              © Villa María • Chichiriviche, Falcón, Venezuela
+              © ${siteName} • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
         </div>
@@ -178,10 +180,10 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
       id: 'checkout',
       title: '⭐ 3. Check-out, Agradecimiento & Solicitud de Reseña',
       subtitle: 'Horario de salida, entrega de llaves y enlace para dejar una reseña en la web.',
-      subject: `⭐ Gracias por visitarnos en Villa María — Recordatorio de Check-out (#${reservation.id.slice(0, 8)})`,
+      subject: `⭐ Gracias por visitarnos en ${siteName} — Recordatorio de Check-out (#${reservation.id.slice(0, 8)})`,
       icon: Star,
       color: 'border-amber-500/40 text-amber-300',
-      text: `¡Hola ${reservation.guestName}! 🌴 Muchas gracias por elegir Villa María para tus vacaciones en Morrocoy.
+      text: `¡Hola ${reservation.guestName}! 🌴 Muchas gracias por elegir ${siteName} para tus vacaciones en Morrocoy.
 
 🕒 Recordatorio de Check-out: Hoy hasta las 12:00 PM. Por favor entregar las llaves al encargado de la casa.
 ⭐ Tu opinión es muy importante para nosotros: ¿Podrías dejarnos una breve reseña en nuestra página web?
@@ -197,7 +199,7 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
             <div style="padding: 24px 20px; text-align: center;">
               <h2 style="color: #1c1c1c; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Gracias por tu visita, ${reservation.guestName}!</h2>
               <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0 0 18px 0; line-height: 1.5;">
-                Ha sido un placer recibirte en Villa María. Esperamos que hayas disfrutado de unas vacaciones inolvidables.
+                Ha sido un placer recibirte en ${siteName}. Esperamos que hayas disfrutado de unas vacaciones inolvidables.
               </p>
               
               <div style="background-color: #FEF3C7; border-radius: 14px; padding: 16px; margin-bottom: 20px; text-align: left;">
@@ -210,7 +212,7 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
               <div style="background-color: #e1dfd8; border-radius: 14px; padding: 20px; margin-bottom: 18px;">
                 <p style="margin: 0 0 6px 0; font-weight: bold; font-size: 14px; color: #1c1c1c;">⭐⭐⭐⭐⭐</p>
                 <p style="margin: 0 0 12px 0; font-size: 13px; color: rgba(27,59,54,0.9); font-weight: bold;">
-                  ¿Cómo fue tu experiencia en Villa María?
+                  ¿Cómo fue tu experiencia en ${siteName}?
                 </p>
                 <p style="margin: 0 0 14px 0; font-size: 12px; color: rgba(27,59,54,0.75);">
                   Tu opinión nos ayuda enormemente a seguir brindando el mejor servicio.
@@ -222,7 +224,7 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
               </p>
             </div>
             <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
-              © Villa María • Chichiriviche, Falcón, Venezuela
+              © ${siteName} • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
         </div>
@@ -232,10 +234,10 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
       id: 'payment_reminder',
       title: '💰 4. Confirmación de Pago & Verificación de Reserva',
       subtitle: 'Recordatorio para reservas pendientes que requieren comprobante de pago.',
-      subject: `💰 Confirmación de Pago y Validación de Reserva en Villa María (#${reservation.id.slice(0, 8)})`,
+      subject: `💰 Confirmación de Pago y Validación de Reserva en ${siteName} (#${reservation.id.slice(0, 8)})`,
       icon: DollarSign,
       color: 'border-purple-500/40 text-purple-300',
-      text: `¡Hola ${reservation.guestName}! Te escribimos del equipo de Villa María para confirmar los datos de tu solicitud de reserva #${reservation.id.slice(0, 8)} del ${startFormatted} al ${endFormatted}.
+      text: `¡Hola ${reservation.guestName}! Te escribimos del equipo de ${siteName} para confirmar los datos de tu solicitud de reserva #${reservation.id.slice(0, 8)} del ${startFormatted} al ${endFormatted}.
 
 💰 Monto Total: $${reservation.totalPrice || 0} USD
 Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle / Pago Móvil / Efectivo) para activar tu pase digital con código QR. ¡Muchas gracias!`,
@@ -268,11 +270,11 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
               </div>
 
               <p style="font-size: 12px; color: rgba(27,59,54,0.75); margin: 0;">
-                ¡Muchas gracias por elegir Villa María!
+                ¡Muchas gracias por elegir ${siteName}!
               </p>
             </div>
             <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
-              © Villa María • Chichiriviche, Falcón, Venezuela
+              © ${siteName} • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
         </div>

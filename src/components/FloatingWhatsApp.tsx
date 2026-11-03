@@ -1,3 +1,4 @@
+import { useSite } from '../context/SiteContext';
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -9,9 +10,10 @@ interface FloatingWhatsAppProps {
 }
 
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ phone, availableToday, raised }) => {
+  const { t, siteName } = useSite();
   const digits = (phone || '').replace(/[^0-9]/g, '');
   if (!digits) return null;
-  const url = `https://wa.me/${digits}?text=${encodeURIComponent('Hola Villa María , quisiera consultar disponibilidad.')}`;
+  const url = `https://wa.me/${digits}?text=${encodeURIComponent(t('whatsapp_greeting'))}`;
 
   return (
     <motion.a
@@ -27,9 +29,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ phone, avail
       <MessageCircle className="w-6 h-6 fill-white shrink-0" />
       {availableToday && (
         <span className="hidden md:flex items-center gap-1.5 pr-1">
-          <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-          Disponible hoy
-        </span>
+          <span className="w-2 h-2 rounded-full bg-white animate-pulse" />{t('txt_available_today')}</span>
       )}
       {availableToday && <span className="md:hidden absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-300 ring-2 ring-[#25D366]" />}
     </motion.a>

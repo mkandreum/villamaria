@@ -32,14 +32,17 @@ export interface SiteInfo {
   social: { instagram: string; facebook: string; tiktok: string; youtube: string };
   hidden: string[];
   isVisible: (navOrSectionId: string) => boolean;
+  /** The saved text for a key; empty when the admin left it empty. */
+  t: (key: string) => string;
 }
 
 const defaults: SiteInfo = {
-  siteName: 'Villa María',
+  siteName: '',
   logoUrl: '',
   social: { instagram: '', facebook: '', tiktok: '', youtube: '' },
   hidden: [],
   isVisible: () => true,
+  t: () => '',
 };
 
 const Ctx = createContext<SiteInfo>(defaults);
@@ -51,7 +54,7 @@ export const SiteProvider: React.FC<{ settings: Record<string, any>; children: R
     const hiddenAll = new Set(hidden);
     SECTION_DEFS.forEach((d) => { if (hiddenAll.has(d.id)) hiddenAll.add(d.navId); });
     return {
-      siteName: String(settings.site_name || '').trim() || defaults.siteName,
+      siteName: String(settings.site_name ?? '').trim(),
       logoUrl: String(settings.site_logo_url || '').trim(),
       social: {
         instagram: String(settings.social_instagram || '').trim(),
@@ -61,6 +64,7 @@ export const SiteProvider: React.FC<{ settings: Record<string, any>; children: R
       },
       hidden,
       isVisible: (id) => !hiddenAll.has(id),
+      t: (key) => String(settings[key] ?? ''),
     };
   }, [settings]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

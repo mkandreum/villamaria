@@ -160,7 +160,7 @@ const ZoomableSlide: React.FC<{
       <img
         ref={imgRef}
         src={photo.url}
-        alt={photo.title || 'Foto de Villa María'}
+        alt={photo.title || ''}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
         draggable={false}

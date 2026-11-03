@@ -45,14 +45,15 @@ export const WordReveal: React.FC<{ text: string; className?: string; delay?: nu
   stagger = 0.04,
 }) => {
   const reduce = useReducedMotion();
-  if (reduce) return <span className={className}>{text}</span>;
+  const content = String(text ?? '');
+  if (reduce) return <span className={className}>{content}</span>;
   const trigger = inView
     ? { whileInView: 'show' as const, viewport: { once: true, margin: '0px 0px -8% 0px' } }
     : { animate: 'show' as const };
   return (
     <motion.span className={className} initial="hidden" {...trigger}>
-      <span className="sr-only">{text}</span>
-      {text.split(' ').map((w, i) => (
+      <span className="sr-only">{content}</span>
+      {content.split(' ').filter(Boolean).map((w, i) => (
         <span key={i} aria-hidden className="inline-block overflow-hidden align-bottom pb-[0.14em] -mb-[0.14em] mr-[0.25em] last:mr-0">
           <motion.span
             className="inline-block"

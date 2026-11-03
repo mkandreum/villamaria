@@ -1,6 +1,6 @@
+import { useSite } from '../context/SiteContext';
 import { SectionHeader } from './SectionHeader';
 import React, { useState } from 'react';
-import { HOUSE_RULES, FAQS, PROPERTY_INFO } from '../data/mockData';
 import { ChevronDown, CheckCircle2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Reveal, Stagger, StaggerItem } from './Reveal';
@@ -16,22 +16,16 @@ interface HouseRulesAndFAQProps {
 
 export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
   rules,
-  cancellationPolicy = (PROPERTY_INFO as any)?.cancellationPolicy || 'Cancelación gratuita hasta 7 días antes de la llegada. Reembolso completo del depósito.',
+  cancellationPolicy,
   faqs,
-  title = 'Información & Preguntas',
-  subtitle = 'Todo lo que necesitas saber para una estancia tranquila y sin sorpresas.',
+  title,
+  subtitle,
 }) => {
-  const rulesList = React.useMemo(() => {
-    if (!rules) return HOUSE_RULES;
-    if (typeof rules === 'string') {
-      return rules.split('\n').map((r) => r.trim()).filter(Boolean);
-    }
-    return HOUSE_RULES;
-  }, [rules]);
+  const { t, siteName } = useSite();
+  const rulesList = React.useMemo(() => String(rules ?? '').split('\n').map((r) => r.trim()).filter(Boolean), [rules]);
 
   const normalizedFaqs = React.useMemo(() => {
-    if (!faqs) return FAQS.map((f: any) => ({ question: f.q, answer: f.a }));
-    let list = faqs;
+    let list: any = faqs;
     if (typeof faqs === 'string') {
       try {
         list = JSON.parse(faqs);
@@ -39,11 +33,14 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
         list = [];
       }
     }
-    if (!Array.isArray(list) || list.length === 0) return FAQS.map((f: any) => ({ question: f.q, answer: f.a }));
+    if (!Array.isArray(list)) return [];
     return list.map((f: any) => ({ question: f.question || f.q || '', answer: f.answer || f.a || '' })).filter((f: any) => f.question);
   }, [faqs]);
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const policy = String(cancellationPolicy ?? '').trim();
+
+  if (rulesList.length === 0 && !policy && normalizedFaqs.length === 0) return null;
 
   return (
     <section id="faq" className="py-16 sm:py-24 bg-[#e1dfd8]/40 text-[#1c1c1c] relative font-sans ">
@@ -54,9 +51,9 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Rules & Policy (5 cols) */}
           <Reveal className="lg:col-span-5 space-y-4 sm:space-y-6">
-            <div className="bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-6   space-y-3.5 sm:space-y-4">
+            {rulesList.length > 0 && (<div className="bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-6   space-y-3.5 sm:space-y-4">
               <h3 className="text-base sm:text-lg font-serif font-bold text-[#1c1c1c] flex items-center gap-2">
-                <span> Normas de la Casa</span>
+                <span>{t('txt_faq_rules')}</span>
               </h3>
               <Stagger gap={0.06} className="space-y-2.5 sm:space-y-3">
                 {rulesList.map((r, i) => (
@@ -66,22 +63,22 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
                   </StaggerItem>
                 ))}
               </Stagger>
-            </div>
+            </div>)}
 
-            <div className="bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-6   space-y-2.5 sm:space-y-3">
+            {policy && (<div className="bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-6   space-y-2.5 sm:space-y-3">
               <h3 className="text-sm sm:text-base font-serif font-bold text-[#1c1c1c] flex items-center gap-2">
-                <span> Política de Cancelación</span>
+                <span>{t('txt_faq_cancel')}</span>
               </h3>
               <p className="text-xs text-[#1c1c1c]/80 leading-relaxed font-sans">
-                {cancellationPolicy}
+                {policy}
               </p>
-            </div>
+            </div>)}
           </Reveal>
 
           {/* FAQs (7 cols) */}
-          <Reveal delay={0.12} className="lg:col-span-7 bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-8   space-y-3">
+          {normalizedFaqs.length > 0 && (<Reveal delay={0.12} className="lg:col-span-7 bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-8   space-y-3">
             <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1c1c1c] mb-3 sm:mb-4 flex items-center gap-2">
-              <span> Preguntas Frecuentes</span>
+              <span>{t('txt_faq_faq')}</span>
             </h3>
 
             <div className="space-y-2.5 sm:space-y-3">
@@ -119,7 +116,7 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
                 );
               })}
             </div>
-          </Reveal>
+          </Reveal>)}
         </div>
       </div>
     </section>
