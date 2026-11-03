@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+@theme {
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.45;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
+  --color-emerald-50: #f1f4f0;
+  --color-emerald-100: #e1e8df;
+  --color-emerald-200: #c6d4c4;
+  --color-emerald-300: #a9bda8;
+  --color-emerald-400: #8fa68e;
+  --color-emerald-500: #758f74;
+  --color-emerald-600: #5f7a5e;
+  --color-emerald-700: #4c644c;
+  --color-emerald-800: #3a4e3b;
+  --color-emerald-900: #283729;
+  --color-emerald-950: #1c1c1c;
+  --color-teal-300: #a9bda8;
+  --color-teal-400: #8fa68e;
+  --color-teal-950: #1c1c1c;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -9,8 +30,8 @@
   }
   body {
     font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
-    background-color: #F8F5F0;
-    color: #1B3B36;
+    background-color: #efeeea;
+    color: #1c1c1c;
     overflow-x: clip;
     touch-action: manipulation;
     overscroll-behavior-y: none;
@@ -26,13 +47,18 @@
   }
 
   :focus-visible {
-    outline: 2px solid #059669;
+    outline: 2px solid #5f7a5e;
     outline-offset: 2px;
     border-radius: 6px;
   }
 
   h1, h2, h3, h4, .font-serif {
     font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  /* Every control gives a little under the finger; utilities like active:scale-90 override it */
+  button:not(:disabled):active, a:active {
+    scale: 0.97;
   }
 
   /* Optimize tap and click buttons */
@@ -142,17 +168,32 @@
 /* Modals: centered when short, scrollable from the top when tall (no clipped header) */
 .modal-backdrop {
   overscroll-behavior: contain;
-  animation: backdropIn 0.2s ease-out both;
+  animation: backdropIn 0.25s ease-out backwards;
   padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
 }
 .modal-backdrop > * {
   margin-block: auto;
-  animation: sheetIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: sheetIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sheetIn {
   from { opacity: 0; transform: translateY(32px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Admin: the panel rises in, then each tab's blocks follow in reading order */
+.admin-enter { animation: adminIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+@keyframes adminIn {
+  from { opacity: 0; transform: translateY(28px); }
+}
+.tab-stagger > * > * { animation: tabItemIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.tab-stagger > * > :nth-child(2) { animation-delay: 50ms; }
+.tab-stagger > * > :nth-child(3) { animation-delay: 100ms; }
+.tab-stagger > * > :nth-child(4) { animation-delay: 150ms; }
+.tab-stagger > * > :nth-child(5) { animation-delay: 200ms; }
+.tab-stagger > * > :nth-child(n+6) { animation-delay: 250ms; }
+@keyframes tabItemIn {
+  from { opacity: 0; transform: translateY(14px); }
 }
 
 /* Tactile feedback on touch devices */
@@ -172,35 +213,12 @@
 
 /* ---------- Design tokens ---------- */
 :root {
-  --vm-bg: #F8F5F0;
+  --vm-bg: #efeeea;
   --vm-surface: #ffffff;
-  --vm-sand: #EAE3D8;
-  --vm-ink: #1B3B36;
+  --vm-sand: #e1dfd8;
+  --vm-ink: #1c1c1c;
   --vm-accent: #C17D5C;
 }
-
-/* ---------- Dark theme (remaps the palette used across components) ---------- */
-html[data-theme='dark'] {
-  color-scheme: dark;
-  --vm-bg: #0c1a17;
-  --vm-surface: #14272300;
-  --vm-ink: #e8efe9;
-}
-html[data-theme='dark'] body,
-html[data-theme='dark'] .bg-\[\#F8F5F0\],
-html[data-theme='dark'] .from-\[\#F8F5F0\],
-html[data-theme='dark'] .to-\[\#F8F5F0\] { background-color: #0c1a17; --tw-gradient-from: #0c1a17; --tw-gradient-to: #0c1a17; }
-html[data-theme='dark'] .bg-white { background-color: #132622; }
-html[data-theme='dark'] .bg-\[\#EAE3D8\],
-html[data-theme='dark'] .via-\[\#EAE3D8\]\/40 { background-color: #1a322d; }
-html[data-theme='dark'] .text-\[\#1B3B36\],
-html[data-theme='dark'] .text-emerald-900,
-html[data-theme='dark'] .bg-emerald-100.text-emerald-950 { color: #e8efe9; }
-html[data-theme='dark'] [class*='text-\[\#1B3B36\]\/'] { color: rgba(232, 239, 233, 0.72); }
-html[data-theme='dark'] [class*='border-\[\#1B3B36\]'] { border-color: rgba(232, 239, 233, 0.14); }
-html[data-theme='dark'] .max-md\:bg-\[\#F8F5F0\]\/90 { background-color: rgba(12, 26, 23, 0.92); }
-html[data-theme='dark'] .bg-\[\#1B3B36\] { background-color: #2f6b5f; }
-html[data-theme='dark'] img { filter: brightness(0.92); }
 
 /* Sheen sweep on primary buttons */
 .shine { position: relative; overflow: hidden; isolation: isolate; }
@@ -210,25 +228,12 @@ html[data-theme='dark'] img { filter: brightness(0.92); }
   transform: translateX(-120%);
 }
 .shine:hover::after, .shine:focus-visible::after { transform: translateX(120%); transition: transform 0.9s ease; }
-@media (hover: none) { .shine::after { animation: shineLoop 4.5s ease-in-out infinite 1.5s; } }
-@keyframes shineLoop { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
-
-/* Soft floating glow for the featured CTA */
-@keyframes ctaPulse { 0%,100% { box-shadow: 0 8px 24px rgba(16,185,129,.28); } 50% { box-shadow: 0 8px 36px rgba(16,185,129,.55); } }
-.cta-pulse { animation: ctaPulse 2.8s ease-in-out infinite; }
-html[data-theme='dark'] .bg-emerald-100 { background-color: #14532d; }
-html[data-theme='dark'] .bg-emerald-50,
-html[data-theme='dark'] .hover\:bg-emerald-50:hover { background-color: #123d2c; }
-html[data-theme='dark'] .bg-red-50 { background-color: rgba(127, 29, 29, 0.35); }
-html[data-theme='dark'] .text-emerald-800 { color: #6ee7b7; }
 
 /* ---------- Browser surfaces themed from the palette ---------- */
 ::selection { background: #C17D5C; color: #fff; }
-input, textarea, select { caret-color: #059669; accent-color: #1B3B36; }
+input, textarea, select { caret-color: #5f7a5e; accent-color: #1c1c1c; }
 ::placeholder { color: rgb(27 59 54 / 0.45); }
 a { text-underline-offset: 3px; text-decoration-thickness: 1px; }
 p, li { text-wrap: pretty; }
 .tabular-nums, [class*='price'] { font-variant-numeric: tabular-nums; }
 html { scrollbar-color: rgb(27 59 54 / 0.35) transparent; }
-html[data-theme='dark'] ::selection { background: #34d399; color: #04130f; }
-html[data-theme='dark'] input, html[data-theme='dark'] textarea, html[data-theme='dark'] select { color-scheme: dark; }

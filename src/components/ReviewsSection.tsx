@@ -1,4 +1,5 @@
 import { Stagger, StaggerItem } from './Reveal';
+import { WordReveal } from './Motion';
 import React, { useState, useEffect } from 'react';
 import { Star, Plus, UserCheck, Send, X, Loader2 } from 'lucide-react';
 import { api } from '../api';
@@ -53,18 +54,15 @@ export const ReviewsSection: React.FC = () => {
     : '—';
 
   return (
-    <section id="reviews" className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section id="reviews" className="py-16 sm:py-24 bg-[#efeeea] text-[#1c1c1c] relative font-sans ">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
 
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-900/10 border border-emerald-800/20 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wider mb-2">
-            <span> Valoraciones {reviews.length > 0 ? avgRating : '—'}/5.0</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1B3B36] font-bold tracking-tight">
-            Opiniones de Huéspedes
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1c1c1c] font-bold tracking-tight">
+            <WordReveal text="Opiniones de Huéspedes" inView />
           </h2>
-          <p className="text-[#1B3B36]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
+          <p className="text-[#1c1c1c]/70 text-xs sm:text-sm mt-1.5 max-w-lg mx-auto">
             Experiencias reales de familias que han disfrutado de su estancia en Villa María.
           </p>
 
@@ -77,7 +75,7 @@ export const ReviewsSection: React.FC = () => {
           {!isAdding && !submitted && (
             <button
               onClick={() => setIsAdding(true)}
-              className="mt-4 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold font-sans uppercase tracking-wider transition min-h-[48px] shadow-md cursor-pointer active:scale-95"
+              className="mt-4 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl sm:rounded-2xl bg-[#1c1c1c] text-white hover:bg-emerald-900 text-xs font-bold font-sans transition min-h-[48px]  cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4 text-emerald-400" />
               <span>Dejar una Opinión</span>
@@ -89,14 +87,14 @@ export const ReviewsSection: React.FC = () => {
         {isAdding && (
           <form
             onSubmit={handleSubmit}
-            className="max-w-lg mx-auto mb-10 bg-white border border-[#1B3B36]/15 rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-xl font-sans space-y-4"
+            className="max-w-lg mx-auto mb-10 bg-white  rounded-2xl sm:rounded-3xl p-4 sm:p-7  font-sans space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-serif font-bold text-[#1B3B36]">Escribe tu experiencia</h3>
+              <h3 className="text-base font-serif font-bold text-[#1c1c1c]">Escribe tu experiencia</h3>
               <button
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="p-2 rounded-full hover:bg-[#EAE3D8] text-[#1B3B36]/60 hover:text-[#1B3B36] transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                className="p-2 rounded-full hover:bg-[#e1dfd8] text-[#1c1c1c]/60 hover:text-[#1c1c1c] transition min-w-[36px] min-h-[36px] flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -109,19 +107,19 @@ export const ReviewsSection: React.FC = () => {
                 required
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
-                className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-xl p-3 text-xs text-[#1B3B36] focus:outline-none focus:border-emerald-700 min-h-[44px]"
+                className="bg-[#efeeea]  rounded-xl p-3 text-xs text-[#1c1c1c] focus:outline-none focus:border-emerald-700 min-h-[44px]"
               />
               <input
                 type="text"
                 placeholder="Ciudad / Origen"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-xl p-3 text-xs text-[#1B3B36] focus:outline-none focus:border-emerald-700 min-h-[44px]"
+                className="bg-[#efeeea]  rounded-xl p-3 text-xs text-[#1c1c1c] focus:outline-none focus:border-emerald-700 min-h-[44px]"
               />
             </div>
 
             <div>
-              <label className="text-[11px] uppercase font-bold text-[#1B3B36]/70 block mb-1">Calificación</label>
+              <label className="text-[13px] font-bold text-[#1c1c1c]/70 block mb-1">Calificación</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -142,7 +140,7 @@ export const ReviewsSection: React.FC = () => {
               placeholder="¿Qué tal tu estancia en Villa María? *"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="w-full bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-xl p-3 text-xs text-[#1B3B36] focus:outline-none focus:border-emerald-700 resize-none"
+              className="w-full bg-[#efeeea]  rounded-xl p-3 text-xs text-[#1c1c1c] focus:outline-none focus:border-emerald-700 resize-none"
             />
 
             {error && <p className="text-xs text-red-600">{error}</p>}
@@ -151,7 +149,7 @@ export const ReviewsSection: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#1B3B36] text-white py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider min-h-[48px] disabled:opacity-60 transition hover:bg-emerald-900 active:scale-95 cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#1c1c1c] text-white py-3 px-4 rounded-xl text-xs font-bold min-h-[48px] disabled:opacity-60 transition hover:bg-emerald-900 active:scale-95 cursor-pointer"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {submitting ? 'Enviando…' : 'Enviar Opinión'}
@@ -159,12 +157,12 @@ export const ReviewsSection: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="bg-[#EAE3D8] text-[#1B3B36] px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider min-h-[48px] hover:bg-[#d9d0c4] transition cursor-pointer"
+                className="bg-[#e1dfd8] text-[#1c1c1c] px-5 py-3 rounded-xl text-xs font-bold min-h-[48px] hover:bg-[#d9d0c4] transition cursor-pointer"
               >
                 Cancelar
               </button>
             </div>
-            <p className="text-[11px] text-[#1B3B36]/40 text-center">
+            <p className="text-[13px] text-[#1c1c1c]/40 text-center">
               Tu opinión será publicada tras revisión del anfitrión.
             </p>
           </form>
@@ -179,7 +177,7 @@ export const ReviewsSection: React.FC = () => {
 
         {/* Empty state */}
         {!loading && reviews.length === 0 && (
-          <div className="text-center py-12 text-[#1B3B36]/40 text-sm">
+          <div className="text-center py-12 text-[#1c1c1c]/40 text-sm">
             <p>Aún no hay opiniones publicadas. ¡Sé el primero en dejar la tuya!</p>
           </div>
         )}
@@ -188,9 +186,9 @@ export const ReviewsSection: React.FC = () => {
         {!loading && reviews.length > 0 && (
           <Stagger className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-3 px-3 sm:mx-0 sm:px-0 scrollbar-none no-scrollbar font-sans">
             {reviews.map((rev: any) => (
-              <StaggerItem key={rev.id} className="min-w-[270px] sm:min-w-0 w-[82vw] sm:w-auto snap-center shrink-0 sm:shrink flex">
+              <StaggerItem lift key={rev.id} className="min-w-[270px] sm:min-w-0 w-[82vw] sm:w-auto snap-center shrink-0 sm:shrink flex">
               <div
-                className="w-full bg-white border border-[#1B3B36]/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md flex flex-col justify-between shrink-0 sm:shrink"
+                className="w-full bg-white  rounded-2xl sm:rounded-3xl p-4 sm:p-6  flex flex-col justify-between shrink-0 sm:shrink"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -198,15 +196,15 @@ export const ReviewsSection: React.FC = () => {
                       <img
                         src={rev.avatarUrl || avatarUrl(rev.author)}
                         alt={rev.author}
-                        className="w-9 h-9 rounded-full object-cover border border-[#1B3B36]/20 shrink-0"
+                        className="w-9 h-9 rounded-full object-cover  shrink-0"
                         onError={(e) => { (e.target as HTMLImageElement).src = avatarUrl(rev.author); }}
                       />
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-[#1B3B36] truncate">{rev.author}</h4>
-                        {rev.location && <p className="text-[11px] text-[#1B3B36]/60 truncate">{rev.location}</p>}
+                        <h4 className="text-xs font-bold text-[#1c1c1c] truncate">{rev.author}</h4>
+                        {rev.location && <p className="text-[13px] text-[#1c1c1c]/60 truncate">{rev.location}</p>}
                       </div>
                     </div>
-                    <span className="text-[11px] text-[#1B3B36]/50 shrink-0">{rev.date}</span>
+                    <span className="text-[13px] text-[#1c1c1c]/50 shrink-0">{rev.date}</span>
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -218,12 +216,12 @@ export const ReviewsSection: React.FC = () => {
                     ))}
                   </div>
 
-                  <p className="text-xs text-[#1B3B36]/80 leading-relaxed italic line-clamp-4 sm:line-clamp-none">
+                  <p className="text-xs text-[#1c1c1c]/80 leading-relaxed italic line-clamp-4 sm:line-clamp-none">
                     "{rev.comment}"
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#1B3B36]/10 mt-3 flex items-center gap-1.5 text-[11px] text-emerald-800 font-bold uppercase tracking-wider">
+                <div className="pt-3  mt-3 flex items-center gap-1.5 text-[13px] text-emerald-800 font-bold ">
                   <UserCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                   <span>Estadía Verificada</span>
                 </div>

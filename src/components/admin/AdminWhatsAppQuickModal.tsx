@@ -81,19 +81,19 @@ export const AdminWhatsAppQuickModal: React.FC<AdminWhatsAppQuickModalProps> = (
 
 El personal de la garita de seguridad de la Calle 15 tiene tu nombre registrado para el acceso vehicular directo. ¡Buen viaje y te esperamos!`,
       html: `
-        <div style="background-color: #F8F5F0; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+        <div style="background-color: #efeeea; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1c1c1c;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06);">
-            <div style="background-color: #1B3B36; padding: 24px 20px; text-align: center; border-bottom: 3px solid #059669;">
+            <div style="background-color: #1c1c1c; padding: 24px 20px; text-align: center; border-bottom: 3px solid #059669;">
               <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-family: Georgia, serif; letter-spacing: 1px;">VILLA MARÍA 🌴</h1>
               <p style="color: #A7F3D0; margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Guía de Llegada &amp; Check-In • Chichiriviche</p>
             </div>
             <div style="padding: 24px 20px;">
-              <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
+              <h2 style="color: #1c1c1c; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
               <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0 0 18px 0; line-height: 1.5;">
                 Estamos muy emocionados de recibirte en Villa María. A continuación tienes todos los datos clave para tu llegada del <strong>${startFormatted}</strong> al <strong>${endFormatted}</strong>:
               </p>
               
-              <div style="background-color: #EAE3D8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
+              <div style="background-color: #e1dfd8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                   <tr><td style="padding: 5px 0; color: rgba(27,59,54,0.7); font-weight: bold;">🎟️ Código de Reserva:</td><td style="padding: 5px 0; text-align: right; font-weight: bold; font-family: monospace;">${reservation.id}</td></tr>
                   <tr><td style="padding: 5px 0; color: rgba(27,59,54,0.7);">🕒 Hora de Check-in:</td><td style="padding: 5px 0; text-align: right; font-weight: bold;">A partir de las 3:00 PM</td></tr>
@@ -102,16 +102,16 @@ El personal de la garita de seguridad de la Calle 15 tiene tu nombre registrado 
               </div>
 
               <div style="background-color: #ffffff; border: 1px solid rgba(27,59,54,0.15); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 20px;">
-                <p style="margin: 0 0 6px 0; font-size: 12px; color: #1B3B36; font-weight: bold;">📍 Dirección de la Propiedad:</p>
+                <p style="margin: 0 0 6px 0; font-size: 12px; color: #1c1c1c; font-weight: bold;">📍 Dirección de la Propiedad:</p>
                 <p style="margin: 0 0 12px 0; font-size: 12px; color: rgba(27,59,54,0.8);">${propertyAddress}</p>
-                <a href="${mapsUrl}" target="_blank" style="display: inline-block; background-color: #1B3B36; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 10px 20px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px;">🗺️ Abrir en Google Maps</a>
+                <a href="${mapsUrl}" target="_blank" style="display: inline-block; background-color: #1c1c1c; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 10px 20px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px;">🗺️ Abrir en Google Maps</a>
               </div>
 
               <p style="font-size: 12px; color: rgba(27,59,54,0.75); margin: 0; line-height: 1.4;">
                 El vigilante de turno en la garita principal tiene tu nombre en la lista autorizada de huéspedes para acceso directo. ¡Te deseamos un excelente viaje!
               </p>
             </div>
-            <div style="background-color: #F8F5F0; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
+            <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
               © Villa María • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
@@ -134,14 +134,14 @@ El personal de la garita de seguridad de la Calle 15 tiene tu nombre registrado 
 
 Cualquier consulta o necesidad durante tu estancia, estamos a tu completa disposición. ¡Feliz descanso!`,
       html: `
-        <div style="background-color: #F8F5F0; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+        <div style="background-color: #efeeea; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1c1c1c;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06);">
-            <div style="background-color: #1B3B36; padding: 24px 20px; text-align: center; border-bottom: 3px solid #0D9488;">
+            <div style="background-color: #1c1c1c; padding: 24px 20px; text-align: center; border-bottom: 3px solid #0D9488;">
               <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-family: Georgia, serif; letter-spacing: 1px;">VILLA MARÍA 🌴</h1>
               <p style="color: #5EEAD4; margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Credenciales Wi-Fi &amp; Servicios</p>
             </div>
             <div style="padding: 24px 20px;">
-              <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
+              <h2 style="color: #1c1c1c; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
               <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0 0 18px 0; line-height: 1.5;">
                 Esperamos que estés disfrutando al máximo de tu estancia. Aquí tienes tus credenciales de conexión y servicios de la propiedad:
               </p>
@@ -149,13 +149,13 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
               <!-- Wi-Fi Box -->
               <div style="background-color: #E6F4EA; border: 2px dashed #059669; border-radius: 14px; padding: 18px; margin-bottom: 18px; text-align: center;">
                 <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: bold; color: #047857;">📶 WI-FI DE ALTA VELOCIDAD (FIBRA ÓPTICA)</p>
-                <p style="margin: 4px 0; font-size: 15px; color: #1B3B36;">Red (SSID): <strong>${wifiSsid}</strong></p>
+                <p style="margin: 4px 0; font-size: 15px; color: #1c1c1c;">Red (SSID): <strong>${wifiSsid}</strong></p>
                 <p style="margin: 4px 0; font-size: 16px; color: #047857; font-family: monospace; font-weight: bold; letter-spacing: 1px;">Contraseña: ${wifiPass}</p>
               </div>
 
               <!-- Comodidades Grid -->
-              <div style="background-color: #EAE3D8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
-                <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 13px; color: #1B3B36;">✨ Servicios y Normas de la Casa:</p>
+              <div style="background-color: #e1dfd8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
+                <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 13px; color: #1c1c1c;">✨ Servicios y Normas de la Casa:</p>
                 <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: rgba(27,59,54,0.85); line-height: 1.6;">
                   <li>🏊‍♂️ <strong>Piscina:</strong> Operativa de 8:00 AM a 10:00 PM.</li>
                   <li>⚡ <strong>Energía y Agua:</strong> Planta eléctrica 24/7 y tanque de 10.000L garantizados.</li>
@@ -167,7 +167,7 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
                 Estamos a tu total disposición ante cualquier consulta durante tus vacaciones.
               </p>
             </div>
-            <div style="background-color: #F8F5F0; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
+            <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
               © Villa María • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
@@ -188,14 +188,14 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
 
 ¡Esperamos tener el gusto de recibirte nuevamente muy pronto!`,
       html: `
-        <div style="background-color: #F8F5F0; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+        <div style="background-color: #efeeea; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1c1c1c;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06);">
-            <div style="background-color: #1B3B36; padding: 24px 20px; text-align: center; border-bottom: 3px solid #D97706;">
+            <div style="background-color: #1c1c1c; padding: 24px 20px; text-align: center; border-bottom: 3px solid #D97706;">
               <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-family: Georgia, serif; letter-spacing: 1px;">VILLA MARÍA 🌴</h1>
               <p style="color: #FDE68A; margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Check-Out &amp; Agradecimiento</p>
             </div>
             <div style="padding: 24px 20px; text-align: center;">
-              <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Gracias por tu visita, ${reservation.guestName}!</h2>
+              <h2 style="color: #1c1c1c; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Gracias por tu visita, ${reservation.guestName}!</h2>
               <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0 0 18px 0; line-height: 1.5;">
                 Ha sido un placer recibirte en Villa María. Esperamos que hayas disfrutado de unas vacaciones inolvidables.
               </p>
@@ -207,8 +207,8 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
                 </p>
               </div>
 
-              <div style="background-color: #EAE3D8; border-radius: 14px; padding: 20px; margin-bottom: 18px;">
-                <p style="margin: 0 0 6px 0; font-weight: bold; font-size: 14px; color: #1B3B36;">⭐⭐⭐⭐⭐</p>
+              <div style="background-color: #e1dfd8; border-radius: 14px; padding: 20px; margin-bottom: 18px;">
+                <p style="margin: 0 0 6px 0; font-weight: bold; font-size: 14px; color: #1c1c1c;">⭐⭐⭐⭐⭐</p>
                 <p style="margin: 0 0 12px 0; font-size: 13px; color: rgba(27,59,54,0.9); font-weight: bold;">
                   ¿Cómo fue tu experiencia en Villa María?
                 </p>
@@ -221,7 +221,7 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
                 ¡Te esperamos de vuelta en tu próxima visita a Chichiriviche!
               </p>
             </div>
-            <div style="background-color: #F8F5F0; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
+            <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
               © Villa María • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
@@ -240,23 +240,23 @@ Cualquier consulta o necesidad durante tu estancia, estamos a tu completa dispos
 💰 Monto Total: $${reservation.totalPrice || 0} USD
 Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle / Pago Móvil / Efectivo) para activar tu pase digital con código QR. ¡Muchas gracias!`,
       html: `
-        <div style="background-color: #F8F5F0; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1B3B36;">
+        <div style="background-color: #efeeea; padding: 25px 15px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1c1c1c;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; border: 1px solid rgba(27,59,54,0.15); overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06);">
-            <div style="background-color: #1B3B36; padding: 24px 20px; text-align: center; border-bottom: 3px solid #9333EA;">
+            <div style="background-color: #1c1c1c; padding: 24px 20px; text-align: center; border-bottom: 3px solid #9333EA;">
               <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-family: Georgia, serif; letter-spacing: 1px;">VILLA MARÍA 🌴</h1>
               <p style="color: #E9D5FF; margin: 4px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Validación de Pago &amp; Reserva</p>
             </div>
             <div style="padding: 24px 20px;">
-              <h2 style="color: #1B3B36; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
+              <h2 style="color: #1c1c1c; font-family: Georgia, serif; margin: 0 0 10px 0; font-size: 20px;">¡Hola ${reservation.guestName}!</h2>
               <p style="color: rgba(27,59,54,0.8); font-size: 13px; margin: 0 0 18px 0; line-height: 1.5;">
                 Hemos registrado tu solicitud de reserva para el periodo del <strong>${startFormatted}</strong> al <strong>${endFormatted}</strong>.
               </p>
               
-              <div style="background-color: #EAE3D8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
+              <div style="background-color: #e1dfd8; border-radius: 14px; padding: 16px; margin-bottom: 18px;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                   <tr><td style="padding: 5px 0; color: rgba(27,59,54,0.7);">Código de Reserva:</td><td style="padding: 5px 0; text-align: right; font-weight: bold; font-family: monospace;">${reservation.id}</td></tr>
                   <tr><td style="padding: 5px 0; color: rgba(27,59,54,0.7);">Estado:</td><td style="padding: 5px 0; text-align: right; font-weight: bold; color: #D97706;">Pendiente de Comprobante</td></tr>
-                  <tr style="border-top: 1px solid rgba(27,59,54,0.15);"><td style="padding: 8px 0 0 0; font-weight: bold; color: #1B3B36;">Total a Pagar:</td><td style="padding: 8px 0 0 0; text-align: right; font-weight: bold; font-size: 16px; color: #1B3B36;">$${reservation.totalPrice || 0} USD</td></tr>
+                  <tr style="border-top: 1px solid rgba(27,59,54,0.15);"><td style="padding: 8px 0 0 0; font-weight: bold; color: #1c1c1c;">Total a Pagar:</td><td style="padding: 8px 0 0 0; text-align: right; font-weight: bold; font-size: 16px; color: #1c1c1c;">$${reservation.totalPrice || 0} USD</td></tr>
                 </table>
               </div>
 
@@ -271,7 +271,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
                 ¡Muchas gracias por elegir Villa María!
               </p>
             </div>
-            <div style="background-color: #F8F5F0; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
+            <div style="background-color: #efeeea; padding: 14px; text-align: center; border-top: 1px solid rgba(27,59,54,0.1); font-size: 11px; color: rgba(27,59,54,0.6);">
               © Villa María • Chichiriviche, Falcón, Venezuela
             </div>
           </div>
@@ -338,7 +338,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
         {/* Close Button */}
         <button aria-label="Cerrar"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
+          className="absolute top-4 right-4 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
         >
           <X className="w-4 h-4" />
         </button>
@@ -530,7 +530,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
           </p>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-emerald-900/50 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold transition-colors min-h-[40px] ml-auto"
+            className="px-5 py-2 rounded-xl bg-emerald-900/50 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold transition min-h-[40px] ml-auto"
           >
             Cerrar
           </button>

@@ -138,7 +138,7 @@ export const ReservationsTab: React.FC<{ ctx: AdminCtx; initialFilter?: string }
                 transition={{ delay: Math.min(i, 8) * 0.03, duration: 0.3 }}
                 className="rounded-2xl bg-emerald-900/35 border border-emerald-400/15 overflow-hidden"
               >
-                <button onClick={() => setOpenId(r.id)} className="w-full text-left p-4 cursor-pointer active:bg-emerald-900/60 transition-colors">
+                <button onClick={() => setOpenId(r.id)} className="w-full text-left p-4 cursor-pointer active:bg-emerald-900/60 transition">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-serif text-lg font-bold text-white truncate">{r.guestName}</p>

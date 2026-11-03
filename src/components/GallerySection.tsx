@@ -4,6 +4,7 @@ import { GALLERY_IMAGES } from '../data/mockData';
 import { Images } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PhotoViewer } from './PhotoViewer';
+import { PhotoReveal } from './Motion';
 import { stripEmoji } from '../utils/icons';
 
 interface GallerySectionProps {
@@ -80,7 +81,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   };
 
   return (
-    <section className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section className="py-16 sm:py-24 bg-[#efeeea] text-[#1c1c1c] relative font-sans ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader title={stripEmoji(title)} subtitle={subtitle}>
           {categories.length > 1 && (
@@ -96,20 +97,20 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                       setActiveCategory(cat.id);
                       setExpanded(false);
                     }}
-                    className={`relative shrink-0 px-4 min-h-[44px] rounded-full text-sm font-semibold transition-colors cursor-pointer ${
-                      active ? 'text-white' : 'text-[#1B3B36]/75 hover:text-[#1B3B36]'
+                    className={`relative shrink-0 px-4 min-h-[44px] rounded-full text-sm font-semibold transition cursor-pointer ${
+                      active ? 'text-white' : 'text-[#1c1c1c]/75 hover:text-[#1c1c1c]'
                     }`}
                   >
                     {active && (
                       <motion.span
                         layoutId="gallery-filter-pill"
-                        className="absolute inset-0 rounded-full bg-[#1B3B36]"
+                        className="absolute inset-0 rounded-full bg-[#1c1c1c]"
                         transition={{ type: 'spring', stiffness: 420, damping: 36 }}
                       />
                     )}
                     <span className="relative flex items-center gap-1.5 whitespace-nowrap">
                       {cat.label}
-                      <span className={`text-xs tabular-nums ${active ? 'text-white/70' : 'text-[#1B3B36]/50'}`}>{cat.count}</span>
+                      <span className={`text-xs tabular-nums ${active ? 'text-white/70' : 'text-[#1c1c1c]/50'}`}>{cat.count}</span>
                     </span>
                   </button>
                 );
@@ -135,10 +136,11 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                   key={img.id || img.url || idx}
                   onClick={() => setViewerIndex(idx)}
                   aria-label={isLast ? `Ver las ${filteredImages.length} fotos` : `Ampliar foto ${idx + 1}${img.title ? `: ${img.title}` : ''}`}
-                  className={`group relative overflow-hidden rounded-2xl bg-[#EAE3D8] cursor-zoom-in active:scale-[0.98] transition-transform duration-200 ${tileShape(idx)} ${
+                  className={`group relative overflow-hidden rounded-2xl bg-[#e1dfd8] cursor-zoom-in active:scale-[0.98] transition-transform duration-200 ${tileShape(idx)} ${
                     loaded[img.url] ? '' : 'animate-pulse'
                   }`}
                 >
+                  <PhotoReveal className="absolute inset-0" delay={Math.min(idx, 7) * 0.07}>
                   <img
                     src={img.url}
                     alt={img.title || `Foto ${idx + 1} de Villa María`}
@@ -149,6 +151,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                       loaded[img.url] ? 'opacity-100' : 'opacity-0'
                     }`}
                   />
+                  </PhotoReveal>
                   {isLast && (
                     <span className="absolute inset-0 bg-emerald-950/60 text-white flex items-center justify-center gap-2 font-semibold">
                       <Images className="w-5 h-5" />+{hidden} fotos
@@ -164,7 +167,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setExpanded((v) => !v)}
-              className="min-h-[48px] px-5 rounded-full border border-[#1B3B36]/25 text-[#1B3B36] text-sm font-semibold hover:bg-[#1B3B36]/5 active:scale-95 transition-transform cursor-pointer"
+              className="min-h-[48px] px-5 rounded-full  text-[#1c1c1c] text-sm font-semibold hover:bg-[#1c1c1c]/5 active:scale-95 transition-transform cursor-pointer"
             >
               {expanded ? 'Ver menos' : `Ver las ${filteredImages.length} fotos`}
             </button>

@@ -156,12 +156,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
 
   const pending = reservations.filter((r) => r.status === 'PENDING').length;
   const toApprove = reviews.filter((r) => !r.visible).length;
+  const tabIndex = TABS.findIndex((t) => t.id === tab);
+  const prevTabIndex = useRef(tabIndex);
+  const tabDir = tabIndex >= prevTabIndex.current ? 1 : -1;
+  useEffect(() => { prevTabIndex.current = tabIndex; }, [tabIndex]);
   const showSaveBar = dirty && (tab === 'web' || tab === 'more');
   const price = Number(settings.price_per_night) || 150;
   const fee = Number(settings.cleaning_fee) || 50;
 
   return (
-    <div className="fixed inset-0 z-50 bg-emerald-950 text-emerald-50 font-sans flex flex-col">
+    <div className="admin-enter fixed inset-0 z-50 bg-emerald-950 text-emerald-50 font-sans flex flex-col">
       <header className="shrink-0 flex items-center justify-between gap-3 px-4 pt-[max(env(safe-area-inset-top),10px)] pb-2.5 border-b border-emerald-400/10 bg-emerald-950/95 backdrop-blur">
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-300/70">Panel de administración</p>
@@ -173,7 +177,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
         </div>
       </header>
 
-      <main ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: 'thin' }}>
+      <main ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain" style={{ scrollbarWidth: 'thin' }}>
         <div className="max-w-3xl mx-auto px-4 pt-5 pb-40">
           {loading ? (
             <div className="space-y-4" aria-busy="true" aria-label="Cargando">
@@ -181,7 +185,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
             </div>
           ) : (
             <AnimatePresence mode="wait" initial={false}>
-              <motion.div key={tab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}>
+              <motion.div key={tab} className="tab-stagger" initial={{ opacity: 0, x: tabDir * 28 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
                 {tab === 'today' && <TodayTab ctx={ctx} />}
                 {tab === 'reservations' && <ReservationsTab ctx={ctx} initialFilter={subHint} />}
                 {tab === 'calendar' && (
@@ -209,7 +213,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-            className="fixed inset-x-0 bottom-[calc(76px+env(safe-area-inset-bottom))] z-[60] px-3 pointer-events-none"
+            className="fixed inset-x-0 bottom-[calc(92px+env(safe-area-inset-bottom))] z-[60] px-3 pointer-events-none"
           >
             <div className="pointer-events-auto max-w-lg mx-auto flex items-center gap-2 rounded-2xl bg-emerald-900 border border-emerald-300/30 shadow-2xl p-2 pl-4">
               <span className="flex-1 text-sm font-semibold text-white">Cambios sin publicar</span>
@@ -220,19 +224,19 @@ export const AdminModal: React.FC<AdminModalProps> = ({ onClose, onRefreshData }
         )}
       </AnimatePresence>
 
-      <nav aria-label="Secciones del panel" className="fixed inset-x-0 bottom-0 z-[55] bg-emerald-950/95 backdrop-blur border-t border-emerald-400/15 pb-[max(env(safe-area-inset-bottom),4px)]">
-        <div className="max-w-xl mx-auto flex">
+      <nav aria-label="Secciones del panel" className="fixed left-1/2 -translate-x-1/2 bottom-[max(env(safe-area-inset-bottom),12px)] z-[55] w-max max-w-[calc(100%-16px)] bg-[#2c2f2c] rounded-full p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+        <div className="flex gap-0.5">
           {TABS.map(({ id, label, icon: Icon }) => {
             const active = tab === id;
             const badge = id === 'reservations' ? pending : id === 'more' ? toApprove : 0;
             return (
-              <button key={id} onClick={() => goTab(id)} aria-current={active ? 'page' : undefined} className="relative flex-1 min-h-[60px] flex flex-col items-center justify-center gap-1 cursor-pointer active:scale-90 transition-transform">
-                {active && <motion.span layoutId="admin-tab" className="absolute top-0 h-[3px] w-10 rounded-b-full bg-emerald-300" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+              <button key={id} onClick={() => goTab(id)} aria-current={active ? 'page' : undefined} className="relative w-[62px] min-h-[54px] flex flex-col items-center justify-center gap-0.5 rounded-full cursor-pointer active:scale-90 transition-transform">
+                {active && <motion.span layoutId="admin-tab" className="absolute inset-0 rounded-full bg-emerald-300" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
                 <span className="relative">
-                  <Icon className={`w-6 h-6 transition-colors ${active ? 'text-emerald-300' : 'text-emerald-100/55'}`} />
+                  <Icon className={`w-[22px] h-[22px] transition ${active ? 'text-[#1c1c1c]' : 'text-white/60'}`} />
                   {badge > 0 && <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-amber-950 text-[11px] font-bold flex items-center justify-center tabular-nums">{badge}</span>}
                 </span>
-                <span className={`text-[11px] font-semibold leading-none ${active ? 'text-white' : 'text-emerald-100/55'}`}>{label}</span>
+                <span className={`relative text-[11px] font-semibold leading-none ${active ? 'text-[#1c1c1c]' : 'text-white/70'}`}>{label}</span>
               </button>
             );
           })}

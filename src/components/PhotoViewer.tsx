@@ -314,7 +314,7 @@ export const PhotoViewer: React.FC<PhotoViewerProps> = ({ photos, startIndex, on
         <button
           onClick={() => go(index - 1)}
           aria-label="Foto anterior"
-          className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-md items-center justify-center transition-colors cursor-pointer"
+          className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-md items-center justify-center transition cursor-pointer"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -323,7 +323,7 @@ export const PhotoViewer: React.FC<PhotoViewerProps> = ({ photos, startIndex, on
         <button
           onClick={() => go(index + 1)}
           aria-label="Foto siguiente"
-          className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-md items-center justify-center transition-colors cursor-pointer"
+          className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-md items-center justify-center transition cursor-pointer"
         >
           <ChevronRight className="w-6 h-6" />
         </button>

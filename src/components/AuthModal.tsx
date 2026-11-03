@@ -46,7 +46,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess }) => {
       <div className="bg-emerald-950 border border-emerald-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-5 sm:p-8 shadow-2xl relative text-emerald-100 font-sans my-auto max-h-[94vh] overflow-y-auto">
         <button aria-label="Cerrar"
           onClick={onClose}
-          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition-colors min-w-[38px] min-h-[38px] flex items-center justify-center cursor-pointer"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full bg-emerald-900/60 text-emerald-200 hover:bg-emerald-800 hover:text-white transition min-w-[38px] min-h-[38px] flex items-center justify-center cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>

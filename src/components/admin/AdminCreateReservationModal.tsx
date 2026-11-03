@@ -94,7 +94,7 @@ export const AdminCreateReservationModal: React.FC<AdminCreateReservationModalPr
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition"
           aria-label="Cerrar modal"
         >
           <X className="w-5 h-5" />

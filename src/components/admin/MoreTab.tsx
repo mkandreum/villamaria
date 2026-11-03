@@ -209,7 +209,7 @@ export const MoreTab: React.FC<{ ctx: AdminCtx; sub: MoreSub | null; setSub: (s:
             <h2 className="font-serif text-3xl font-bold text-white px-1">Más</h2>
             <Card className="!p-0 divide-y divide-emerald-400/10 overflow-hidden">
               {ITEMS.map(({ id, label, hint, icon: Icon }) => (
-                <button key={id} onClick={() => setSub(id)} className="w-full flex items-center gap-3.5 p-4 text-left active:bg-emerald-900/60 transition-colors cursor-pointer">
+                <button key={id} onClick={() => setSub(id)} className="w-full flex items-center gap-3.5 p-4 text-left active:bg-emerald-900/60 transition cursor-pointer">
                   <span className="w-11 h-11 rounded-xl bg-emerald-950 text-emerald-300 flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold text-white">{label}{id === 'reviews' && ctx.reviews.some((r) => !r.visible) && <span className="ml-2 px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-xs font-bold">{ctx.reviews.filter((r) => !r.visible).length}</span>}</span>

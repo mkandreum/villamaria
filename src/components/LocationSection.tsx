@@ -1,4 +1,6 @@
 import { SectionHeader } from './SectionHeader';
+import { PhotoReveal } from './Motion';
+import { Reveal, Stagger, StaggerItem } from './Reveal';
 import { iconForText, stripEmoji } from '../utils/icons';
 import React from 'react';
 import { MapPin, Navigation, ExternalLink } from 'lucide-react';
@@ -86,54 +88,55 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   const resolvedEmbed = React.useMemo(() => resolveEmbedUrl(embedUrl), [embedUrl]);
 
   return (
-    <section className="py-16 sm:py-24 bg-[#F8F5F0] text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section className="py-16 sm:py-24 bg-[#efeeea] text-[#1c1c1c] relative font-sans ">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
 
         <SectionHeader title={title} subtitle={subtitle} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Details Card */}
-          <div className="lg:col-span-5 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#1B3B36]/10 shadow-lg space-y-5 sm:space-y-6">
+          <Reveal className="lg:col-span-5 bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-8   space-y-5 sm:space-y-6">
             <div className="space-y-2.5 sm:space-y-3">
-              <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs ">
                 <MapPin className="w-4 h-4" />
                 <span>Dirección Exacta</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1B3B36]">{address}</h3>
-              <p className="text-xs text-[#1B3B36]/80 leading-relaxed font-sans">{description}</p>
+              <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1c1c1c]">{address}</h3>
+              <p className="text-xs text-[#1c1c1c]/80 leading-relaxed font-sans">{description}</p>
             </div>
 
-            <div className="space-y-2.5 sm:space-y-3 pt-3 sm:pt-4 border-t border-[#1B3B36]/10">
-              <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
-                <span className="w-9 h-9 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet1)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+            <Stagger delay={0.2} className="space-y-2.5 sm:space-y-3 pt-3 sm:pt-4 ">
+              <StaggerItem className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
+                <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet1)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
                 <span>{stripEmoji(String(bullet1))}</span>
-              </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
-                <span className="w-9 h-9 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet2)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
+                <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet2)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
                 <span>{stripEmoji(String(bullet2))}</span>
-              </div>
-              <div className="flex items-center gap-3 text-xs font-semibold text-[#1B3B36]">
-                <span className="w-9 h-9 rounded-full bg-[#1B3B36] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet3)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 text-xs font-semibold text-[#1c1c1c]">
+                <span className="w-9 h-9 rounded-full bg-[#1c1c1c] text-emerald-100 flex items-center justify-center shrink-0">{React.createElement(iconForText(String(bullet3)), { className: 'w-4 h-4', strokeWidth: 1.75 })}</span>
                 <span>{stripEmoji(String(bullet3))}</span>
-              </div>
-            </div>
+              </StaggerItem>
+            </Stagger>
 
             <div className="pt-2">
               <a
                 href={mapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 text-xs font-bold uppercase tracking-wider transition shadow-md min-h-[48px] active:scale-95 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl bg-[#1c1c1c] text-white hover:bg-emerald-900 text-xs font-bold transition  min-h-[48px] active:scale-95 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-emerald-400" />
-                <span className="truncate">Abrir en Google Maps GPS</span>
+                <span className="leading-snug">Abrir en Google Maps GPS</span>
                 <ExternalLink className="w-3.5 h-3.5 ml-1 shrink-0" />
               </a>
             </div>
-          </div>
+          </Reveal>
 
           {/* Map iframe */}
-          <div className="lg:col-span-7 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 sm:border-4 border-white h-[280px] sm:h-[380px] lg:h-[420px] relative bg-[#EAE3D8]">
+          <div className="lg:col-span-7 rounded-2xl sm:rounded-3xl overflow-hidden  border-2 sm:border-4 border-white h-[280px] sm:h-[380px] lg:h-[420px] relative bg-[#e1dfd8]">
+            <PhotoReveal className="w-full h-full">
             <iframe
               title="Ubicación Villa María"
               src={resolvedEmbed}
@@ -142,6 +145,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
+            </PhotoReveal>
           </div>
         </div>
       </div>

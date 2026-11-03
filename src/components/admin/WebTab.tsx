@@ -3,10 +3,15 @@ import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Star, Trash2 } from 'luci
 import { api } from '../../api';
 import { AMENITIES, NEARBY_ATTRACTIONS, FAQS, HOUSE_RULES } from '../../data/mockData';
 import type { AdminCtx } from './types';
+import { SECTION_DEFS, orderedSections, hiddenSections } from '../../context/SiteContext';
+import { ICON_CHOICES } from '../../utils/icons';
 import { Btn, Card, Chip, Empty, Field, SectionTitle, Toggle, asList } from './ui';
 
-type Sub = 'photos' | 'banner' | 'hero' | 'titles' | 'amenities' | 'attractions' | 'faq' | 'location' | 'footer';
+type Sub = 'brand' | 'sections' | 'share' | 'photos' | 'banner' | 'hero' | 'titles' | 'amenities' | 'attractions' | 'faq' | 'location' | 'footer';
 const SUBS: Array<{ id: Sub; label: string }> = [
+  { id: 'brand', label: 'Marca' },
+  { id: 'sections', label: 'Secciones' },
+  { id: 'share', label: 'Google y WhatsApp' },
   { id: 'photos', label: 'Fotos' },
   { id: 'banner', label: 'Banner' },
   { id: 'hero', label: 'Portada' },
@@ -75,7 +80,7 @@ function ListEditor<T extends Record<string, any>>({
 }
 
 export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, initialSub }) => {
-  const [sub, setSub] = useState<Sub>((SUBS.find((s) => s.id === initialSub)?.id as Sub) || 'photos');
+  const [sub, setSub] = useState<Sub>((SUBS.find((s) => s.id === initialSub)?.id as Sub) || 'brand');
   const { settings: s, setSetting: set } = ctx;
   const text = (key: string, label: string, extra: Partial<React.ComponentProps<typeof Field>> = {}) => (
     <Field key={key} label={label} value={s[key] ?? ''} onChange={(v) => set(key, v)} {...extra} />
@@ -119,7 +124,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
   };
 
   // ---------- lists ----------
-  const amenities = asList<any>(s.amenities, AMENITIES as any[]).map((a) => ({ id: a.id || uid(), title: a.title || a.name || '', description: a.description || '' }));
+  const amenities = asList<any>(s.amenities, AMENITIES as any[]).map((a) => ({ id: a.id || uid(), title: a.title || a.name || '', description: a.description || '', icon: a.icon || '' }));
   const attractions = asList<any>(s.attractions, NEARBY_ATTRACTIONS as any[]).map((a) => ({
     id: a.id || uid(),
     title: a.title || a.name || '',
@@ -142,6 +147,46 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
       setUploadingAttr(null);
     }
   };
+
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
+  const pickImage = async (key: string, file?: File | null) => {
+    if (!file) return;
+    setUploadingKey(key);
+    try {
+      set(key, (await api.uploadFile(file)).url);
+    } catch (e: any) {
+      ctx.notify('error', e.message || 'No se pudo subir la imagen.');
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+  const imageField = (key: string, label: string, hint: string, round = false) => (
+    <Field label={label} hint={hint}>
+      <div className="flex items-center gap-3">
+        <div className={`w-16 h-16 shrink-0 overflow-hidden bg-emerald-950 border border-emerald-400/20 ${round ? 'rounded-full' : 'rounded-xl'}`}>
+          {s[key] ? <img src={s[key]} alt="" className="w-full h-full object-cover" /> : null}
+        </div>
+        <label className="min-h-[48px] px-4 rounded-xl bg-emerald-800/60 text-white font-semibold flex items-center gap-2 cursor-pointer">
+          {uploadingKey === key ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+          {s[key] ? 'Cambiar' : 'Subir imagen'}
+          <input type="file" accept="image/*" className="sr-only" onChange={(e) => { pickImage(key, e.target.files?.[0]); e.target.value = ''; }} />
+        </label>
+        {s[key] ? <button type="button" onClick={() => set(key, '')} className="min-h-[48px] px-3 text-sm text-rose-300 cursor-pointer">Quitar</button> : null}
+      </div>
+    </Field>
+  );
+
+  const order = orderedSections(s.sections_order);
+  const hidden = hiddenSections(s.sections_hidden);
+  const moveSection = (i: number, d: number) => {
+    const next = [...order];
+    const j = i + d;
+    if (j < 0 || j >= next.length) return;
+    [next[i], next[j]] = [next[j], next[i]];
+    set('sections_order', next);
+  };
+  const toggleSection = (id: string, visible: boolean) =>
+    set('sections_hidden', visible ? hidden.filter((x) => x !== id) : [...hidden, id]);
 
   return (
     <div className="space-y-5">
@@ -265,12 +310,22 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
 
       {sub === 'amenities' && (
         <section className="space-y-4">
-          <SectionTitle title="Servicios incluidos" hint="El icono se asigna solo según el nombre." action={<button onClick={async () => (await ctx.confirm('¿Volver a la lista sugerida?')) && set('amenities', AMENITIES)} className="text-xs font-semibold text-emerald-300 underline min-h-[44px] px-1 cursor-pointer">Restaurar</button>} />
-          <ListEditor items={amenities} onChange={(v) => set('amenities', v)} make={() => ({ id: uid(), title: '', description: '' })} label={(a) => a.title} addLabel="Añadir servicio" confirm={ctx.confirm}>
+          <SectionTitle title="Servicios incluidos" hint="Elige un icono o deja que se asigne solo según el nombre." action={<button onClick={async () => (await ctx.confirm('¿Volver a la lista sugerida?')) && set('amenities', AMENITIES)} className="text-xs font-semibold text-emerald-300 underline min-h-[44px] px-1 cursor-pointer">Restaurar</button>} />
+          <ListEditor items={amenities} onChange={(v) => set('amenities', v)} make={() => ({ id: uid(), title: '', description: '', icon: '' })} label={(a) => a.title} addLabel="Añadir servicio" confirm={ctx.confirm}>
             {(a, up) => (
               <>
                 <Field label="Nombre" placeholder="Ej: Planta eléctrica 24/7" value={a.title} onChange={(v) => up({ title: v })} />
                 <Field label="Descripción" multiline rows={2} value={a.description} onChange={(v) => up({ description: v })} />
+                <Field label="Icono">
+                  <select
+                    value={a.icon}
+                    onChange={(e) => up({ icon: e.target.value })}
+                    className="w-full min-h-[48px] rounded-xl bg-emerald-950 border border-emerald-400/20 px-3 text-base text-white"
+                  >
+                    <option value="">Automático (según el nombre)</option>
+                    {Object.entries(ICON_CHOICES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                  </select>
+                </Field>
               </>
             )}
           </ListEditor>
@@ -333,6 +388,57 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
             <p className="font-semibold text-white">Tres puntos destacados</p>
             {[1, 2, 3].map((n) => text(`location_bullet_${n}`, `Punto ${n}`))}
           </Card>
+        </section>
+      )}
+
+      {sub === 'brand' && (
+        <section className="space-y-4">
+          <SectionTitle title="Marca y redes" hint="El nombre y el logo salen en la barra, el pie y la barra móvil." />
+          <Card className="space-y-4">
+            {text('site_name', 'Nombre del sitio', { placeholder: 'Villa María' })}
+            {imageField('site_logo_url', 'Logo', 'Cuadrado, se muestra en círculo. Sin logo se usan las iniciales.', true)}
+          </Card>
+          <Card className="space-y-4">
+            {text('social_instagram', 'Instagram', { placeholder: 'https://instagram.com/tu_casa', type: 'url', inputMode: 'url' })}
+            {text('social_facebook', 'Facebook', { placeholder: 'https://facebook.com/tu_casa', type: 'url', inputMode: 'url' })}
+            {text('social_tiktok', 'TikTok', { placeholder: 'https://tiktok.com/@tu_casa', type: 'url', inputMode: 'url' })}
+            {text('social_youtube', 'YouTube', { placeholder: 'https://youtube.com/@tu_casa', type: 'url', inputMode: 'url' })}
+            <p className="text-xs text-emerald-200/50">Solo salen en el pie de página los que rellenes.</p>
+          </Card>
+        </section>
+      )}
+
+      {sub === 'sections' && (
+        <section className="space-y-4">
+          <SectionTitle title="Secciones de la web" hint="Muestra, oculta y ordena. La portada siempre va primero." />
+          <div className="space-y-2.5">
+            {order.map((id, i) => {
+              const def = SECTION_DEFS.find((d) => d.id === id)!;
+              const visible = !hidden.includes(id);
+              return (
+                <Card key={id} className="flex items-center gap-2 !py-2.5">
+                  <div className="flex-1 min-w-0">
+                    <Toggle checked={visible} onChange={(v) => toggleSection(id, v)} label={def.label} hint={visible ? 'Visible' : 'Oculta'} />
+                  </div>
+                  <button aria-label="Subir" disabled={i === 0} onClick={() => moveSection(i, -1)} className="w-11 h-11 rounded-lg text-emerald-200 disabled:opacity-25 hover:bg-emerald-800/60 flex items-center justify-center cursor-pointer"><ArrowUp className="w-4 h-4" /></button>
+                  <button aria-label="Bajar" disabled={i === order.length - 1} onClick={() => moveSection(i, 1)} className="w-11 h-11 rounded-lg text-emerald-200 disabled:opacity-25 hover:bg-emerald-800/60 flex items-center justify-center cursor-pointer"><ArrowDown className="w-4 h-4" /></button>
+                </Card>
+              );
+            })}
+          </div>
+          <p className="text-xs text-emerald-200/50">Si ocultas el calendario, los visitantes no podrán reservar desde la web.</p>
+        </section>
+      )}
+
+      {sub === 'share' && (
+        <section className="space-y-4">
+          <SectionTitle title="Google y WhatsApp" hint="Lo que se ve al buscar la casa en Google o al compartir el enlace." />
+          <Card className="space-y-4">
+            {text('seo_title', 'Título', { placeholder: 'Villa María - Casa de playa en Chichiriviche', hint: 'Hasta 60 caracteres.' })}
+            {text('seo_description', 'Descripción', { multiline: true, rows: 3, hint: 'Hasta 160 caracteres.' })}
+            {imageField('seo_image', 'Imagen al compartir', 'Mejor horizontal, 1200 × 630.')}
+          </Card>
+          <p className="text-xs text-emerald-200/50">Google y WhatsApp guardan una copia: los cambios pueden tardar en verse al compartir.</p>
         </section>
       )}
 

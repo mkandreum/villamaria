@@ -1,7 +1,10 @@
 import { SectionHeader } from './SectionHeader';
 import React, { useState } from 'react';
 import { HOUSE_RULES, FAQS, PROPERTY_INFO } from '../data/mockData';
-import { ShieldCheck, HelpCircle, ChevronDown, ChevronUp, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import { ChevronDown, CheckCircle2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { Reveal, Stagger, StaggerItem } from './Reveal';
+import { EASE_OUT } from './Motion';
 
 interface HouseRulesAndFAQProps {
   rules?: string;
@@ -43,41 +46,41 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
+    <section id="faq" className="py-16 sm:py-24 bg-[#e1dfd8]/40 text-[#1c1c1c] relative font-sans ">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         <SectionHeader title={title} subtitle={subtitle} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Rules & Policy (5 cols) */}
-          <div className="lg:col-span-5 space-y-4 sm:space-y-6">
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-md space-y-3.5 sm:space-y-4">
-              <h3 className="text-base sm:text-lg font-serif font-bold text-[#1B3B36] flex items-center gap-2">
+          <Reveal className="lg:col-span-5 space-y-4 sm:space-y-6">
+            <div className="bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-6   space-y-3.5 sm:space-y-4">
+              <h3 className="text-base sm:text-lg font-serif font-bold text-[#1c1c1c] flex items-center gap-2">
                 <span> Normas de la Casa</span>
               </h3>
-              <ul className="space-y-2.5 sm:space-y-3">
+              <Stagger gap={0.06} className="space-y-2.5 sm:space-y-3">
                 {rulesList.map((r, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-xs text-[#1B3B36]/80 leading-relaxed font-sans">
+                  <StaggerItem key={i} className="flex items-start gap-2.5 text-xs text-[#1c1c1c]/80 leading-relaxed font-sans">
                     <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                     <span>{r}</span>
-                  </li>
+                  </StaggerItem>
                 ))}
-              </ul>
+              </Stagger>
             </div>
 
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-md space-y-2.5 sm:space-y-3">
-              <h3 className="text-sm sm:text-base font-serif font-bold text-[#1B3B36] flex items-center gap-2">
+            <div className="bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-6   space-y-2.5 sm:space-y-3">
+              <h3 className="text-sm sm:text-base font-serif font-bold text-[#1c1c1c] flex items-center gap-2">
                 <span> Política de Cancelación</span>
               </h3>
-              <p className="text-xs text-[#1B3B36]/80 leading-relaxed font-sans">
+              <p className="text-xs text-[#1c1c1c]/80 leading-relaxed font-sans">
                 {cancellationPolicy}
               </p>
             </div>
-          </div>
+          </Reveal>
 
           {/* FAQs (7 cols) */}
-          <div className="lg:col-span-7 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#1B3B36]/10 shadow-md space-y-3">
-            <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1B3B36] mb-3 sm:mb-4 flex items-center gap-2">
+          <Reveal delay={0.12} className="lg:col-span-7 bg-[#efeeea] rounded-2xl sm:rounded-3xl p-4 sm:p-8   space-y-3">
+            <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1c1c1c] mb-3 sm:mb-4 flex items-center gap-2">
               <span> Preguntas Frecuentes</span>
             </h3>
 
@@ -87,32 +90,36 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
                 return (
                   <div
                     key={idx}
-                    className="border border-[#1B3B36]/10 rounded-xl sm:rounded-2xl overflow-hidden transition-colors"
+                    className=" rounded-xl sm:rounded-2xl overflow-hidden transition"
                   >
                     <button
                       onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                      className="w-full p-3.5 sm:p-4 text-left font-serif font-bold text-xs sm:text-sm text-[#1B3B36] flex items-center justify-between gap-3 bg-[#F8F5F0]/60 hover:bg-[#F8F5F0] transition-colors min-h-[48px] cursor-pointer"
+                      className="w-full p-3.5 sm:p-4 text-left font-serif font-bold text-xs sm:text-sm text-[#1c1c1c] flex items-center justify-between gap-3 bg-[#efeeea]/60 hover:bg-[#efeeea] transition min-h-[48px] cursor-pointer"
                     >
                       <span className="flex items-center gap-2">
                         <span>{faq.question}</span>
                       </span>
-                      {isOpen ? (
-                        <ChevronUp className="w-4 h-4 text-emerald-800 shrink-0" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-emerald-800 shrink-0" />
-                      )}
+                      <ChevronDown className={`w-4 h-4 text-emerald-800 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
 
-                    {isOpen && (
-                      <div className="p-3.5 sm:p-4 pt-2 text-xs text-[#1B3B36]/80 font-sans leading-relaxed border-t border-[#1B3B36]/10 bg-white">
-                        {faq.answer}
-                      </div>
-                    )}
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: EASE_OUT }}
+                          className="overflow-hidden"
+                        >
+                          <div className="p-3.5 sm:p-4 pt-2 text-xs text-[#1c1c1c]/80 font-sans leading-relaxed  bg-[#efeeea]">{faq.answer}</div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

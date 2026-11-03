@@ -38,7 +38,7 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
   return (
     <aside
       aria-label="Anuncio promocional"
-      className="relative z-40 bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border-b border-emerald-500/20 text-emerald-100 py-0.5 h-6 sm:h-7 flex items-center text-[11px] font-sans shadow-none overflow-hidden"
+      className="relative z-40 bg-emerald-950 text-emerald-100 py-0.5 h-8 sm:h-9 flex items-center text-[13px] font-sans  overflow-hidden"
     >
       <div className="flex items-center justify-between relative w-full">
         {/* Continuous Left-Scrolling Marquee Container */}
@@ -48,11 +48,11 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               const IconComponent = item.icon;
               return (
                 <div key={idx} className="inline-flex items-center gap-1.5 shrink-0 px-1">
-                  {item.badge ? <span className="shimmer-badge px-1.5 py-0 rounded-full text-[8px] font-bold uppercase tracking-wider text-emerald-300 border border-emerald-400/30 flex items-center gap-1 leading-tight">
-                    <IconComponent className="w-2 h-2 text-emerald-400" />
+                  {item.badge ? <span className="font-bold text-emerald-300 flex items-center gap-1.5 leading-tight">
+                    <IconComponent className="w-3.5 h-3.5" />
                     <span>{item.badge}</span>
                   </span> : null}
-                  <span className="text-[11px] text-white/90 font-medium leading-none">
+                  <span className="text-[13px] text-white/90 font-medium leading-none">
                     {item.content}
                   </span>
                 </div>
@@ -68,10 +68,10 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               setVisible(false);
               if (onClose) onClose();
             }}
-            className="text-emerald-300/60 hover:text-white transition-colors p-0.5 flex items-center justify-center"
+            className="text-emerald-300/60 hover:text-white transition p-0.5 flex items-center justify-center"
             title="Cerrar aviso"
           >
-            <X className="w-3 h-3" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>

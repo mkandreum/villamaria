@@ -333,7 +333,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
           <div className="flex items-center gap-1 sm:gap-1.5 bg-emerald-950/80 border border-emerald-500/30 rounded-xl p-1">
             <button
               onClick={prevMonth}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition-colors active:scale-95"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition active:scale-95"
               title="Mes Anterior"
               aria-label="Mes Anterior"
             >
@@ -344,7 +344,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
             </span>
             <button
               onClick={nextMonth}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition-colors active:scale-95"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-emerald-800/70 text-emerald-300 transition active:scale-95"
               title="Mes Siguiente"
               aria-label="Mes Siguiente"
             >
@@ -637,7 +637,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
               </button>
               <button
                 onClick={() => setSelectedDate(null)}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 transition-colors"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 transition"
                 title="Cerrar detalles del día"
                 aria-label="Cerrar detalles del día"
               >
@@ -676,7 +676,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                     >
                       {res.status}
                     </span>
-                    <h5 className="font-bold text-white text-sm group-hover:text-emerald-300 transition-colors truncate">
+                    <h5 className="font-bold text-white text-sm group-hover:text-emerald-300 transition truncate">
                       {res.guestName}
                     </h5>
                     <p className="text-xs text-emerald-300/80 truncate">
@@ -728,7 +728,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                       onShowAlert({ type: 'error', text: err.message });
                     }
                   }}
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs shrink-0 transition-colors"
+                  className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs shrink-0 transition"
                   title="Eliminar bloqueo"
                   aria-label="Eliminar bloqueo"
                 >
@@ -750,7 +750,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                 setSelectedReservation(null);
                 setIsRescheduling(false);
               }}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 hover:text-white transition"
               aria-label="Cerrar modal de reserva"
             >
               <X className="w-5 h-5" />
@@ -984,7 +984,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsRescheduling(false)}
-                      className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 text-xs font-bold transition-colors"
+                      className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 text-xs font-bold transition"
                     >
                       Cancelar
                     </button>
@@ -1009,7 +1009,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
           <div className="bg-emerald-950 border border-purple-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto text-emerald-100 font-sans">
             <button
               onClick={() => setIsQuickBlockOpen(false)}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-emerald-900/60 text-emerald-300 hover:bg-emerald-800 transition"
               aria-label="Cerrar modal de bloqueo"
             >
               <X className="w-5 h-5" />
@@ -1060,7 +1060,7 @@ export const AdminCalendarView: React.FC<AdminCalendarViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsQuickBlockOpen(false)}
-                  className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/50 hover:bg-emerald-900 text-emerald-300 font-bold transition-colors"
+                  className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-900/50 hover:bg-emerald-900 text-emerald-300 font-bold transition"
                 >
                   Cancelar
                 </button>

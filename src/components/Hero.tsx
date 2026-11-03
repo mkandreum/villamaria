@@ -3,7 +3,8 @@ import { Calendar, MessageCircle, Star, ChevronLeft, ChevronRight } from 'lucide
 import { useCurrency } from '../context/CurrencyContext';
 import { WeatherSeaWidget } from './WeatherSeaWidget';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
-import { WordReveal } from './Motion';
+import { EASE_OUT, WordReveal } from './Motion';
+import { Stagger, StaggerItem } from './Reveal';
 import { iconForText, stripEmoji } from '../utils/icons';
 
 interface HeroProps {
@@ -89,7 +90,9 @@ export const Hero: React.FC<HeroProps> = ({
   const [loadedImgs, setLoadedImgs] = useState<Record<number, boolean>>({});
   const trackRef = React.useRef<HTMLDivElement>(null);
   const interactedAt = React.useRef(0);
-  const introBase = React.useMemo(() => { try { return sessionStorage.getItem('vm-splash') === '1' ? 0.1 : 1.15; } catch { return 0.1; } }, []);
+  const introBase = 0.25;
+  // On desktop this column is on the first screen and waits for the title; on a phone it is reached by scrolling
+  const isDesktop = React.useMemo(() => window.matchMedia('(min-width: 1024px)').matches, []);
   const heroRef = React.useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
@@ -154,35 +157,38 @@ export const Hero: React.FC<HeroProps> = ({
   )}`;
 
   return (
-    <section className="relative pt-0 md:pt-20 lg:pt-24 pb-12 md:pb-16 overflow-hidden bg-gradient-to-b from-[#F8F5F0] via-[#EAE3D8]/40 to-[#F8F5F0] text-[#1B3B36] font-sans border-b border-[#1B3B36]/10">
+    <section className="relative pt-0 md:pt-20 lg:pt-28 pb-12 md:pb-20 overflow-hidden bg-[#efeeea] text-[#1c1c1c] font-sans">
       <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
         
         {/* Headline & Title Section */}
-        <div className="hidden lg:block text-center lg:text-left max-w-4xl mx-auto lg:mx-0 space-y-2 mb-4">
-
-          {/* Centered Large Professional Title - Super Big on Mobile */}
-          <h1 className="text-5xl xs:text-6xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#1B3B36] font-black tracking-tighter text-center lg:text-left leading-[1.05] sm:leading-none pt-1 sm:pt-2 pb-1 break-words">
-            {title}
+        <div className="hidden lg:block max-w-5xl mb-12">
+          <h1 className="text-[clamp(54px,6.6vw,108px)] font-serif font-light tracking-[-0.03em] leading-[1.02] text-[#1c1c1c] text-balance">
+            <WordReveal text={title} delay={0.1} stagger={0.05} />
           </h1>
-          <p className="font-serif italic text-xl lg:text-2xl text-emerald-900 pt-1">{stripEmoji(subtitle)}</p>
-
-          <p className="text-xs sm:text-sm md:text-base text-[#1B3B36]/80 max-w-2xl text-center lg:text-left pt-1 leading-relaxed">
-            {description}
-          </p>
+          <motion.p initial={reduceMotion ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.7, ease: EASE_OUT }} className="mt-6 text-xl text-[#1c1c1c] max-w-[48ch] leading-snug">{stripEmoji(subtitle)}</motion.p>
         </div>
 
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-10 items-center">
           
           {/* PHOTO CAROUSEL "AL AIRE" (Full-width, large, rounded corners, arrows on touch/hover)  */}
-          <div className="lg:col-span-7">
-            <div
+          <div className="lg:col-span-7 min-w-0">
+            <motion.div
               ref={heroRef}
+              initial={reduceMotion ? false : { clipPath: 'inset(100% 0% 0% 0%)' }}
+              animate={{ clipPath: 'inset(0% 0% 0% 0%)', transitionEnd: { clipPath: 'none' } }}
+              transition={{ duration: 1.2, ease: EASE_OUT }}
               onMouseEnter={() => setShowArrows(true)}
               onMouseLeave={() => setShowArrows(false)}
-              className="relative -mx-3 sm:-mx-6 lg:mx-0 rounded-none lg:rounded-3xl overflow-hidden shadow-2xl h-[calc(100svh-7rem)] min-h-[460px] max-h-[720px] lg:h-auto lg:max-h-none lg:aspect-[16/9] group bg-emerald-950 isolate"
+              className="relative -mx-3 sm:-mx-6 lg:mx-0 rounded-none overflow-hidden  h-[calc(100svh-7rem)] min-h-[460px] max-h-[720px] lg:h-auto lg:min-h-0 lg:max-h-none lg:aspect-[16/9] group bg-emerald-950 isolate"
             >
-              <motion.div style={{ y: parallaxY }} className="absolute inset-x-0 -inset-y-[10%] bg-emerald-950">
+              <motion.div
+                style={{ y: parallaxY }}
+                initial={reduceMotion ? false : { scale: 1.14 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1.7, ease: EASE_OUT }}
+                className="absolute inset-x-0 -inset-y-[10%] bg-emerald-950"
+              >
                 <div
                   ref={trackRef}
                   className="no-scrollbar flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory overscroll-x-contain"
@@ -212,18 +218,18 @@ export const Hero: React.FC<HeroProps> = ({
 
               {/* Mobile overlay: title, price and primary actions over the photo */}
               <motion.div style={{ y: overlayY, opacity: overlayOpacity }} className="pointer-events-none lg:hidden absolute inset-x-0 bottom-0 z-10 px-5 pb-12 text-white space-y-3">
-                <h1 className="text-5xl font-serif font-black tracking-tight leading-[1.02] drop-shadow-lg break-words"><WordReveal text={title} delay={introBase + 0.1} /></h1>
-                <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.4, duration: 0.7 }} className="font-serif italic text-lg text-emerald-100/95 -mt-1">{stripEmoji(subtitle)}</motion.p>
-                <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.55, duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="flex items-end justify-between gap-3 pt-1">
+                <h1 className="text-[clamp(34px,10vw,54px)] font-serif font-light tracking-[-0.02em] leading-[1.05] text-balance"><WordReveal text={title} delay={introBase} /></h1>
+                <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.3, duration: 0.7, ease: EASE_OUT }} className="text-base text-white/90 -mt-1">{stripEmoji(subtitle)}</motion.p>
+                <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: introBase + 0.45, duration: 0.8, ease: EASE_OUT }} className="flex items-end justify-between gap-3 pt-1">
                   <div>
-                    <span className="text-[11px] uppercase tracking-wider text-emerald-200 font-bold block">Desde</span>
+                    <span className="text-[13px] text-emerald-200 font-bold block">Desde</span>
                     <span className="text-2xl font-serif font-bold leading-none">
                       {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-white/80">/ noche</span>
                     </span>
                   </div>
                   <button
                     onClick={onSearch}
-                    className="pointer-events-auto shine cta-pulse px-5 min-h-[48px] rounded-2xl bg-white text-[#1B3B36] font-bold text-sm flex items-center gap-2 shadow-xl active:scale-95 transition-transform cursor-pointer"
+                    className="pointer-events-auto shine px-5 min-h-[48px] rounded-2xl bg-white text-[#1c1c1c] font-bold text-sm flex items-center gap-2  active:scale-95 transition-transform cursor-pointer"
                   >
                     <Calendar className="w-4 h-4" /> Ver fechas
                   </button>
@@ -235,14 +241,14 @@ export const Hero: React.FC<HeroProps> = ({
                 <>
                   <button
                     onClick={() => goTo(-1)}
-                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition active:scale-90 z-20 cursor-pointer"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center   transition active:scale-90 z-20 cursor-pointer"
                     title="Anterior foto"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => goTo(1)}
-                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg transition active:scale-90 z-20 cursor-pointer"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 text-white flex items-center justify-center   transition active:scale-90 z-20 cursor-pointer"
                     title="Siguiente foto"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -265,77 +271,67 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Editable Badge Overlay */}
-              <div className="pointer-events-none absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85 backdrop-blur-md border border-emerald-400/30 text-white text-[11px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1 shadow-md max-w-[80%] truncate">
+              <div className="pointer-events-none absolute top-4 lg:top-3 left-4 lg:left-3 bg-emerald-950/85  border border-emerald-400/30 text-white text-[13px] sm:text-[13px] font-bold px-2.5 sm:px-3 py-1 rounded-full flex items-center gap-1  max-w-[80%] truncate">
                 <span className="truncate">{stripEmoji(String(photoBadge))}</span>
               </div>
-            </div>
-            <p className="lg:hidden px-1 pt-4 text-sm text-[#1B3B36]/80 leading-relaxed">{description}</p>
+            </motion.div>
+            <p className="lg:hidden px-1 pt-4 text-sm text-[#1c1c1c]/80 leading-relaxed">{description}</p>
           </div>
 
           {/* Right Column: Rating, WhatsApp CTA & Features */}
-          <div className="lg:col-span-5 space-y-3.5 sm:space-y-4">
+          <Stagger delay={isDesktop ? 0.6 : 0.05} gap={0.1} className="lg:col-span-5 space-y-3.5 sm:space-y-4">
             
-            {/* Live Weather & Sea Condition Widget */}
-            <WeatherSeaWidget />
+            <StaggerItem><WeatherSeaWidget /></StaggerItem>
 
-            {/* Price & Rating Card */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#1B3B36]/10 shadow-lg space-y-4">
-              <div className="flex items-center justify-between gap-2">
+            <div className="space-y-6 pt-2">
+              <StaggerItem className="flex items-end justify-between gap-4">
                 <div>
-                  <span className="text-[11px] uppercase font-bold text-emerald-800 tracking-wider block">
-                    {priceLabel}
+                  <span className="text-5xl font-serif font-light tracking-tight text-[#1c1c1c]">
+                    {formatPrice(pricePerNight)} <span className="text-base font-sans text-[#1c1c1c]/70 tracking-normal">/ noche</span>
                   </span>
-                  <span className="text-xl sm:text-3xl font-serif font-bold text-[#1B3B36]">
-                    {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
-                  </span>
+                  <span className="text-base text-[#1c1c1c]/70 block mt-1">{priceLabel}</span>
                 </div>
-
                 <div className="text-right shrink-0">
                   <div className="flex text-amber-500 justify-end">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-[#1B3B36]">{rating}</span>
-                  <span className="text-[11px] text-[#1B3B36]/60 block">({reviewsCount} reseñas)</span>
+                  <span className="text-base font-semibold text-[#1c1c1c]">{rating}</span>
+                  <span className="text-sm text-[#1c1c1c]/70 block">({reviewsCount} reseñas)</span>
                 </div>
-              </div>
+              </StaggerItem>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <StaggerItem className="grid grid-cols-2 gap-3">
                 <button
                   onClick={onSearch}
-                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1B3B36] text-white hover:bg-emerald-900 font-bold text-xs uppercase tracking-wider transition shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+                  className="py-3.5 rounded-full bg-[#1c1c1c] text-white hover:bg-emerald-800 font-semibold text-base transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
                 >
-                  <Calendar className="w-4 h-4 text-emerald-400" />
+                  <Calendar className="w-4 h-4" />
                   <span>Reservar</span>
                 </button>
-
                 <a
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+                  className="py-3.5 rounded-full bg-emerald-300 hover:bg-emerald-200 text-[#1c1c1c] font-semibold text-base transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer min-h-[52px]"
                 >
-                  <MessageCircle className="w-4 h-4 fill-white" />
+                  <MessageCircle className="w-4 h-4" />
                   <span>WhatsApp</span>
                 </a>
-              </div>
+              </StaggerItem>
+
+              <StaggerItem><ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-base text-[#1c1c1c]">
+                {[feat1, feat2, feat3, feat4].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 min-w-0">
+                    {React.createElement(iconForText(String(item)), { className: 'w-4 h-4 mt-1 text-emerald-700 shrink-0', strokeWidth: 1.75 })}
+                    <span className="leading-snug">{stripEmoji(String(item))}</span>
+                  </li>
+                ))}
+              </ul></StaggerItem>
             </div>
 
-            {/* Editable Features Emojis Grid */}
-            <div className="grid grid-cols-2 gap-2">
-              {[feat1, feat2, feat3, feat4].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-2 p-2.5 px-3 rounded-xl sm:rounded-2xl bg-white border border-[#1B3B36]/10 text-xs font-semibold text-[#1B3B36] shadow-sm min-h-[42px]"
-                >
-                  {React.createElement(iconForText(String(item)), { className: 'w-4 h-4 text-emerald-700 shrink-0', strokeWidth: 1.75 })}
-                  <span className="text-xs truncate">{stripEmoji(String(item))}</span>
-                </div>
-              ))}
-            </div>
-
-          </div>
+          </Stagger>
 
         </div>
       </div>

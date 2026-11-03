@@ -36,7 +36,7 @@ export const SectionTitle: React.FC<{ title: string; hint?: string; action?: Rea
 );
 
 const inputBase =
-  'w-full rounded-xl bg-emerald-950/80 border border-emerald-400/20 px-3.5 text-[15px] text-emerald-50 placeholder:text-emerald-200/30 focus:outline-none focus:border-emerald-300 focus:ring-2 focus:ring-emerald-400/20 transition-colors';
+  'w-full rounded-xl bg-emerald-950/80 border border-emerald-400/20 px-3.5 text-[15px] text-emerald-50 placeholder:text-emerald-200/30 focus:outline-none focus:border-emerald-300 focus:ring-2 focus:ring-emerald-400/20 transition';
 
 export const Field: React.FC<{
   label: string;
@@ -97,7 +97,7 @@ export const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void
       <span className="block text-[15px] font-semibold text-emerald-50">{label}</span>
       {hint && <span className="block text-xs text-emerald-200/55 mt-0.5 text-pretty">{hint}</span>}
     </span>
-    <span className={`relative shrink-0 w-12 h-7 rounded-full transition-colors duration-200 ${checked ? 'bg-emerald-400' : 'bg-emerald-950 border border-emerald-400/25'}`}>
+    <span className={`relative shrink-0 w-12 h-7 rounded-full transition duration-200 ${checked ? 'bg-emerald-400' : 'bg-emerald-950 border border-emerald-400/25'}`}>
       <span
         className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow transition-transform duration-200 ${
           checked ? 'translate-x-5 bg-emerald-950' : 'bg-emerald-200/60'
@@ -135,7 +135,7 @@ export const Chip: React.FC<{ active: boolean; onClick: () => void; children: Re
 }) => (
   <button
     onClick={onClick}
-    className={`shrink-0 min-h-[40px] px-3.5 rounded-full text-[13px] font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+    className={`shrink-0 min-h-[40px] px-3.5 rounded-full text-[13px] font-semibold transition cursor-pointer whitespace-nowrap ${
       active ? 'bg-emerald-400 text-emerald-950' : 'bg-emerald-900/60 text-emerald-100/80 border border-emerald-400/15'
     }`}
   >

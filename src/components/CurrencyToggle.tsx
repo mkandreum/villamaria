@@ -8,7 +8,7 @@ export const CurrencyToggle: React.FC = () => {
 
   return (
     <div
-      className="inline-flex items-center gap-1 rounded-full bg-white border border-[#1B3B36]/20 p-0.5 shadow-sm"
+      className="inline-flex items-center gap-1 rounded-full bg-white  p-0.5 "
       title={exchange.rate != null ? `Tasa del día (BCV): ${rateLabel} · ${exchange.date || ''}` : 'Tasa BCV'}
     >
       {(['USD', 'BS'] as const).map((c) => (
@@ -17,10 +17,10 @@ export const CurrencyToggle: React.FC = () => {
           type="button"
           onClick={() => setCurrency(c)}
           aria-pressed={currency === c}
-          className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition active:scale-95 ${
+          className={`px-2.5 py-1 rounded-full text-[13px] font-bold transition active:scale-95 ${
             currency === c
-              ? 'bg-[#1B3B36] text-white shadow'
-              : 'text-[#1B3B36]/70 hover:text-[#1B3B36] hover:bg-[#EAE3D8]/60'
+              ? 'bg-[#1c1c1c] text-white shadow'
+              : 'text-[#1c1c1c]/70 hover:text-[#1c1c1c] hover:bg-[#e1dfd8]/60'
           }`}
         >
           {c === 'USD' ? 'USD' : 'Bs'}

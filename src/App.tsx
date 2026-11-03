@@ -19,13 +19,21 @@ import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
 import { CurrencyProvider } from './context/CurrencyContext';
+import { SiteProvider, orderedSections, hiddenSections } from './context/SiteContext';
 import { Reveal } from './components/Reveal';
 import { Toast, ToastState } from './components/Toast';
 import { StickyMobileBar } from './components/StickyMobileBar';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
-import { ThemeToggle } from './components/ThemeToggle';
-import { ScrollProgress, Splash } from './components/Motion';
+import { ScrollProgress } from './components/Motion';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { stripEmoji } from './utils/icons';
+
+/** Lets a modal fade out when it closes; opening is handled by .modal-backdrop in the stylesheet. */
+const ModalExit: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <motion.div className="relative z-50" exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: 'easeIn' }}>
+    {children}
+  </motion.div>
+);
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(() => getAuthUser());
@@ -175,6 +183,24 @@ export default function App() {
 
   const liveBreakdown = calculatePriceBreakdown(checkIn, checkOut, adults, childrenCount, mockPricing);
 
+  useEffect(() => {
+    const s = propertySettings;
+    const setMeta = (sel: string, attr: string, key: string, value: string) => {
+      if (!value) return;
+      let el = document.head.querySelector<HTMLMetaElement>(sel);
+      if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
+      el.setAttribute('content', value);
+    };
+    const title = String(s.seo_title || '').trim();
+    const desc = String(s.seo_description || '').trim();
+    const image = String(s.seo_image || '').trim();
+    if (title) document.title = title;
+    setMeta('meta[name="description"]', 'name', 'description', desc);
+    setMeta('meta[property="og:title"]', 'property', 'og:title', title);
+    setMeta('meta[property="og:description"]', 'property', 'og:description', desc);
+    setMeta('meta[property="og:image"]', 'property', 'og:image', image);
+  }, [propertySettings]);
+
   const now = new Date();
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const availableToday = ![...availability.reservations, ...availability.blockedDates].some((r: any) => {
@@ -192,9 +218,96 @@ export default function App() {
     try { return typeof raw === 'string' ? JSON.parse(raw) : []; } catch { return []; }
   })();
 
+  const sectionOrder = orderedSections(propertySettings.sections_order);
+  const hiddenIds = hiddenSections(propertySettings.sections_hidden);
+  const sections: Record<string, React.ReactNode> = {
+    disponibilidad: (
+        <section id="disponibilidad"><Reveal>
+          <BookingCalendar
+            checkIn={checkIn}
+            checkOut={checkOut}
+            adults={adults}
+            childrenCount={childrenCount}
+            bookings={availability.reservations}
+            pricing={mockPricing}
+            onCheckInChange={setCheckIn}
+            onCheckOutChange={setCheckOut}
+            onAdultsChange={setAdults}
+            onChildrenChange={setChildrenCount}
+            onInitiateBooking={() => setIsBookingModalOpen(true)}
+          />
+        </Reveal></section>
+    ),
+    gallery: (
+        <section id="gallery">
+          <GallerySection
+            images={propertySettings.gallery_images}
+            badge={propertySettings.gallery_badge}
+            title={propertySettings.gallery_title}
+            subtitle={propertySettings.gallery_subtitle}
+            cat1Label={propertySettings.gallery_cat1}
+            cat2Label={propertySettings.gallery_cat2}
+            cat3Label={propertySettings.gallery_cat3}
+            cat4Label={propertySettings.gallery_cat4}
+          />
+        </section>
+    ),
+    amenities: (
+        <section id="amenities">
+          <AmenitiesSection
+            amenities={propertySettings.amenities}
+            badge={propertySettings.amenities_badge}
+            title={propertySettings.amenities_title}
+            subtitle={propertySettings.amenities_subtitle}
+          />
+        </section>
+    ),
+    location: (
+        <section id="location">
+          <LocationSection
+            badge={propertySettings.location_badge}
+            title={propertySettings.location_title}
+            subtitle={propertySettings.location_subtitle}
+            address={propertySettings.location_address}
+            description={propertySettings.location_description}
+            mapsLink={propertySettings.location_maps_link}
+            embedUrl={propertySettings.location_embed_url}
+            bullet1={propertySettings.location_bullet_1}
+            bullet2={propertySettings.location_bullet_2}
+            bullet3={propertySettings.location_bullet_3}
+          />
+        </section>
+    ),
+    attractions: (
+        <section id="attractions">
+          <AttractionsSection
+            attractions={propertySettings.attractions}
+            title={propertySettings.attractions_title}
+            subtitle={propertySettings.attractions_subtitle}
+          />
+        </section>
+    ),
+    faq: (
+        <HouseRulesAndFAQ
+          rules={propertySettings.house_rules}
+          cancellationPolicy={propertySettings.cancellation_policy}
+          faqs={propertySettings.faqs}
+          title={propertySettings.faq_title}
+          subtitle={propertySettings.faq_subtitle}
+        />
+    ),
+    reviews: (
+        <section id="reviews">
+          <ReviewsSection reviews={propertySettings.reviews} />
+        </section>
+    ),
+  };
+
   return (
+    <SiteProvider settings={propertySettings}>
     <CurrencyProvider>
-      <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-28 md:pb-0 overflow-x-clip">
+      <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-[#efeeea] text-[#1c1c1c] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-28 md:pb-0 overflow-x-clip">
       {/* Top Announcement Promo Banner */}
       <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} items={bannerItems} />
 
@@ -242,88 +355,13 @@ export default function App() {
           />
         </section>
 
-        {/* Live Reservation Calendar */}
-        <section id="disponibilidad"><Reveal>
-          <BookingCalendar
-            checkIn={checkIn}
-            checkOut={checkOut}
-            adults={adults}
-            childrenCount={childrenCount}
-            bookings={availability.reservations}
-            pricing={mockPricing}
-            onCheckInChange={setCheckIn}
-            onCheckOutChange={setCheckOut}
-            onAdultsChange={setAdults}
-            onChildrenChange={setChildrenCount}
-            onInitiateBooking={() => setIsBookingModalOpen(true)}
-          />
-        </Reveal></section>
-
-        {/* Photo Gallery */}
-        <section id="gallery"><Reveal>
-          <GallerySection
-            images={propertySettings.gallery_images}
-            badge={propertySettings.gallery_badge}
-            title={propertySettings.gallery_title}
-            subtitle={propertySettings.gallery_subtitle}
-            cat1Label={propertySettings.gallery_cat1}
-            cat2Label={propertySettings.gallery_cat2}
-            cat3Label={propertySettings.gallery_cat3}
-            cat4Label={propertySettings.gallery_cat4}
-          />
-        </Reveal></section>
-
-        {/* Amenities */}
-        <section id="amenities"><Reveal>
-          <AmenitiesSection
-            amenities={propertySettings.amenities}
-            badge={propertySettings.amenities_badge}
-            title={propertySettings.amenities_title}
-            subtitle={propertySettings.amenities_subtitle}
-          />
-        </Reveal></section>
-
-        {/* Location */}
-        <section id="location"><Reveal>
-          <LocationSection
-            badge={propertySettings.location_badge}
-            title={propertySettings.location_title}
-            subtitle={propertySettings.location_subtitle}
-            address={propertySettings.location_address}
-            description={propertySettings.location_description}
-            mapsLink={propertySettings.location_maps_link}
-            embedUrl={propertySettings.location_embed_url}
-            bullet1={propertySettings.location_bullet_1}
-            bullet2={propertySettings.location_bullet_2}
-            bullet3={propertySettings.location_bullet_3}
-          />
-        </Reveal></section>
-
-        {/* Local Attractions */}
-        <section id="attractions"><Reveal>
-          <AttractionsSection
-            attractions={propertySettings.attractions}
-            title={propertySettings.attractions_title}
-            subtitle={propertySettings.attractions_subtitle}
-          />
-        </Reveal></section>
-
-        {/* House rules & FAQ */}
-        <HouseRulesAndFAQ
-          rules={propertySettings.house_rules}
-          cancellationPolicy={propertySettings.cancellation_policy}
-          faqs={propertySettings.faqs}
-          title={propertySettings.faq_title}
-          subtitle={propertySettings.faq_subtitle}
-        />
-
-        {/* Testimonials & Reviews */}
-        <section id="reviews"><Reveal>
-          <ReviewsSection reviews={propertySettings.reviews} />
-        </Reveal></section>
+        {sectionOrder.filter((id) => !hiddenIds.includes(id)).map((id) => (
+          <React.Fragment key={id}>
+            {sections[id]}
+          </React.Fragment>
+        ))}
       </main>
 
-      <Splash ready={loaded} />
       <ScrollProgress />
       <StickyMobileBar
         visible={showSticky}
@@ -340,7 +378,6 @@ export default function App() {
         availableToday={loaded && availableToday}
         raised={showSticky}
       />
-      <ThemeToggle />
       <Toast toast={toast} onDismiss={dismissToast} />
 
       {/* Footer */}
@@ -355,7 +392,9 @@ export default function App() {
 
       <React.Suspense fallback={null}>
       {/* Auth Modal */}
+      <AnimatePresence>
       {isAuthModalOpen && (
+        <ModalExit key="AuthModal">
         <AuthModal
           onClose={() => setIsAuthModalOpen(false)}
           onSuccess={(user) => {
@@ -363,10 +402,14 @@ export default function App() {
             loadUserBookings();
           }}
         />
+        </ModalExit>
       )}
+      </AnimatePresence>
 
       {/* Booking Form Modal */}
+      <AnimatePresence>
       {isBookingModalOpen && (
+        <ModalExit key="BookingFormModal">
         <BookingFormModal
           checkIn={checkIn}
           checkOut={checkOut}
@@ -399,10 +442,14 @@ export default function App() {
             }
           }}
         />
+        </ModalExit>
       )}
+      </AnimatePresence>
 
       {/* Booking Confirmation Modal */}
+      <AnimatePresence>
       {lastSubmittedBooking && (
+        <ModalExit key="BookingConfirmationModal">
         <BookingConfirmationModal
           booking={{
             id: lastSubmittedBooking.id,
@@ -425,10 +472,14 @@ export default function App() {
           hostPhone={propertySettings.whatsapp_number || propertySettings.contact_phone}
           onClose={() => setLastSubmittedBooking(null)}
         />
+        </ModalExit>
       )}
+      </AnimatePresence>
 
       {/* Client My Bookings Modal */}
+      <AnimatePresence>
       {isMyBookingsModalOpen && (
+        <ModalExit key="MyBookingsModal">
         <MyBookingsModal
           bookings={myBookings}
           propertyAddress={propertySettings.location_address}
@@ -448,10 +499,14 @@ export default function App() {
             }
           }}
         />
+        </ModalExit>
       )}
+      </AnimatePresence>
 
       {/* Admin Management Hub Modal */}
+      <AnimatePresence>
       {isAdminModalOpen && (
+        <ModalExit key="AdminModal">
         <AdminModal
           onClose={() => setIsAdminModalOpen(false)}
           onRefreshData={() => {
@@ -459,9 +514,13 @@ export default function App() {
             if (currentUser) loadUserBookings();
           }}
         />
+        </ModalExit>
       )}
+      </AnimatePresence>
       </React.Suspense>
       </div>
+      </MotionConfig>
     </CurrencyProvider>
+    </SiteProvider>
   );
 }

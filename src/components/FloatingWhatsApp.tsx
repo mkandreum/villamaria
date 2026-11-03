@@ -22,7 +22,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ phone, avail
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1, bottom: raised ? 'calc(148px + env(safe-area-inset-bottom))' : 'calc(84px + env(safe-area-inset-bottom))' }}
       transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-      className="fixed right-3 md:!bottom-6 md:right-6 z-40 flex items-center gap-2 rounded-full bg-[#25D366] text-white shadow-xl h-12 min-w-12 px-3.5 font-bold text-sm active:scale-95 cursor-pointer"
+      className="fixed right-3 md:!bottom-6 md:right-6 z-40 flex items-center gap-2 rounded-full bg-[#25D366] text-[#1c1c1c] shadow-xl h-12 min-w-12 px-3.5 font-bold text-sm active:scale-95 cursor-pointer"
     >
       <MessageCircle className="w-6 h-6 fill-white shrink-0" />
       {availableToday && (

@@ -44,8 +44,8 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.trim())) errors.guestEmail = 'Necesitamos un correo válido para enviarte la confirmación.';
   const showError = (k: string) => (touched[k] && errors[k] ? errors[k] : '');
   const fieldClass = (k: string) =>
-    `w-full bg-white border rounded-xl p-2.5 text-sm text-[#1B3B36] focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${
-      showError(k) ? 'border-red-400 focus:ring-red-300' : 'border-[#1B3B36]/20 focus:ring-emerald-300'
+    `w-full bg-white border rounded-xl p-2.5 text-sm text-[#1c1c1c] focus:outline-none focus:ring-2 min-h-[48px] transition ${
+      showError(k) ? 'border-red-400 focus:ring-red-300' : 'border-[#1c1c1c]/20 focus:ring-emerald-300'
     }`;
   const ErrorText: React.FC<{ id: string; k: string }> = ({ id, k }) =>
     showError(k) ? <p id={id} role="alert" className="text-[11px] text-red-600 font-semibold mt-1">{showError(k)}</p> : null;
@@ -108,11 +108,11 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center modal-backdrop p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-[#F8F5F0] border border-[#1B3B36]/20 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
+      <div className="bg-[#efeeea] border border-[#1c1c1c]/20 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl relative my-auto max-h-[92vh] flex flex-col font-sans overflow-hidden">
         {/* Close Button */}
         <button aria-label="Cerrar"
           onClick={onClose}
-          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-[#EAE3D8] text-[#1B3B36] hover:bg-[#1B3B36] hover:text-white transition-colors z-10 min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer"
+          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-[#e1dfd8] text-[#1c1c1c] hover:bg-[#1c1c1c] hover:text-white transition z-10 min-w-[36px] min-h-[36px] flex items-center justify-center cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -122,10 +122,10 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           <span className="text-[11px] font-bold text-emerald-800 bg-emerald-900/10 px-2.5 py-0.5 rounded-full border border-emerald-800/20 uppercase tracking-widest inline-block">
             Reserva Directa Villa María
           </span>
-          <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1B3B36] mt-1 leading-tight">
+          <h2 className="text-lg sm:text-2xl font-serif font-bold text-[#1c1c1c] mt-1 leading-tight">
             Datos de Reserva
           </h2>
-          <p className="text-xs text-[#1B3B36]/70 mt-0.5 font-sans">
+          <p className="text-xs text-[#1c1c1c]/70 mt-0.5 font-sans">
             {breakdown.nights} {breakdown.nights === 1 ? 'noche' : 'noches'} ({formatDateSpanish(checkIn)}  {formatDateSpanish(checkOut)})
           </p>
         </div>
@@ -134,12 +134,12 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
         <form noValidate onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 scrollbar-none">
           {/* Personal Info */}
           <div className="space-y-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1c1c1c]">
               1. Datos del Huésped Principal
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label className="text-[11px] font-semibold text-[#1B3B36]/70 block mb-0.5">
+                <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
                   Nombre y Apellido *
                 </label>
                 <input
@@ -156,7 +156,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                 <ErrorText id="err-name" k="guestName" />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-[#1B3B36]/70 block mb-0.5">
+                <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
                   Teléfono / WhatsApp *
                 </label>
                 <input
@@ -176,7 +176,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-[#1B3B36]/70 block mb-0.5">
+              <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
                 Correo Electrónico *
               </label>
               <input
@@ -197,12 +197,12 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           </div>
 
           {/* Payment Method Preferences */}
-          <div className="space-y-2 pt-2 border-t border-[#1B3B36]/10">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1B3B36]">
+          <div className="space-y-2 pt-2 border-t border-[#1c1c1c]/10">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#1c1c1c]">
               2. Método de Pago (Anticipo 50%)
             </h3>
             
-            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-[#1B3B36] flex items-start gap-2">
+            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-[#1c1c1c] flex items-start gap-2">
               <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <span>
                 Las instrucciones detalladas para el pago del anticipo se enviarán por WhatsApp tras enviar la solicitud.
@@ -220,8 +220,8 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                       onClick={() => setPaymentMethod(m.id)}
                       className={`p-2.5 rounded-xl border text-left flex items-center gap-2 transition min-h-[44px] cursor-pointer ${
                         paymentMethod === m.id
-                          ? 'bg-[#1B3B36] text-white border-[#1B3B36] font-bold shadow-sm'
-                          : 'bg-white border-[#1B3B36]/15 text-[#1B3B36]/80 hover:bg-[#EAE3D8]'
+                          ? 'bg-[#1c1c1c] text-white border-[#1c1c1c] font-bold shadow-sm'
+                          : 'bg-white border-[#1c1c1c]/15 text-[#1c1c1c]/80 hover:bg-[#e1dfd8]'
                       }`}
                     >
                       <IconComp className="w-3.5 h-3.5 shrink-0" />
@@ -231,7 +231,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
                 })}
               </div>
             ) : (
-              <div className="p-3 bg-white rounded-xl border border-[#1B3B36]/15 text-xs text-[#1B3B36] flex items-center gap-2 font-semibold">
+              <div className="p-3 bg-white rounded-xl border border-[#1c1c1c]/15 text-xs text-[#1c1c1c] flex items-center gap-2 font-semibold">
                 <MessageCircle className="w-4 h-4 text-emerald-800" />
                 <span>Coordinación Directa por WhatsApp con el Anfitrión</span>
               </div>
@@ -240,7 +240,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
 
           {/* Special Requests */}
           <div>
-            <label className="text-[11px] font-semibold text-[#1B3B36]/70 block mb-0.5">
+            <label className="text-[11px] font-semibold text-[#1c1c1c]/70 block mb-0.5">
               Notas o Solicitudes Especiales
             </label>
             <textarea
@@ -248,19 +248,19 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
               placeholder="Ej. Hora estimada de llegada 3:00 PM."
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
-              className="w-full bg-white border border-[#1B3B36]/20 rounded-xl p-2.5 text-xs text-[#1B3B36] focus:outline-none resize-none"
+              className="w-full bg-white border border-[#1c1c1c]/20 rounded-xl p-2.5 text-xs text-[#1c1c1c] focus:outline-none resize-none"
             />
           </div>
 
           {/* Summary Box */}
-          <div className="bg-[#EAE3D8] p-3 rounded-2xl border border-[#1B3B36]/15 space-y-2">
+          <div className="bg-[#e1dfd8] p-3 rounded-2xl border border-[#1c1c1c]/15 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[#1B3B36]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
+              <span className="text-[11px] text-[#1c1c1c]/70 block font-semibold uppercase tracking-wider">Total Reserva:</span>
               <CurrencyToggle />
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-base sm:text-lg font-serif font-bold text-[#1B3B36] truncate">{formatPrice(breakdown.totalPrice)}</span>
-              <div className="text-right text-[11px] text-[#1B3B36]/80 shrink-0">
+              <span className="text-base sm:text-lg font-serif font-bold text-[#1c1c1c] truncate">{formatPrice(breakdown.totalPrice)}</span>
+              <div className="text-right text-[11px] text-[#1c1c1c]/80 shrink-0">
                 <span>Anticipo 50%: </span>
                 <strong className="text-emerald-800 font-bold">{formatPrice(Math.round(breakdown.totalPrice / 2))}</strong>
               </div>
@@ -271,7 +271,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({
           <button
             type="submit"
             disabled={submitting}
-            className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1B3B36] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition active:scale-95 min-h-[48px] cursor-pointer"
+            className="shine w-full disabled:opacity-60 disabled:cursor-wait bg-[#1c1c1c] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition active:scale-95 min-h-[48px] cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>{submitting ? 'Enviando…' : 'Confirmar Reserva y Comprobante'}</span>
