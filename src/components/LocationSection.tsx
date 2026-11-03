@@ -44,17 +44,11 @@ function resolveEmbedUrl(raw: string | undefined): string {
   // If it's already a proper Google Maps Embed API URL (share  embed map)
   if (raw.includes('google.com/maps/embed')) return raw;
 
-  // If it looks like a Google Maps URL (but NOT a proper embed URL),
-  // we cannot convert it without an API key — fall back to OSM
-  if (raw.includes('google.com/maps') || raw.includes('maps.google.com')) {
-    return raw;
-  }
-
   // If the admin pasted an OSM embed URL directly, use it
   if (raw.includes('openstreetmap.org')) return raw;
 
-  // Raw coordinates  "lat,lng"  e.g. "10.9317,-68.2736"
-  const coordMatch = raw.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
+  // Coordinates, alone or inside a normal Google Maps link (which cannot be embedded as is)
+  const coordMatch = raw.match(/^\s*(-?\d+\.?\d*),\s*(-?\d+\.?\d*)\s*$/) || raw.match(/[@=](-?\d+\.\d+),\s*(-?\d+\.\d+)/);
   if (coordMatch) {
     const lat = parseFloat(coordMatch[1]);
     const lng = parseFloat(coordMatch[2]);
@@ -65,7 +59,9 @@ function resolveEmbedUrl(raw: string | undefined): string {
       `&layer=mapnik&marker=${lat}%2C${lng}`
     );
   }
-  return raw;
+
+  // Nothing usable: no map rather than a broken frame
+  return '';
 }
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
