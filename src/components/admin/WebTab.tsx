@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Star, Trash2 } from 'luci
 import { api } from '../../api';
 import { SITE_TEXTS } from '../../../server/siteTexts';
 import type { AdminCtx } from './types';
-import { SECTION_DEFS, orderedSections, hiddenSections } from '../../context/SiteContext';
+import { SECTION_DEFS, NO_FILTER, galleryFilters, orderedSections, hiddenSections, photoFilterId } from '../../context/SiteContext';
 import { ICON_CHOICES } from '../../utils/icons';
 import { Btn, Card, Chip, Empty, Field, SectionTitle, Toggle, asList } from './ui';
 
@@ -27,12 +27,6 @@ const SUBS: Array<{ id: Sub; label: string }> = [
   { id: 'account', label: 'Cuenta' },
   { id: 'voucher', label: 'Pase de entrada' },
   { id: 'weather', label: 'Tiempo' },
-];
-const CATS = [
-  { id: 'fachada', label: 'Fachada' },
-  { id: 'piscina', label: 'Piscina' },
-  { id: 'interiores', label: 'Interiores' },
-  { id: 'exteriores', label: 'General' },
 ];
 
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
@@ -95,8 +89,11 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
   // ---------- photos ----------
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
-  const [uploadCat, setUploadCat] = useState('fachada');
-  const photos = asList<any>(s.gallery_images).map((p) => (typeof p === 'string' ? { url: p, category: 'exteriores' } : { url: p.url || p.imageUrl, category: p.category || 'exteriores' }));
+  const [pickedCat, setPickedCat] = useState('');
+  const filters = galleryFilters(s);
+  const CATS = [...filters.map((f) => ({ id: f.id, label: f.label || 'Sin nombre' })), { id: NO_FILTER, label: 'Sin filtro' }];
+  const uploadCat = CATS.find((c) => c.id === pickedCat)?.id ?? CATS[0].id;
+  const photos = asList<any>(s.gallery_images).map((p) => (typeof p === 'string' ? { url: p, category: NO_FILTER } : { url: p.url || p.imageUrl, category: photoFilterId(p.category, filters) }));
   const setPhotos = (next: any[]) => set('gallery_images', next);
 
   const upload = async (files: FileList | null) => {
@@ -215,10 +212,17 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
 
       {sub === 'photos' && (
         <section className="space-y-4">
+          <SectionTitle title="Filtros de la galería" hint="Los botones que hay sobre las fotos en la web. Cada foto se asigna a uno más abajo." />
+          <Card>{text('gallery_cat1', 'Botón que muestra todas las fotos')}</Card>
+          <ListEditor items={filters} onChange={(v) => set('gallery_filters', v)} make={() => ({ id: uid(), label: '' })} label={(f) => f.label} addLabel="Añadir filtro" confirm={ctx.confirm}>
+            {(f, up) => <Field label="Nombre del filtro" placeholder="Ej: Ávila Room" value={f.label} onChange={(v) => up({ label: v })} />}
+          </ListEditor>
+          <p className="text-xs text-emerald-200/55 px-1">Un filtro sin fotos no sale en la web. Si eliminas uno, sus fotos pasan a “Sin filtro” y solo se ven en el botón de todas.</p>
+
           <SectionTitle title="Galería de fotos" hint="La primera foto es la portada de la web. Cambia el orden con las flechas." />
           <Card className="space-y-3">
             <div className="flex gap-2 no-scrollbar overflow-x-auto">
-              {CATS.map((c) => <Chip key={c.id} active={uploadCat === c.id} onClick={() => setUploadCat(c.id)}>{c.label}</Chip>)}
+              {CATS.map((c) => <Chip key={c.id} active={uploadCat === c.id} onClick={() => setPickedCat(c.id)}>{c.label}</Chip>)}
             </div>
             <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => upload(e.target.files)} />
             <Btn tone="primary" block disabled={!!uploading} onClick={() => fileRef.current?.click()}>
@@ -227,7 +231,7 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
           </Card>
 
           {photos.length === 0 ? (
-            <Empty icon={<ImagePlus className="w-7 h-7" />} title="Aún no hay fotos" text="Mientras tanto la web muestra fotos de ejemplo." />
+            <Empty icon={<ImagePlus className="w-7 h-7" />} title="Aún no hay fotos" text="La galería no sale en la web hasta que añadas alguna." />
           ) : (
             <ul className="grid grid-cols-2 gap-3">
               {photos.map((p, i) => (
@@ -321,10 +325,6 @@ export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, 
               {text(`${k}_subtitle`, 'Frase de apoyo', { multiline: true, rows: 2 })}
             </Card>
           ))}
-          <Card className="space-y-4">
-            <p className="font-semibold text-white">Filtros de la galería</p>
-            {[1, 2, 3, 4].map((n) => text(`gallery_cat${n}`, n === 1 ? 'Todas' : `Categoría ${n - 1}`))}
-          </Card>
         </section>
       )}
 

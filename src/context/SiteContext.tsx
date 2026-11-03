@@ -26,6 +26,25 @@ export const orderedSections = (rawOrder: any): SectionId[] => {
 
 export const hiddenSections = (rawHidden: any): string[] => parseList(rawHidden);
 
+export interface GalleryFilter { id: string; label: string }
+// Photos with this category only appear under "Todas"
+export const NO_FILTER = 'exteriores';
+
+/** The gallery's filter buttons. Until the list is first edited, they come from the old three fixed labels. */
+export const galleryFilters = (settings: Record<string, any>): GalleryFilter[] => {
+  let saved = settings.gallery_filters;
+  try { if (typeof saved === 'string') saved = JSON.parse(saved); } catch { saved = null; }
+  if (Array.isArray(saved)) return saved.map((f: any) => ({ id: String(f.id), label: String(f.label ?? '') }));
+  return [
+    { id: 'fachada', label: String(settings.gallery_cat2 ?? '') },
+    { id: 'piscina', label: String(settings.gallery_cat3 ?? '') },
+    { id: 'interiores', label: String(settings.gallery_cat4 ?? '') },
+  ].filter((f) => f.label.trim());
+};
+
+export const photoFilterId = (category: any, filters: GalleryFilter[]): string =>
+  filters.find((f) => String(category || '').toLowerCase().includes(f.id))?.id ?? NO_FILTER;
+
 export interface SiteInfo {
   siteName: string;
   logoUrl: string;

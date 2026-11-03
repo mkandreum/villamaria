@@ -19,7 +19,7 @@ import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
 import { CurrencyProvider } from './context/CurrencyContext';
-import { SiteProvider, orderedSections, hiddenSections } from './context/SiteContext';
+import { SiteProvider, galleryFilters, orderedSections, hiddenSections } from './context/SiteContext';
 import { Reveal } from './components/Reveal';
 import { Toast, ToastState } from './components/Toast';
 import { StickyMobileBar } from './components/StickyMobileBar';
@@ -251,9 +251,7 @@ export default function App() {
             title={propertySettings.gallery_title}
             subtitle={propertySettings.gallery_subtitle}
             cat1Label={propertySettings.gallery_cat1}
-            cat2Label={propertySettings.gallery_cat2}
-            cat3Label={propertySettings.gallery_cat3}
-            cat4Label={propertySettings.gallery_cat4}
+            filters={galleryFilters(propertySettings)}
           />
         </section>
     ),

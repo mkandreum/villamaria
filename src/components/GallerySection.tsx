@@ -1,4 +1,4 @@
-import { useSite } from '../context/SiteContext';
+import { useSite, type GalleryFilter } from '../context/SiteContext';
 import { SectionHeader } from './SectionHeader';
 import React, { useState } from 'react';
 import { Images } from 'lucide-react';
@@ -13,9 +13,7 @@ interface GallerySectionProps {
   title?: string;
   subtitle?: string;
   cat1Label?: string;
-  cat2Label?: string;
-  cat3Label?: string;
-  cat4Label?: string;
+  filters?: GalleryFilter[];
 }
 
 export const GallerySection: React.FC<GallerySectionProps> = ({
@@ -24,9 +22,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   title,
   subtitle,
   cat1Label,
-  cat2Label,
-  cat3Label,
-  cat4Label,
+  filters = [],
 }) => {
   const { t, siteName } = useSite();
   const normalizedImages = React.useMemo(() => {
@@ -58,12 +54,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
 
   const categories = [
     { id: 'todas', label: cat1Label },
-    { id: 'fachada', label: cat2Label },
-    { id: 'piscina', label: cat3Label },
-    { id: 'interiores', label: cat4Label },
+    ...filters,
   ]
     .map((c) => ({ ...c, label: stripEmoji(c.label), count: normalizedImages.filter((img) => matches(img, c.id)).length }))
-    .filter((c) => c.id === 'todas' || c.count > 0);
+    .filter((c) => c.id === 'todas' || (c.count > 0 && c.label));
 
   const filteredImages = normalizedImages.filter((img) => matches(img, activeCategory));
   const categoryLabel = (img: any) => categories.find((c) => c.id !== 'todas' && matches(img, c.id))?.label;
