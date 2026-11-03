@@ -71,6 +71,8 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   if (normalizedImages.length === 0) return null;
 
   const tileShape = (i: number) => {
+    // A lone photo has no neighbour to give the row its height
+    if (filteredImages.length === 1) return 'col-span-2 lg:col-span-4 aspect-[16/10] lg:aspect-[2/1]';
     const pos = i % 7;
     if (pos === 0) return 'col-span-2 lg:col-span-2 lg:row-span-2 aspect-[16/10] lg:aspect-auto';
     if (pos === 3 || pos === 6) return 'col-span-2 lg:col-span-1 aspect-[16/9] lg:aspect-[4/3]';
