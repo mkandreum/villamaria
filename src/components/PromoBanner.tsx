@@ -4,40 +4,33 @@ import { Sparkles, Compass, Waves, ShieldCheck, X } from 'lucide-react';
 interface PromoBannerProps {
   enabled?: boolean;
   text?: string;
+  items?: Array<{ badge?: string; text?: string }>;
   onClose?: () => void;
 }
 
 export const PromoBanner: React.FC<PromoBannerProps> = ({
   enabled = true,
   text,
+  items,
   onClose,
 }) => {
   const [visible, setVisible] = useState(enabled);
 
   if (!enabled || !visible) return null;
 
-  const promoItems = [
-    {
-      icon: Sparkles,
-      badge: 'Garantía Total',
-      content: text || 'Suministro constante de agua, planta eléctrica 24/7 y piscina privada climatizada.',
-    },
-    {
-      icon: Compass,
-      badge: 'Ubicación Premium',
-      content: 'Calle 15, Chichiriviche • A 5 minutos de los embarcaderos a Cayo Sombrero.',
-    },
-    {
-      icon: ShieldCheck,
-      badge: 'Reserva Flexible',
-      content: 'Confirmación inmediata por WhatsApp y atención personalizada.',
-    },
-    {
-      icon: Waves,
-      badge: 'Piscina Privada',
-      content: 'Piscina climatizada con hamacas y área de solárium.',
-    },
+  const icons = [Sparkles, Compass, ShieldCheck, Waves];
+  const defaults = [
+    { badge: 'Garantía Total', text: text || 'Suministro constante de agua, planta eléctrica 24/7 y piscina privada climatizada.' },
+    { badge: 'Ubicación Premium', text: 'Calle 15, Chichiriviche • A 5 minutos de los embarcaderos a Cayo Sombrero.' },
+    { badge: 'Reserva Flexible', text: 'Confirmación inmediata por WhatsApp y atención personalizada.' },
+    { badge: 'Piscina Privada', text: 'Piscina climatizada con hamacas y área de solárium.' },
   ];
+  const source = (items || []).filter((i) => i && String(i.text || '').trim());
+  const promoItems = (source.length > 0 ? source : defaults).map((i, idx) => ({
+    icon: icons[idx % icons.length],
+    badge: i.badge || '',
+    content: String(i.text),
+  }));
 
   // Duplicate items for continuous loop
   const tickerItems = [...promoItems, ...promoItems];
@@ -55,10 +48,10 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               const IconComponent = item.icon;
               return (
                 <div key={idx} className="inline-flex items-center gap-1.5 shrink-0 px-1">
-                  <span className="shimmer-badge px-1.5 py-0 rounded-full text-[8px] font-bold uppercase tracking-wider text-emerald-300 border border-emerald-400/30 flex items-center gap-1 leading-tight">
+                  {item.badge ? <span className="shimmer-badge px-1.5 py-0 rounded-full text-[8px] font-bold uppercase tracking-wider text-emerald-300 border border-emerald-400/30 flex items-center gap-1 leading-tight">
                     <IconComponent className="w-2 h-2 text-emerald-400" />
                     <span>{item.badge}</span>
-                  </span>
+                  </span> : null}
                   <span className="text-[11px] text-white/90 font-medium leading-none">
                     {item.content}
                   </span>

@@ -279,7 +279,7 @@ export const CheckInVoucherModal: React.FC<CheckInVoucherModalProps> = ({ reserv
   const totalGuests = reservation.guestsCount || ((reservation.adults || 0) + (reservation.children || 0)) || 1;
 
   return (
-    <div className="fixed inset-0 z-50 bg-emerald-950/85 backdrop-blur-md flex items-start justify-center modal-backdrop p-2 sm:p-4 overflow-y-auto print:p-0 print:bg-white">
+    <div className="fixed inset-0 z-[85] bg-emerald-950/85 backdrop-blur-md flex items-start justify-center modal-backdrop p-2 sm:p-4 overflow-y-auto print:p-0 print:bg-white">
       <div className="bg-emerald-950 sm:border sm:border-emerald-500/30 sm:rounded-3xl max-w-xl w-full p-3 sm:p-6 shadow-2xl relative my-2 text-emerald-100 font-sans max-h-[96vh] flex flex-col print:border-none print:shadow-none print:max-h-none print:p-0 print:bg-white">
         
         {/* Close Button - Hidden in Print */}

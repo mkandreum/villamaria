@@ -332,7 +332,7 @@ Por favor envíanos por correo o WhatsApp tu comprobante de transferencia (Zelle
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-emerald-950/85 backdrop-blur-md flex items-start justify-center modal-backdrop p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[85] bg-emerald-950/85 backdrop-blur-md flex items-start justify-center modal-backdrop p-2 sm:p-4 overflow-y-auto">
       <div className="bg-emerald-950 border border-emerald-500/30 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative my-3 text-emerald-100 font-sans max-h-[94vh] flex flex-col">
         
         {/* Close Button */}

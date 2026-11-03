@@ -14,6 +14,7 @@ import { MyBookingsModal } from './components/MyBookingsModal';
 const AdminModal = React.lazy(() => import('./components/AdminModal').then((m) => ({ default: m.AdminModal })));
 import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
+import { HouseRulesAndFAQ } from './components/HouseRulesAndFAQ';
 import { PromoBanner } from './components/PromoBanner';
 import { calculatePriceBreakdown } from './utils/dateUtils';
 import { api, getAuthUser, setAuthToken, setAuthUser } from './api';
@@ -183,13 +184,19 @@ export default function App() {
   });
   const showSticky = pastHero && !isBookingModalOpen && (activeSection !== 'booking' || Boolean(checkIn && checkOut));
 
-  const isBannerActive = propertySettings.banner_enabled !== 'false';
+  const isOff = (v: any) => v === false || v === 'false';
+  const isBannerActive = !isOff(propertySettings.banner_enabled);
+  const bannerItems = (() => {
+    const raw = propertySettings.banner_items;
+    if (Array.isArray(raw)) return raw;
+    try { return typeof raw === 'string' ? JSON.parse(raw) : []; } catch { return []; }
+  })();
 
   return (
     <CurrencyProvider>
       <div className="min-h-screen bg-[#F8F5F0] text-[#1B3B36] font-sans antialiased selection:bg-emerald-500 selection:text-white pb-28 md:pb-0 overflow-x-clip">
       {/* Top Announcement Promo Banner */}
-      <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} />
+      <PromoBanner enabled={isBannerActive} text={propertySettings.banner_text} items={bannerItems} />
 
       {/* Floating Pill Navigation */}
       <Navbar
@@ -228,6 +235,10 @@ export default function App() {
             feat2={propertySettings.hero_feat2}
             feat3={propertySettings.hero_feat3}
             feat4={propertySettings.hero_feat4}
+            rating={propertySettings.hero_rating}
+            reviewsCount={propertySettings.hero_reviews_count}
+            priceLabel={propertySettings.hero_price_label}
+            whatsappGreeting={propertySettings.whatsapp_greeting}
           />
         </section>
 
@@ -290,8 +301,21 @@ export default function App() {
 
         {/* Local Attractions */}
         <section id="attractions"><Reveal>
-          <AttractionsSection attractions={propertySettings.attractions} />
+          <AttractionsSection
+            attractions={propertySettings.attractions}
+            title={propertySettings.attractions_title}
+            subtitle={propertySettings.attractions_subtitle}
+          />
         </Reveal></section>
+
+        {/* House rules & FAQ */}
+        <HouseRulesAndFAQ
+          rules={propertySettings.house_rules}
+          cancellationPolicy={propertySettings.cancellation_policy}
+          faqs={propertySettings.faqs}
+          title={propertySettings.faq_title}
+          subtitle={propertySettings.faq_subtitle}
+        />
 
         {/* Testimonials & Reviews */}
         <section id="reviews"><Reveal>
@@ -325,6 +349,8 @@ export default function App() {
         phone={propertySettings.contact_phone}
         email={propertySettings.contact_email}
         mapsLink={propertySettings.location_maps_link}
+        description={propertySettings.footer_description}
+        tagline={propertySettings.footer_tagline}
       />
 
       {/* Auth Modal */}

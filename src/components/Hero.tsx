@@ -26,6 +26,10 @@ interface HeroProps {
   feat2?: string;
   feat3?: string;
   feat4?: string;
+  rating?: string;
+  reviewsCount?: string;
+  priceLabel?: string;
+  whatsappGreeting?: string;
 }
 
 const DEFAULT_HERO_PHOTOS = [
@@ -55,6 +59,10 @@ export const Hero: React.FC<HeroProps> = ({
   feat2 = ' Fibra 600Mb',
   feat3 = ' Luz y Agua 24/7',
   feat4 = ' Parking Privado',
+  rating = '4.96/5.0',
+  reviewsCount = '48',
+  priceLabel = 'Tarifa Estándar',
+  whatsappGreeting = 'Hola Villa María, me gustaría consultar disponibilidad y precios para reservar.',
 }) => {
   const photos = React.useMemo(() => {
     let list = images;
@@ -142,7 +150,7 @@ export const Hero: React.FC<HeroProps> = ({
   }, [photos.length, reduceMotion]);
 
   const waUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodeURIComponent(
-    'Hola Villa María , me gustaría consultar disponibilidad y precios para reservar.'
+    whatsappGreeting
   )}`;
 
   return (
@@ -275,7 +283,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] uppercase font-bold text-emerald-800 tracking-wider block">
-                    Tarifa Estándar
+                    {priceLabel}
                   </span>
                   <span className="text-xl sm:text-3xl font-serif font-bold text-[#1B3B36]">
                     {formatPrice(pricePerNight)} <span className="text-xs font-sans font-normal text-[#1B3B36]/70">/ noche</span>
@@ -288,8 +296,8 @@ export const Hero: React.FC<HeroProps> = ({
                       <Star key={i} className="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-[#1B3B36]">4.96/5.0</span>
-                  <span className="text-[11px] text-[#1B3B36]/60 block">(48 reseñas)</span>
+                  <span className="text-xs font-bold text-[#1B3B36]">{rating}</span>
+                  <span className="text-[11px] text-[#1B3B36]/60 block">({reviewsCount} reseñas)</span>
                 </div>
               </div>
 

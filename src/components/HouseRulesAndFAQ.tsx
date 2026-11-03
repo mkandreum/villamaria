@@ -7,23 +7,27 @@ interface HouseRulesAndFAQProps {
   rules?: string;
   cancellationPolicy?: string;
   faqs?: any;
+  title?: string;
+  subtitle?: string;
 }
 
 export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
   rules,
   cancellationPolicy = (PROPERTY_INFO as any)?.cancellationPolicy || 'Cancelación gratuita hasta 7 días antes de la llegada. Reembolso completo del depósito.',
   faqs,
+  title = 'Información & Preguntas',
+  subtitle = 'Todo lo que necesitas saber para una estancia tranquila y sin sorpresas.',
 }) => {
   const rulesList = React.useMemo(() => {
     if (!rules) return HOUSE_RULES;
     if (typeof rules === 'string') {
-      return rules.split('\n').filter(Boolean);
+      return rules.split('\n').map((r) => r.trim()).filter(Boolean);
     }
     return HOUSE_RULES;
   }, [rules]);
 
   const normalizedFaqs = React.useMemo(() => {
-    if (!faqs) return FAQS;
+    if (!faqs) return FAQS.map((f: any) => ({ question: f.q, answer: f.a }));
     let list = faqs;
     if (typeof faqs === 'string') {
       try {
@@ -32,8 +36,8 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
         list = [];
       }
     }
-    if (!Array.isArray(list) || list.length === 0) return FAQS;
-    return list;
+    if (!Array.isArray(list) || list.length === 0) return FAQS.map((f: any) => ({ question: f.q, answer: f.a }));
+    return list.map((f: any) => ({ question: f.question || f.q || '', answer: f.answer || f.a || '' })).filter((f: any) => f.question);
   }, [faqs]);
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -42,7 +46,7 @@ export const HouseRulesAndFAQ: React.FC<HouseRulesAndFAQProps> = ({
     <section id="faq" className="py-16 sm:py-24 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
-        <SectionHeader title="Información & Preguntas" subtitle="Todo lo que necesitas saber para una estancia tranquila y sin sorpresas." />
+        <SectionHeader title={title} subtitle={subtitle} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Rules & Policy (5 cols) */}

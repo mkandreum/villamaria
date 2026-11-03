@@ -8,12 +8,17 @@ import { Compass, Waves, Navigation } from 'lucide-react';
 
 interface AttractionsSectionProps {
   attractions?: any;
+  title?: string;
+  subtitle?: string;
 }
 
-export const AttractionsSection: React.FC<AttractionsSectionProps> = ({ attractions }) => {
+export const AttractionsSection: React.FC<AttractionsSectionProps> = ({
+  attractions,
+  title = 'Cayos & Playas Cercanas',
+  subtitle = 'Descubre los mejores cayos de aguas turquesas a solo minutos de la villa.',
+}) => {
   const normalizedAttractions = React.useMemo(() => {
-    if (!attractions) return NEARBY_ATTRACTIONS;
-    let list = attractions;
+    let list: any = attractions || NEARBY_ATTRACTIONS;
     if (typeof attractions === 'string') {
       try {
         list = JSON.parse(attractions);
@@ -21,12 +26,12 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({ attracti
         list = [];
       }
     }
-    if (!Array.isArray(list) || list.length === 0) return NEARBY_ATTRACTIONS;
+    if (!Array.isArray(list) || list.length === 0) list = NEARBY_ATTRACTIONS;
 
     return list.map((item, idx) => ({
       id: item.id || `att-${idx}`,
       title: item.title || item.name || `Cayo ${idx + 1}`,
-      duration: item.duration || '10 min en peñero',
+      duration: item.duration || item.travelTime || '10 min en peñero',
       description: item.description || 'Aguas cristalinas y arena blanca en Morrocoy.',
       imageUrl: item.imageUrl || item.url || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
     }));
@@ -36,7 +41,7 @@ export const AttractionsSection: React.FC<AttractionsSectionProps> = ({ attracti
     <section className="py-16 sm:py-24 bg-[#EAE3D8]/40 text-[#1B3B36] relative font-sans border-b border-[#1B3B36]/10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
-        <SectionHeader title="Cayos & Playas Cercanas" subtitle="Descubre los mejores cayos de aguas turquesas a solo minutos de la villa." />
+        <SectionHeader title={title} subtitle={subtitle} />
 
         {/* Grid */}
         <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">

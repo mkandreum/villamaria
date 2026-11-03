@@ -7,6 +7,8 @@ interface FooterProps {
   phone?: string;
   email?: string;
   mapsLink?: string;
+  description?: string;
+  tagline?: string;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -14,6 +16,8 @@ export const Footer: React.FC<FooterProps> = ({
   phone = PROPERTY_INFO.formattedPhone,
   email = PROPERTY_INFO.email,
   mapsLink = PROPERTY_INFO.googleMapsUrl,
+  description = 'Disfruta de las mejores vacaciones en el Estado Falcón. Urbanización privada con piscina climatizada, agua constante 24/7 y planta eléctrica.',
+  tagline = 'Alojamiento Turístico & Relax • Chichiriviche',
 }) => {
   return (
     <footer className="bg-[#1B3B36] text-[#F8F5F0] py-10 sm:py-16 pb-24 md:pb-16 font-sans border-t border-emerald-500/20">
@@ -31,13 +35,13 @@ export const Footer: React.FC<FooterProps> = ({
                   Villa María
                 </span>
                 <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider block">
-                  Alojamiento Turístico & Relax • Chichiriviche
+                  {tagline}
                 </span>
               </div>
             </div>
 
             <p className="text-xs text-[#EAE3D8] leading-relaxed max-w-sm font-sans">
-              Disfruta de las mejores vacaciones en el Estado Falcón. Urbanización privada con piscina climatizada, agua constante 24/7 y planta eléctrica.
+              {description}
             </p>
 
             <div className="pt-2">
@@ -88,6 +92,11 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <a href="#reviews" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
                    Opiniones de Huéspedes
+                </a>
+              </li>
+              <li>
+                <a href="#faq" className="hover:text-emerald-400 transition-colors py-1 inline-block min-h-[32px]">
+                  Preguntas Frecuentes
                 </a>
               </li>
             </ul>

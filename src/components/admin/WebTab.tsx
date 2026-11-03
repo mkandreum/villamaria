@@ -1,0 +1,351 @@
+import React, { useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Star, Trash2 } from 'lucide-react';
+import { api } from '../../api';
+import { AMENITIES, NEARBY_ATTRACTIONS, FAQS, HOUSE_RULES } from '../../data/mockData';
+import type { AdminCtx } from './types';
+import { Btn, Card, Chip, Empty, Field, SectionTitle, Toggle, asList } from './ui';
+
+type Sub = 'photos' | 'banner' | 'hero' | 'titles' | 'amenities' | 'attractions' | 'faq' | 'location' | 'footer';
+const SUBS: Array<{ id: Sub; label: string }> = [
+  { id: 'photos', label: 'Fotos' },
+  { id: 'banner', label: 'Banner' },
+  { id: 'hero', label: 'Portada' },
+  { id: 'titles', label: 'Títulos' },
+  { id: 'amenities', label: 'Servicios' },
+  { id: 'attractions', label: 'Atracciones' },
+  { id: 'faq', label: 'Normas y FAQ' },
+  { id: 'location', label: 'Ubicación' },
+  { id: 'footer', label: 'Pie de página' },
+];
+const CATS = [
+  { id: 'fachada', label: 'Fachada' },
+  { id: 'piscina', label: 'Piscina' },
+  { id: 'interiores', label: 'Interiores' },
+  { id: 'exteriores', label: 'General' },
+];
+
+const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+
+/** Generic editor for a list of cards: add, reorder, remove. */
+function ListEditor<T extends Record<string, any>>({
+  items,
+  onChange,
+  make,
+  label,
+  addLabel,
+  children,
+  confirm,
+}: {
+  items: T[];
+  onChange: (next: T[]) => void;
+  make: () => T;
+  label: (item: T, i: number) => string;
+  addLabel: string;
+  children: (item: T, update: (patch: Partial<T>) => void) => React.ReactNode;
+  confirm: AdminCtx['confirm'];
+}) {
+  const move = (i: number, d: number) => {
+    const next = [...items];
+    const j = i + d;
+    if (j < 0 || j >= next.length) return;
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <Card key={item.id || i} className="space-y-3.5">
+          <div className="flex items-center gap-1.5">
+            <span className="w-7 h-7 rounded-full bg-emerald-950 text-emerald-300 text-xs font-bold flex items-center justify-center tabular-nums shrink-0">{i + 1}</span>
+            <p className="flex-1 min-w-0 font-semibold text-white truncate">{label(item, i) || 'Sin título'}</p>
+            <button aria-label="Subir" disabled={i === 0} onClick={() => move(i, -1)} className="w-10 h-10 rounded-lg text-emerald-200 disabled:opacity-25 hover:bg-emerald-800/60 flex items-center justify-center cursor-pointer"><ArrowUp className="w-4 h-4" /></button>
+            <button aria-label="Bajar" disabled={i === items.length - 1} onClick={() => move(i, 1)} className="w-10 h-10 rounded-lg text-emerald-200 disabled:opacity-25 hover:bg-emerald-800/60 flex items-center justify-center cursor-pointer"><ArrowDown className="w-4 h-4" /></button>
+            <button
+              aria-label="Eliminar"
+              onClick={async () => (await confirm(`¿Eliminar “${label(item, i) || 'este elemento'}”?`, { danger: true, confirmLabel: 'Eliminar' })) && onChange(items.filter((_, k) => k !== i))}
+              className="w-10 h-10 rounded-lg text-rose-300 hover:bg-rose-500/15 flex items-center justify-center cursor-pointer"
+            ><Trash2 className="w-4 h-4" /></button>
+          </div>
+          {children(item, (patch) => onChange(items.map((x, k) => (k === i ? { ...x, ...patch } : x))))}
+        </Card>
+      ))}
+      <Btn block onClick={() => onChange([...items, make()])} className="border-dashed"><Plus className="w-5 h-5" />{addLabel}</Btn>
+    </div>
+  );
+}
+
+export const WebTab: React.FC<{ ctx: AdminCtx; initialSub?: string }> = ({ ctx, initialSub }) => {
+  const [sub, setSub] = useState<Sub>((SUBS.find((s) => s.id === initialSub)?.id as Sub) || 'photos');
+  const { settings: s, setSetting: set } = ctx;
+  const text = (key: string, label: string, extra: Partial<React.ComponentProps<typeof Field>> = {}) => (
+    <Field key={key} label={label} value={s[key] ?? ''} onChange={(v) => set(key, v)} {...extra} />
+  );
+
+  // ---------- photos ----------
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
+  const [uploadCat, setUploadCat] = useState('fachada');
+  const photos = asList<any>(s.gallery_images).map((p) => (typeof p === 'string' ? { url: p, category: 'exteriores' } : { url: p.url || p.imageUrl, category: p.category || 'exteriores' }));
+  const setPhotos = (next: any[]) => set('gallery_images', next);
+
+  const upload = async (files: FileList | null) => {
+    if (!files?.length) return;
+    const list = Array.from(files);
+    setUploading({ done: 0, total: list.length });
+    const added: any[] = [];
+    for (const file of list) {
+      try {
+        const res = await api.uploadFile(file);
+        added.push({ url: res.url, category: uploadCat });
+      } catch (e: any) {
+        ctx.notify('error', `${file.name}: ${e.message || 'no se pudo subir'}`);
+      }
+      setUploading((u) => (u ? { ...u, done: u.done + 1 } : u));
+    }
+    if (added.length) {
+      setPhotos([...photos, ...added]);
+      ctx.notify('success', `${added.length} ${added.length === 1 ? 'foto añadida' : 'fotos añadidas'}. Guarda para publicarlas.`);
+    }
+    setUploading(null);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const movePhoto = (i: number, d: number) => {
+    const next = [...photos];
+    const j = i + d;
+    if (j < 0 || j >= next.length) return;
+    [next[i], next[j]] = [next[j], next[i]];
+    setPhotos(next);
+  };
+
+  // ---------- lists ----------
+  const amenities = asList<any>(s.amenities, AMENITIES as any[]).map((a) => ({ id: a.id || uid(), title: a.title || a.name || '', description: a.description || '' }));
+  const attractions = asList<any>(s.attractions, NEARBY_ATTRACTIONS as any[]).map((a) => ({
+    id: a.id || uid(),
+    title: a.title || a.name || '',
+    duration: a.duration || a.travelTime || '',
+    description: a.description || '',
+    imageUrl: a.imageUrl || a.url || '',
+  }));
+  const faqs = asList<any>(s.faqs, FAQS as any[]).map((f) => ({ id: f.id || uid(), question: f.question || f.q || '', answer: f.answer || f.a || '' }));
+  const banner = asList<any>(s.banner_items).map((b) => ({ id: b.id || uid(), badge: b.badge || '', text: b.text || '' }));
+
+  const [uploadingAttr, setUploadingAttr] = useState<string | null>(null);
+  const attrImage = async (id: string, file?: File | null, patch?: (url: string) => void) => {
+    if (!file) return;
+    setUploadingAttr(id);
+    try {
+      patch?.((await api.uploadFile(file)).url);
+    } catch (e: any) {
+      ctx.notify('error', e.message || 'No se pudo subir la imagen.');
+    } finally {
+      setUploadingAttr(null);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="no-scrollbar -mx-4 px-4 flex gap-2 overflow-x-auto sticky top-0 z-10 py-2 bg-emerald-950/95 backdrop-blur">
+        {SUBS.map((x) => <Chip key={x.id} active={sub === x.id} onClick={() => setSub(x.id)}>{x.label}</Chip>)}
+      </div>
+
+      {sub === 'photos' && (
+        <section className="space-y-4">
+          <SectionTitle title="Galería de fotos" hint="La primera foto es la portada de la web. Cambia el orden con las flechas." />
+          <Card className="space-y-3">
+            <div className="flex gap-2 no-scrollbar overflow-x-auto">
+              {CATS.map((c) => <Chip key={c.id} active={uploadCat === c.id} onClick={() => setUploadCat(c.id)}>{c.label}</Chip>)}
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => upload(e.target.files)} />
+            <Btn tone="primary" block disabled={!!uploading} onClick={() => fileRef.current?.click()}>
+              {uploading ? <><Loader2 className="w-5 h-5 animate-spin" />Subiendo {uploading.done}/{uploading.total}…</> : <><ImagePlus className="w-5 h-5" />Añadir fotos en “{CATS.find((c) => c.id === uploadCat)?.label}”</>}
+            </Btn>
+          </Card>
+
+          {photos.length === 0 ? (
+            <Empty icon={<ImagePlus className="w-7 h-7" />} title="Aún no hay fotos" text="Mientras tanto la web muestra fotos de ejemplo." />
+          ) : (
+            <ul className="grid grid-cols-2 gap-3">
+              {photos.map((p, i) => (
+                <li key={`${p.url}-${i}`} className="rounded-2xl overflow-hidden bg-emerald-900/40 border border-emerald-400/15">
+                  <div className="relative aspect-[4/3] bg-emerald-950">
+                    <img src={p.url} alt={`Foto ${i + 1}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                    {i === 0 && <span className="absolute top-2 left-2 px-2 py-1 rounded-full bg-emerald-400 text-emerald-950 text-[11px] font-bold flex items-center gap-1"><Star className="w-3 h-3 fill-current" />Portada</span>}
+                    <button
+                      aria-label="Eliminar foto"
+                      onClick={async () => (await ctx.confirm('¿Quitar esta foto de la galería?', { danger: true, confirmLabel: 'Quitar' })) && setPhotos(photos.filter((_, k) => k !== i))}
+                      className="absolute top-1.5 right-1.5 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-rose-200 flex items-center justify-center cursor-pointer"
+                    ><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                  <div className="p-2 space-y-2">
+                    <select
+                      aria-label="Categoría"
+                      value={p.category}
+                      onChange={(e) => setPhotos(photos.map((x, k) => (k === i ? { ...x, category: e.target.value } : x)))}
+                      className="w-full min-h-[44px] rounded-lg bg-emerald-950 border border-emerald-400/20 px-2 text-sm text-white"
+                    >
+                      {CATS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                    </select>
+                    <div className="flex gap-1.5">
+                      <button aria-label="Mover antes" disabled={i === 0} onClick={() => movePhoto(i, -1)} className="flex-1 min-h-[40px] rounded-lg bg-emerald-800/50 disabled:opacity-25 text-emerald-100 flex items-center justify-center cursor-pointer"><ArrowUp className="w-4 h-4 -rotate-90" /></button>
+                      <button aria-label="Mover después" disabled={i === photos.length - 1} onClick={() => movePhoto(i, 1)} className="flex-1 min-h-[40px] rounded-lg bg-emerald-800/50 disabled:opacity-25 text-emerald-100 flex items-center justify-center cursor-pointer"><ArrowDown className="w-4 h-4 -rotate-90" /></button>
+                      {i !== 0 && <button aria-label="Hacer portada" onClick={() => setPhotos([photos[i], ...photos.filter((_, k) => k !== i)])} className="flex-1 min-h-[40px] rounded-lg bg-amber-400/15 text-amber-200 flex items-center justify-center cursor-pointer"><Star className="w-4 h-4" /></button>}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {sub === 'banner' && (
+        <section className="space-y-4">
+          <SectionTitle title="Banner superior" hint="La franja animada que aparece sobre la web." />
+          <Card><Toggle label="Mostrar el banner" hint="Si lo apagas desaparece de toda la web." checked={s.banner_enabled !== false && s.banner_enabled !== 'false'} onChange={(v) => set('banner_enabled', v)} /></Card>
+          <p className="text-xs text-emerald-200/55 px-1">Cada mensaje rota en el banner. Si no añades ninguno, se usan los mensajes por defecto.</p>
+          <ListEditor items={banner} onChange={(v) => set('banner_items', v)} make={() => ({ id: uid(), badge: '', text: '' })} label={(b) => b.text} addLabel="Añadir mensaje" confirm={ctx.confirm}>
+            {(b, up) => (
+              <>
+                <Field label="Etiqueta corta (opcional)" placeholder="Ej: Oferta" value={b.badge} onChange={(v) => up({ badge: v })} />
+                <Field label="Mensaje" multiline rows={2} placeholder="Ej: 10% de descuento reservando 5 noches" value={b.text} onChange={(v) => up({ text: v })} />
+              </>
+            )}
+          </ListEditor>
+        </section>
+      )}
+
+      {sub === 'hero' && (
+        <section className="space-y-4">
+          <SectionTitle title="Portada" hint="Lo primero que ve el visitante." />
+          <Card className="space-y-4">
+            {text('property_title', 'Nombre de la propiedad', { placeholder: 'Villa María' })}
+            {text('property_subtitle', 'Frase destacada', { placeholder: 'Tu refugio exclusivo en Chichiriviche' })}
+            {text('property_description', 'Descripción', { multiline: true, rows: 4 })}
+            {text('hero_photo_badge', 'Etiqueta sobre la foto', { placeholder: 'Piscina climatizada' })}
+          </Card>
+          <Card className="space-y-4">
+            <p className="font-semibold text-white">Cuatro características</p>
+            {[1, 2, 3, 4].map((n) => text(`hero_feat${n}`, `Característica ${n}`))}
+            <p className="text-xs text-emerald-200/50">El icono se elige solo según las palabras (piscina, wifi, luz, parking…).</p>
+          </Card>
+          <Card className="space-y-4">
+            <p className="font-semibold text-white">Tarjeta de precio</p>
+            {text('hero_price_label', 'Texto sobre el precio', { placeholder: 'Tarifa Estándar' })}
+            <div className="grid grid-cols-2 gap-3">
+              {text('hero_rating', 'Puntuación', { placeholder: '4.96/5.0' })}
+              {text('hero_reviews_count', 'Nº de reseñas', { placeholder: '48', inputMode: 'numeric' })}
+            </div>
+            {text('whatsapp_greeting', 'Mensaje inicial de WhatsApp', { multiline: true, rows: 2, hint: 'Se escribe solo cuando alguien pulsa el botón de WhatsApp de la portada.' })}
+          </Card>
+        </section>
+      )}
+
+      {sub === 'titles' && (
+        <section className="space-y-4">
+          <SectionTitle title="Títulos de cada sección" hint="Título grande y frase de apoyo." />
+          {[
+            ['gallery', 'Fotos'],
+            ['amenities', 'Servicios'],
+            ['attractions', 'Atracciones'],
+            ['faq', 'Normas y preguntas'],
+          ].map(([k, name]) => (
+            <Card key={k} className="space-y-4">
+              <p className="font-semibold text-white">{name}</p>
+              {text(`${k}_title`, 'Título')}
+              {text(`${k}_subtitle`, 'Frase de apoyo', { multiline: true, rows: 2 })}
+            </Card>
+          ))}
+          <Card className="space-y-4">
+            <p className="font-semibold text-white">Filtros de la galería</p>
+            {[1, 2, 3, 4].map((n) => text(`gallery_cat${n}`, n === 1 ? 'Todas' : `Categoría ${n - 1}`))}
+          </Card>
+        </section>
+      )}
+
+      {sub === 'amenities' && (
+        <section className="space-y-4">
+          <SectionTitle title="Servicios incluidos" hint="El icono se asigna solo según el nombre." action={<button onClick={async () => (await ctx.confirm('¿Volver a la lista sugerida?')) && set('amenities', AMENITIES)} className="text-xs font-semibold text-emerald-300 underline min-h-[44px] px-1 cursor-pointer">Restaurar</button>} />
+          <ListEditor items={amenities} onChange={(v) => set('amenities', v)} make={() => ({ id: uid(), title: '', description: '' })} label={(a) => a.title} addLabel="Añadir servicio" confirm={ctx.confirm}>
+            {(a, up) => (
+              <>
+                <Field label="Nombre" placeholder="Ej: Planta eléctrica 24/7" value={a.title} onChange={(v) => up({ title: v })} />
+                <Field label="Descripción" multiline rows={2} value={a.description} onChange={(v) => up({ description: v })} />
+              </>
+            )}
+          </ListEditor>
+        </section>
+      )}
+
+      {sub === 'attractions' && (
+        <section className="space-y-4">
+          <SectionTitle title="Atracciones cercanas" hint="Cayos, playas y planes a poca distancia." />
+          <ListEditor items={attractions} onChange={(v) => set('attractions', v)} make={() => ({ id: uid(), title: '', duration: '', description: '', imageUrl: '' })} label={(a) => a.title} addLabel="Añadir atracción" confirm={ctx.confirm}>
+            {(a, up) => (
+              <>
+                <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-emerald-950">
+                  {a.imageUrl ? <img src={a.imageUrl} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" /> : <div className="absolute inset-0 flex items-center justify-center text-emerald-200/40 text-sm">Sin imagen</div>}
+                  <label className="absolute bottom-2 right-2 min-h-[44px] px-3.5 rounded-full bg-black/65 backdrop-blur text-white text-sm font-semibold flex items-center gap-2 cursor-pointer">
+                    {uploadingAttr === a.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}{a.imageUrl ? 'Cambiar' : 'Subir'}
+                    <input type="file" accept="image/*" hidden onChange={(e) => attrImage(a.id, e.target.files?.[0], (url) => up({ imageUrl: url }))} />
+                  </label>
+                </div>
+                <Field label="Nombre" value={a.title} onChange={(v) => up({ title: v })} placeholder="Cayo Sombrero" />
+                <Field label="Cuánto se tarda" value={a.duration} onChange={(v) => up({ duration: v })} placeholder="15 min en lancha" />
+                <Field label="Descripción" multiline rows={3} value={a.description} onChange={(v) => up({ description: v })} />
+              </>
+            )}
+          </ListEditor>
+        </section>
+      )}
+
+      {sub === 'faq' && (
+        <section className="space-y-4">
+          <SectionTitle title="Normas, cancelación y preguntas" hint="Aparecen en la sección “Información” de la web." />
+          <Card className="space-y-4">
+            <Field label="Normas de la casa" multiline rows={7} value={s.house_rules ?? HOUSE_RULES.join('\n')} onChange={(v) => set('house_rules', v)} hint="Una norma por línea." />
+            <Field label="Política de cancelación" multiline rows={3} value={s.cancellation_policy ?? ''} onChange={(v) => set('cancellation_policy', v)} placeholder="Cancelación gratuita hasta 7 días antes de la llegada." />
+          </Card>
+          <SectionTitle title="Preguntas frecuentes" />
+          <ListEditor items={faqs} onChange={(v) => set('faqs', v)} make={() => ({ id: uid(), question: '', answer: '' })} label={(f) => f.question} addLabel="Añadir pregunta" confirm={ctx.confirm}>
+            {(f, up) => (
+              <>
+                <Field label="Pregunta" value={f.question} onChange={(v) => up({ question: v })} />
+                <Field label="Respuesta" multiline rows={4} value={f.answer} onChange={(v) => up({ answer: v })} />
+              </>
+            )}
+          </ListEditor>
+        </section>
+      )}
+
+      {sub === 'location' && (
+        <section className="space-y-4">
+          <SectionTitle title="Ubicación" />
+          <Card className="space-y-4">
+            {text('location_title', 'Título')}
+            {text('location_subtitle', 'Frase de apoyo', { multiline: true, rows: 2 })}
+            {text('location_address', 'Dirección')}
+            {text('location_description', 'Cómo llegar', { multiline: true, rows: 3 })}
+            {text('location_maps_link', 'Enlace de Google Maps', { type: 'url', inputMode: 'url' })}
+            {text('location_embed_url', 'Mapa incrustado (opcional)', { hint: 'Pega el enlace “Insertar un mapa” de Google Maps.' })}
+          </Card>
+          <Card className="space-y-4">
+            <p className="font-semibold text-white">Tres puntos destacados</p>
+            {[1, 2, 3].map((n) => text(`location_bullet_${n}`, `Punto ${n}`))}
+          </Card>
+        </section>
+      )}
+
+      {sub === 'footer' && (
+        <section className="space-y-4">
+          <SectionTitle title="Pie de página" />
+          <Card className="space-y-4">
+            {text('footer_tagline', 'Línea bajo el nombre', { placeholder: 'Alojamiento Turístico & Relax • Chichiriviche' })}
+            {text('footer_description', 'Descripción', { multiline: true, rows: 4 })}
+            <p className="text-xs text-emerald-200/50">Teléfono, correo y dirección se editan en Más → Contacto.</p>
+          </Card>
+        </section>
+      )}
+    </div>
+  );
+};
